@@ -1,0 +1,17 @@
+version: '2'
+services:
+  postgres:
+    image: "postgres:9.4"
+    environment:
+     POSTGRES_PASSWORD: 123456
+     POSTGRES_USER: postgres
+  web:
+    build: .
+    ports:
+     - "80:1234"
+    volumes:
+     - .:/usr/src/app
+    depends_on:
+      - postgres
+      - redis
+    command: ["./wait_for_it.sh", "postgres:5432", "--", "npm", "start"]
