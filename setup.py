@@ -4,7 +4,7 @@ import sys
 import os
 
 version = '0.1'
-readme = open('README.txt').read()
+readme = open('README.md').read()
 
 setup(name='test_tube',
       packages=['test_tube'],
