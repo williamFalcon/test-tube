@@ -4,13 +4,11 @@ import sys
 import os
 
 version = '0.1'
-readme = open('README.md').read()
 
 setup(name='test_tube',
       packages=['test_tube'],
       version=version,
       description='Experiment logger and visualizer',
-      long_description=readme,
       author='William Falcon',
       author_email='will@hacstudios.com',
       url='https://github.com/williamFalcon/test_tube',
