@@ -41,13 +41,24 @@ class Experiment(object):
 
         # create a new log file if not in debug mode
         if not debug:
-            # when we have a version, overwrite it
-            if self.version:
-                self.__create_exp_file(version)
+
+            # when we have a version, load it
+            if self.version is not None:
+
+                # when no version and no file, create it
+                if not os.path.exists(self.__get_log_name()):
+                    self.__create_exp_file(self.version)
+                    self.save()
+                else:
+                    # otherwise load it
+                    self.__load()
             else:
                 # if no version given, increase the version to a new exp
+                # create the file if not exists
                 old_version = self.__get_last_experiment_version()
-                self.__create_exp_file(old_version + 1)
+                self.version = old_version
+                self.__create_exp_file(self.version + 1)
+                self.save()
 
     # --------------------------------
     # FILE IO UTILS
@@ -99,6 +110,8 @@ class Experiment(object):
         :param val:
         :return:
         """
+        if self.debug: return
+
         self.tags[key] = val
         self.save()
 
@@ -111,10 +124,13 @@ class Experiment(object):
         :param metrics_dict:
         :return:
         """
+        if self.debug: return
+
         self.metrics.append(metrics_dict)
         self.save()
 
     def save(self):
+        if self.debug: return
         obj = {
             'name': self.name,
             'version': self.version,
@@ -123,6 +139,14 @@ class Experiment(object):
         }
         with open(self.__get_log_name(), 'w') as file:
             json.dump(obj, file, ensure_ascii=False)
+
+    def __load(self):
+        with open(self.__get_log_name(), 'r') as file:
+            data = json.load(file)
+            self.name = data['name']
+            self.version = data['version']
+            self.tags = data['tags']
+            self.metrics = data['metrics']
 
     # ----------------------------
     # OVERWRITES
