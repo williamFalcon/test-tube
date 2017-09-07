@@ -1,8 +1,0 @@
-numpy==1.11.3
-pandas==0.19.2
-pgpasslib==1.1.0
-psycopg2==2.6.2
-python-dateutil==2.6.0
-pytz==2016.10
-six==1.10.0
-SQLAlchemy==1.1.4
