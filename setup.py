@@ -7,11 +7,13 @@ with open('requirements.txt') as f:
 
 
 setup(name='test_tube',
-      version='0.0',
+      packages=['test_tube'],
+      version='0.1',
       description='Experiment logger and visualizer',
       author='William Falcon',
       author_email='will@hacstudios.com',
-      url='',
-      packages=['log'],
-      install_requires=required
+      url='https://github.com/williamFalcon/test_tube',
+      download_url='https://github.com/williamFalcon/test_tube/archive/0.1.tar.gz',
+      install_requires=required,
+      keywords=['testing', 'machine learning', 'deep learning', 'prototyping', 'experimenting', 'modeling']
      )

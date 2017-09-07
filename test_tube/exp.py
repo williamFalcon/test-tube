@@ -12,7 +12,7 @@ def get_data_path():
     :param path:
     :return:
     """
-    return os.path.join(_ROOT, '../data')
+    return os.path.join(_ROOT, 'data')
 
 # -----------------------------
 # Experiment object
@@ -27,13 +27,18 @@ class Experiment(object):
     tags = {}
     metrics = []
 
-    def __init__(self, name='default', debug=False, version=None):
+    def __init__(self, name='default', debug=False, version=None, save_dir=None):
         """
         A new Experiment object defaults to 'default' unless a specific name is provided
         If a known name is already provided, then the file version is changed
         :param name:
         :param debug:
         """
+        # change where the save dir is if requested
+        if save_dir is not None:
+            global _ROOT
+            _ROOT = save_dir
+
         self.__init_cache_file_if_needed()
         self.name = name
         self.debug = debug
