@@ -24,10 +24,11 @@ class Experiment(object):
     version = None
     tag = None
     debug = False
+    autosave = None
     tags = {}
     metrics = []
 
-    def __init__(self, name='default', debug=False, version=None, save_dir=None):
+    def __init__(self, name='default', debug=False, version=None, save_dir=None, autosave=True):
         """
         A new Experiment object defaults to 'default' unless a specific name is provided
         If a known name is already provided, then the file version is changed
@@ -43,6 +44,7 @@ class Experiment(object):
         self.name = name
         self.debug = debug
         self.version = version
+        self.autosave = autosave
 
         # create a new log file if not in debug mode
         if not debug:
@@ -53,7 +55,7 @@ class Experiment(object):
                 # when no version and no file, create it
                 if not os.path.exists(self.__get_log_name()):
                     self.__create_exp_file(self.version)
-                    self.__save()
+                    self.save()
                 else:
                     # otherwise load it
                     self.__load()
@@ -63,7 +65,7 @@ class Experiment(object):
                 old_version = self.__get_last_experiment_version()
                 self.version = old_version
                 self.__create_exp_file(self.version + 1)
-                self.__save()
+                self.save()
 
     # --------------------------------
     # FILE IO UTILS
@@ -118,7 +120,8 @@ class Experiment(object):
         if self.debug: return
 
         self.tags[key] = val
-        self.__save()
+        if self.autosave == True:
+            self.save()
 
     def add_metric_row(self, metrics_dict):
         """
@@ -132,9 +135,10 @@ class Experiment(object):
         if self.debug: return
 
         self.metrics.append(metrics_dict)
-        self.__save()
+        if self.autosave == True:
+            self.save()
 
-    def __save(self):
+    def save(self):
         """
         Saves current experiment progress
         :return:
