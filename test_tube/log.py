@@ -1,6 +1,6 @@
 import os
 import json
-
+from datetime import datetime
 
 # constants
 _ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -25,6 +25,7 @@ class Experiment(object):
     tag = None
     debug = False
     autosave = None
+    created_at = str(datetime.utcnow())
     tags = {}
     metrics = []
 
@@ -134,6 +135,10 @@ class Experiment(object):
         """
         if self.debug: return
 
+        # timestamp
+        if 'created_at' not in metrics_dict:
+            metrics_dict['created_at'] = str(datetime.utcnow())
+
         self.metrics.append(metrics_dict)
         if self.autosave == True:
             self.save()
@@ -148,7 +153,9 @@ class Experiment(object):
             'name': self.name,
             'version': self.version,
             'tags': self.tags,
-            'metrics': self.metrics
+            'metrics': self.metrics,
+            'autosave': self.autosave,
+            'created_at': self.created_at
         }
         with open(self.__get_log_name(), 'w') as file:
             json.dump(obj, file, ensure_ascii=False)
@@ -160,6 +167,8 @@ class Experiment(object):
             self.version = data['version']
             self.tags = data['tags']
             self.metrics = data['metrics']
+            self.autosave = data['autosave']
+            self.created_at = data['created_at']
 
     # ----------------------------
     # OVERWRITES
