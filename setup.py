@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 import sys
 import os
 
-version = '0.15'
+version = '0.16'
 
 setup(name='test_tube',
       packages=['test_tube'],
@@ -12,6 +12,6 @@ setup(name='test_tube',
       author='William Falcon',
       author_email='will@hacstudios.com',
       url='https://github.com/williamFalcon/test_tube',
-      download_url='https://github.com/williamFalcon/test_tube/archive/0.15.tar.gz',
+      download_url='https://github.com/williamFalcon/test_tube/archive/{}.tar.gz'.format(version),
       keywords=['testing', 'machine learning', 'deep learning', 'prototyping', 'experimenting', 'modeling']
      )
