@@ -124,6 +124,27 @@ class Experiment(object):
         if self.autosave == True:
             self.save()
 
+    def add_meta_tags(self, tag_dict):
+        """
+        Adds a tag to the experiment.
+        Tags are metadata for the exp
+
+        >> e.add_meta_tag({"model": "Convnet A"})
+
+        :param key:
+        :param val:
+        :return:
+        """
+        if self.debug: return
+
+        # parse tags
+        for k, v in tag_dict.items():
+            self.tags[k] = v
+
+        # save if needed
+        if self.autosave == True:
+            self.save()
+
     def add_metric_row(self, metrics_dict):
         """
         Adds a json dict of metrics.
