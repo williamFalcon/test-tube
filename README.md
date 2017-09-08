@@ -1,4 +1,9 @@
-# Test_tube
+# Test tube
+<div style="text-align: center">
+<img src="https://raw.githubusercontent.com/williamfalcon/test_tube/master/imgs/test_tube_logo.png">
+</div>
+<br>
+
 Log machine learning / data science experiments with ease
 
 ```bash
