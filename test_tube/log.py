@@ -53,7 +53,7 @@ class Experiment(object):
                 # when no version and no file, create it
                 if not os.path.exists(self.__get_log_name()):
                     self.__create_exp_file(self.version)
-                    self.save()
+                    self.__save()
                 else:
                     # otherwise load it
                     self.__load()
@@ -63,7 +63,7 @@ class Experiment(object):
                 old_version = self.__get_last_experiment_version()
                 self.version = old_version
                 self.__create_exp_file(self.version + 1)
-                self.save()
+                self.__save()
 
     # --------------------------------
     # FILE IO UTILS
@@ -118,7 +118,7 @@ class Experiment(object):
         if self.debug: return
 
         self.tags[key] = val
-        self.save()
+        self.__save()
 
     def add_metric_row(self, metrics_dict):
         """
@@ -132,9 +132,13 @@ class Experiment(object):
         if self.debug: return
 
         self.metrics.append(metrics_dict)
-        self.save()
+        self.__save()
 
-    def save(self):
+    def __save(self):
+        """
+        Saves current experiment progress
+        :return:
+        """
         if self.debug: return
         obj = {
             'name': self.name,
