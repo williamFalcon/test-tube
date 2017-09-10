@@ -26,10 +26,11 @@ class Experiment(object):
     debug = False
     autosave = None
     created_at = str(datetime.utcnow())
+    description = None
     tags = {}
     metrics = []
 
-    def __init__(self, name='default', debug=False, version=None, save_dir=None, autosave=True):
+    def __init__(self, name='default', debug=False, version=None, save_dir=None, autosave=True, description=None):
         """
         A new Experiment object defaults to 'default' unless a specific name is provided
         If a known name is already provided, then the file version is changed
@@ -46,6 +47,7 @@ class Experiment(object):
         self.debug = debug
         self.version = version
         self.autosave = autosave
+        self.description = description
 
         # create a new log file if not in debug mode
         if not debug:
@@ -160,9 +162,18 @@ class Experiment(object):
         if 'created_at' not in metrics_dict:
             metrics_dict['created_at'] = str(datetime.utcnow())
 
+        self.__convert_numpy_types(metrics_dict)
         self.metrics.append(metrics_dict)
         if self.autosave == True:
             self.save()
+
+    def __convert_numpy_types(self, metrics_dict):
+        for k, v in metrics_dict.items():
+            if v.__class__.__name__ == 'float32':
+                metrics_dict[k] = float(v)
+
+            if v.__class__.__name__ == 'float64':
+                metrics_dict[k] = float(v)
 
     def save(self):
         """
@@ -176,6 +187,7 @@ class Experiment(object):
             'tags': self.tags,
             'metrics': self.metrics,
             'autosave': self.autosave,
+            'description': self.description,
             'created_at': self.created_at
         }
         with open(self.__get_log_name(), 'w') as file:
@@ -190,6 +202,7 @@ class Experiment(object):
             self.metrics = data['metrics']
             self.autosave = data['autosave']
             self.created_at = data['created_at']
+            self.description = data['description']
 
     # ----------------------------
     # OVERWRITES
