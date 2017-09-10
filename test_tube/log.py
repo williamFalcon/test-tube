@@ -12,7 +12,7 @@ def get_data_path():
     :param path:
     :return:
     """
-    return os.path.join(_ROOT, 'data')
+    return os.path.join(_ROOT, 'test_tube_data')
 
 # -----------------------------
 # Experiment object
