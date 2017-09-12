@@ -1,7 +1,7 @@
 from test_tube.log import Experiment
 
 # make new experiment
-e = Experiment(autosave=False)
+e = Experiment(autosave=False, create_git_tag=True)
 
 # add a column
 e.add_meta_tag('loss', 'mse')

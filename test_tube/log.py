@@ -1,6 +1,8 @@
 import os
 import json
 from datetime import datetime
+from subprocess import call
+import os
 
 # constants
 _ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -29,8 +31,9 @@ class Experiment(object):
     description = None
     tags = {}
     metrics = []
+    create_git_tag = False
 
-    def __init__(self, name='default', debug=False, version=None, save_dir=None, autosave=True, description=None):
+    def __init__(self, name='default', debug=False, version=None, save_dir=None, autosave=True, description=None, create_git_tag=False):
         """
         A new Experiment object defaults to 'default' unless a specific name is provided
         If a known name is already provided, then the file version is changed
@@ -48,6 +51,7 @@ class Experiment(object):
         self.version = version
         self.autosave = autosave
         self.description = description
+        self.create_git_tag = create_git_tag
 
         # create a new log file if not in debug mode
         if not debug:
@@ -69,6 +73,15 @@ class Experiment(object):
                 self.version = old_version
                 self.__create_exp_file(self.version + 1)
                 self.save()
+
+            # create a git tag if requested
+            if self.create_git_tag == True:
+                desc = description if description is not None else 'no description'
+                tag_msg = 'Test tube exp: {} - {}'.format(self.name, desc)
+                cmd = 'git tag -a tt_v{} -m "{}"'.format(self.version, tag_msg)
+                os.system(cmd)
+                print('Test tube created git tag:', 'tt_v{}'.format(self.version))
+
 
     # --------------------------------
     # FILE IO UTILS
