@@ -80,7 +80,7 @@ class Experiment(object):
                 tag_msg = 'Test tube exp: {} - {}'.format(self.name, desc)
                 cmd = 'git tag -a tt_v{} -m "{}"'.format(self.version, tag_msg)
                 os.system(cmd)
-                print('Test tube created git tag:', 'tt_v{}'.format(self.version))
+                print('Test tube created git tag:', 'tt_{}_v{}'.format(self.name, self.version))
 
 
     # --------------------------------
