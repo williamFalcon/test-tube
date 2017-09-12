@@ -78,7 +78,7 @@ class Experiment(object):
             if self.create_git_tag == True:
                 desc = description if description is not None else 'no description'
                 tag_msg = 'Test tube exp: {} - {}'.format(self.name, desc)
-                cmd = 'git tag -a tt_v{} -m "{}"'.format(self.version, tag_msg)
+                cmd = 'git tag -a tt_{}_v{} -m "{}"'.format(self.name, self.version, tag_msg)
                 os.system(cmd)
                 print('Test tube created git tag:', 'tt_{}_v{}'.format(self.name, self.version))
 
