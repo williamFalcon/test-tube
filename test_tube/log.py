@@ -254,7 +254,8 @@ class Experiment(object):
                     save_path = '{}/{}_{}.png'.format(save_path, img_name, i)
 
                     # save image to disk
-                    img_io.save_as_png(metric[k], save_path)
+                    if type(metric[k]) is not str:
+                        img_io.save_as_png(metric[k], save_path)
 
                     # replace the image in the metric with the file path
                     metric[k] = save_path
