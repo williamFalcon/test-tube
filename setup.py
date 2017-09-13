@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 import sys
 import os
 
-version = '0.25'
+version = '0.26'
 
 setup(name='test_tube',
       packages=['test_tube'],

@@ -67,7 +67,7 @@ class Experiment(object):
         # is accurate
         if self.version is None:
             old_version = self.__get_last_experiment_version()
-            self.exp_hash = '{}_{}'.format(self.name, old_version + 1)
+            self.exp_hash = '{}_v{}'.format(self.name, old_version + 1)
 
         self.__init_cache_file_if_needed()
 
@@ -144,7 +144,7 @@ class Experiment(object):
 
     def __get_log_name(self):
         exp_cache_file = get_data_path()
-        return '{}/{}_{}.experiment'.format(exp_cache_file, self.name, self.version)
+        return '{}/{}.experiment'.format(exp_cache_file, self.exp_hash)
 
     def add_meta_tag(self, key, val):
         """
