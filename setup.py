@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-from setuptools import setup, find_packages
-import sys
-import os
+from setuptools import setup
 
 version = '0.26'
 
