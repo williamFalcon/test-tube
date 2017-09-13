@@ -244,8 +244,22 @@ class Experiment(object):
         :param metrics:
         :return:
         """
-        file_names = []
-        return file_names
+        # iterate all metrics and find keys with a specific prefix
+        for i, metric in enumerate(metrics):
+            for k, v in metric.items():
+                # if the prefix is a png, save the image and replace the value with the path
+                if 'png_' in k:
+                    # determine the file name
+                    img_name = '_'.join(k.split('_')[1:])
+                    save_path = get_media_path(self.exp_hash)
+                    save_path = '{}/{}_{}.png'.format(save_path, img_name, i)
+
+                    # save image to disk
+                    self.save_as_png(metric[k], save_path)
+
+                    # replace the image in the metric with the file path
+                    metric[k] = save_path
+
 
     def __load(self):
         with open(self.__get_log_name(), 'r') as file:
