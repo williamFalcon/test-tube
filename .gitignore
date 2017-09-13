@@ -3,8 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 data/
+test_tube_data/
 *.experiment
 example.py
+*.png
 
 # C extensions
 *.so

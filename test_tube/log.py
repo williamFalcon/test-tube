@@ -60,7 +60,7 @@ class Experiment(object):
         self.autosave = autosave
         self.description = description
         self.create_git_tag = create_git_tag
-        self.exp_hash = '{}_{}'.format(self.name, version)
+        self.exp_hash = '{}_v{}'.format(self.name, version)
 
         # update version hash if we need to increase version on our own
         # we will increase the previous version, so do it now so the hash
@@ -136,7 +136,7 @@ class Experiment(object):
                 if '_' in f:
                     name, version = f.split('_')[0:2]
                     if self.name == name:
-                        version = int(version.split('.')[0])
+                        version = int(version.split('.')[0][1:])
                         last_version = max(last_version, version)
             return last_version
         except Exception as e:
