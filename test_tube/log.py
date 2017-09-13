@@ -16,6 +16,15 @@ def get_data_path():
     """
     return os.path.join(_ROOT, 'test_tube_data')
 
+
+def get_media_path(exp_name):
+    """
+    Returns the path to the local package cache
+    :param path:
+    :return:
+    """
+    return os.path.join(get_data_path(), 'media_{}'.format(exp_name))
+
 # -----------------------------
 # Experiment object
 # -----------------------------
@@ -32,6 +41,7 @@ class Experiment(object):
     tags = {}
     metrics = []
     create_git_tag = False
+    exp_hash = None
 
     def __init__(self, name='default', debug=False, version=None, save_dir=None, autosave=True, description=None, create_git_tag=False):
         """
@@ -45,13 +55,22 @@ class Experiment(object):
             global _ROOT
             _ROOT = save_dir
 
-        self.__init_cache_file_if_needed()
         self.name = name
         self.debug = debug
         self.version = version
         self.autosave = autosave
         self.description = description
         self.create_git_tag = create_git_tag
+        self.exp_hash = '{}_{}'.format(self.name, version)
+
+        # update version hash if we need to increase version on our own
+        # we will increase the previous version, so do it now so the hash
+        # is accurate
+        if self.version is None:
+            old_version = self.__get_last_experiment_version()
+            self.exp_hash = '{}_{}'.format(self.name, old_version + 1)
+
+        self.__init_cache_file_if_needed()
 
         # create a new log file if not in debug mode
         if not debug:
@@ -78,9 +97,9 @@ class Experiment(object):
             if self.create_git_tag == True:
                 desc = description if description is not None else 'no description'
                 tag_msg = 'Test tube exp: {} - {}'.format(self.name, desc)
-                cmd = 'git tag -a tt_{}_v{} -m "{}"'.format(self.name, self.version, tag_msg)
+                cmd = 'git tag -a tt_{} -m "{}"'.format(self.exp_hash, tag_msg)
                 os.system(cmd)
-                print('Test tube created git tag:', 'tt_{}_v{}'.format(self.name, self.version))
+                print('Test tube created git tag:', 'tt_{}'.format(self.exp_hash))
 
 
     # --------------------------------
@@ -95,6 +114,7 @@ class Experiment(object):
         if not os.path.exists(exp_cache_file):
             os.mkdir(exp_cache_file)
 
+
     def __create_exp_file(self, version):
         """
         Recreates the old file with this exp and version
@@ -103,20 +123,26 @@ class Experiment(object):
         """
         exp_cache_file = get_data_path()
         # if no exp, then make it
-        path = '{}/{}_{}.experiment'.format(exp_cache_file, self.name, version)
+        path = '{}/{}.experiment'.format(exp_cache_file, self.exp_hash)
         open(path, 'w').close()
         self.version = version
 
+        # make the directory for the experiment media assets name
+        os.mkdir(get_media_path(self.exp_hash))
+
     def __get_last_experiment_version(self):
-        exp_cache_file = get_data_path()
-        last_version = -1
-        for f in os.listdir(exp_cache_file):
-            if '_' in f:
-                name, version = f.split('_')[0:2]
-                if self.name == name:
-                    version = int(version.split('.')[0])
-                    last_version = max(last_version, version)
-        return last_version
+        try:
+            exp_cache_file = get_data_path()
+            last_version = -1
+            for f in os.listdir(exp_cache_file):
+                if '_' in f:
+                    name, version = f.split('_')[0:2]
+                    if self.name == name:
+                        version = int(version.split('.')[0])
+                        last_version = max(last_version, version)
+            return last_version
+        except Exception as e:
+            return -1
 
     def __get_log_name(self):
         exp_cache_file = get_data_path()
@@ -212,6 +238,12 @@ class Experiment(object):
             json.dump(obj, file, ensure_ascii=False)
 
     def __save_images(self, metrics):
+        """
+        Save tags that have a png_ prefix (as images)
+        and replace the meta tag with the file name
+        :param metrics:
+        :return:
+        """
         file_names = []
         return file_names
 
@@ -226,7 +258,7 @@ class Experiment(object):
             self.created_at = data['created_at']
             self.description = data['description']
 
-    def saveAsPNG(self, array, filename):
+    def save_as_png(self, array, filename):
         if any([len(row) != len(array[0]) for row in array]):
             raise ValueError('Array should have elements of equal size')
         data = self.__write_png(bytearray(array[::-1]), len(array[0]), len(array))
