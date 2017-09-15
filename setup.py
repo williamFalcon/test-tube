@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-from setuptools import setup
+from setuptools import setup, find_packages
 
-version = '0.30'
+version = '0.31'
 
 setup(name='test_tube',
-      packages=['test_tube'],
+      packages=find_packages(),
       version=version,
       description='Experiment logger and visualizer',
       author='William Falcon',
