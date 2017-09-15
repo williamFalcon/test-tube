@@ -17,16 +17,17 @@ class HyperParamOptimizer(object):
     params = []
 
     current_iteration = 0
-
+    experiment = None
     seen_params = {}
 
-    def __init__(self, method='grid_search', enabled=True):
+    def __init__(self, method='grid_search', enabled=True, experiment=None):
         """
         :param method: 'grid_search', 'random_search'
         :param enabled:
         """
         self.method = method
         self.enabled = enabled
+        self.experiment = experiment
 
     # -----------------------------
     # PARAMETER CHOICES
@@ -79,8 +80,9 @@ class HyperParamOptimizer(object):
         param_i = self.seen_params[name]['idx']
         param = iteration_params[param_i]
         return param['val']
+
     # -----------------------------
-    # RUN OPTIMIZATION
+    # OPTIMIZATION
     # -----------------------------
     def optimize(self, fx, nb_iterations=None):
         """
@@ -91,11 +93,14 @@ class HyperParamOptimizer(object):
         """
         self.nb_iterations = nb_iterations
 
-        results = []
-
         # run first iteration
         result = fx(self)
-        results.append(result)
+
+        # log if requested
+        if self.experiment is not None:
+            result['hypo_iter_nb'] = self.current_iteration
+            self.experiment.add_metric_row(result)
+
         self.current_iteration += 1
 
         # generate the rest of the training seq
@@ -108,8 +113,41 @@ class HyperParamOptimizer(object):
         # calculated from the strategy used
         for i in range(1, len(self.trials)):
             result = fx(self)
-            results.append(result)
+            result['hypo_iter_nb'] = self.current_iteration
+
+            # log if requested
+            if self.experiment is not None:
+                self.experiment.add_metric_row(result)
+
             self.current_iteration += 1
+
+    # -----------------------------
+    # INTERFACE WITH LOGGER
+    # -----------------------------
+    def get_current_trial_meta(self):
+        meta_results = []
+
+        # when we have trials, means we've already done 1 run
+        # we can just get the params that are about to be run
+        # otherwise we need to infer params from the current param list
+        # this assumes the user feeds the opt into the experiment after
+        # they're done setting up the params
+        is_first_trial = self.trials is not None and len(self.trials) > 0
+        if is_first_trial:
+            trial_params = self.trials[self.current_iteration]
+            for trial_param in trial_params:
+                root_param = self.params[trial_param['idx']]
+                meta_results.append({'hypo_' + root_param['name']: trial_param['val']})
+
+        # if we haven't done a pass through the data yet,
+        # we need to infer from the params in the list
+        else:
+            for param in self.params:
+                meta_results.append({'hypo_' + param['name']: param['vals'][0]})
+
+        # add shared meta
+        meta_results.append({'hypo_iter_nb': self.current_iteration})
+        return meta_results
 
     # -----------------------------
     # TRIALS HELPER

@@ -100,6 +100,17 @@ class Experiment(object):
                 os.system(cmd)
                 print('Test tube created git tag:', 'tt_{}'.format(self.exp_hash))
 
+    def add_meta_from_hyperopt(self, hypo):
+        """
+        Transfers meta data about all the params from the
+        hyperoptimizer to the log
+        :param hypo:
+        :return:
+        """
+        meta = hypo.get_current_trial_meta()
+        for tag in meta:
+            self.add_meta_tags(tag)
+
     # --------------------------------
     # FILE IO UTILS
     # --------------------------------
