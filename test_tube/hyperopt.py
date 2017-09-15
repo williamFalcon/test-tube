@@ -22,7 +22,6 @@ class HyperParamOptimizer(object):
 
     def __init__(self, method='grid_search', enabled=True):
         """
-
         :param method: 'grid_search', 'random_search'
         :param enabled:
         """
@@ -33,6 +32,20 @@ class HyperParamOptimizer(object):
     # PARAMETER CHOICES
     # -----------------------------
     def tune_uniform(self, low, high, samples, default, name):
+        # how this fx samples for the data
+        def gen_samples():
+            vals = [random.uniform(low, high) for i in range(samples)]
+            return vals
+
+        return self.__resolve_param(gen_samples, default, name)
+
+    def tune_choice(self, options, default, name):
+        def gen_samples():
+            return options
+
+        return self.__resolve_param(gen_samples, default, name)
+
+    def __resolve_param(self, gen_fx, default, name):
         # case when no action was requested
         if not self.enabled:
             return default
@@ -40,7 +53,7 @@ class HyperParamOptimizer(object):
         # create the param when it's new
         # return the first value in this case
         if name not in self.seen_params:
-            vals = [random.uniform(low, high) for i in range(samples)]
+            vals = gen_fx()
             param = {'vals': vals, 'name': name}
             self.seen_params[name] = {'idx': len(self.params)}
             self.params.append(param)
@@ -52,11 +65,6 @@ class HyperParamOptimizer(object):
         param_i = self.seen_params[name]['idx']
         param = iteration_params[param_i]
         return param['val']
-
-
-    def tune_choice(self, options, default, name):
-        pass
-
     # -----------------------------
     # RUN OPTIMIZATION
     # -----------------------------
