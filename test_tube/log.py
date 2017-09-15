@@ -30,17 +30,6 @@ def get_media_path(exp_name):
 
 
 class Experiment(object):
-    name = None
-    version = None
-    tag = None
-    debug = False
-    autosave = None
-    created_at = str(datetime.utcnow())
-    description = None
-    tags = {}
-    metrics = []
-    create_git_tag = False
-    exp_hash = None
 
     def __init__(self, name='default', debug=False, version=None, save_dir=None, autosave=True, description=None, create_git_tag=False):
         """
@@ -54,6 +43,8 @@ class Experiment(object):
             global _ROOT
             _ROOT = save_dir
 
+        self.metrics = []
+        self.tags = {}
         self.name = name
         self.debug = debug
         self.version = version
@@ -61,6 +52,7 @@ class Experiment(object):
         self.description = description
         self.create_git_tag = create_git_tag
         self.exp_hash = '{}_v{}'.format(self.name, version)
+        self.created_at = str(datetime.utcnow())
 
         # update version hash if we need to increase version on our own
         # we will increase the previous version, so do it now so the hash
@@ -283,12 +275,13 @@ class Experiment(object):
             self.description = data['description']
             self.exp_hash = data['exp_hash']
 
-
-
     # ----------------------------
     # OVERWRITES
     # ----------------------------
 
     def __str__(self):
+        return 'Exp: {}, v: {}'.format(self.name, self.version)
+
+    def __hash__(self):
         return 'Exp: {}, v: {}'.format(self.name, self.version)
 

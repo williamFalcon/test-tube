@@ -4,21 +4,6 @@ import json
 
 
 class HyperParamOptimizer(object):
-    method = None
-    enabled = None
-
-    # the params to use at each trial
-    trials = None
-
-    # total iterations we're doing
-    nb_iterations = None
-
-    # details about each param
-    params = []
-
-    current_iteration = 0
-    experiment = None
-    seen_params = {}
 
     def __init__(self, method='grid_search', enabled=True, experiment=None):
         """
@@ -28,6 +13,17 @@ class HyperParamOptimizer(object):
         self.method = method
         self.enabled = enabled
         self.experiment = experiment
+        self.seen_params = {}
+        self.current_iteration = 0
+
+        # the params to use at each trial
+        self.trials = None
+
+        # total iterations we're doing
+        self.nb_iterations = None
+
+        # details about each param
+        self.params = []
 
     # -----------------------------
     # PARAMETER CHOICES
