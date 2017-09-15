@@ -1,5 +1,6 @@
 import itertools
 import random
+import json
 
 
 class HyperParamOptimizer(object):
@@ -126,19 +127,31 @@ class HyperParamOptimizer(object):
     def __generate_random_search_trials(self, params):
         results = []
 
+        # ensures we have unique results
+        seen_trials = set()
+
         # shuffle each param list
+        potential_trials = 1
         for p in params:
             random.shuffle(p)
+            potential_trials *= len(p)
+
+        # we can't sample more trials than are possible
+        max_iters = min(potential_trials, self.nb_iterations)
 
         # then for the nb of trials requested, create a new param tuple
         # by picking a random integer at each param level
-        for i in range(self.nb_iterations):
+        while len(results) < max_iters:
             trial = []
             for param in params:
                 p = random.sample(param, 1)[0]
                 trial.append(p)
-            results.append(trial)
+
+            # verify this is a unique trial so we
+            # don't duplicate work
+            trial_str = json.dumps(trial)
+            if trial_str not in seen_trials:
+                seen_trials.add(trial_str)
+                results.append(trial)
 
         return results
-
-
