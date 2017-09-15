@@ -39,6 +39,20 @@ class HyperParamOptimizer(object):
 
         return self.__resolve_param(gen_samples, default, name)
 
+    def tune_odds(self, low, high, default, name):
+        start = low if low %2 != 0 else low + 1
+        def gen_samples():
+            return range(start, high+1, 2)
+
+        return self.__resolve_param(gen_samples, default, name)
+
+    def tune_evens(self, low, high, default, name):
+        start = low if low %2 == 0 else low + 1
+        def gen_samples():
+            return range(start, high+1, 2)
+
+        return self.__resolve_param(gen_samples, default, name)
+
     def tune_choice(self, options, default, name):
         def gen_samples():
             return options
