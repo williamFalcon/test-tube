@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from setuptools import setup
 
-version = '0.27'
+version = '0.28'
 
 setup(name='test_tube',
       packages=['test_tube'],

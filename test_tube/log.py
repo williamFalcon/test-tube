@@ -1,7 +1,7 @@
 import os
 import json
 from datetime import datetime
-from .lib import img_io
+from .tt_lib import img_io
 
 # constants
 _ROOT = os.path.abspath(os.path.dirname(__file__))
