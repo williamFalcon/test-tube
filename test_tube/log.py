@@ -1,7 +1,7 @@
 import os
 import json
 from datetime import datetime
-from .tt_lib import img_io
+from scipy.misc import imsave
 
 # constants
 _ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -57,9 +57,10 @@ class Experiment(object):
         # update version hash if we need to increase version on our own
         # we will increase the previous version, so do it now so the hash
         # is accurate
-        if self.version is None:
+        if version is None:
             old_version = self.__get_last_experiment_version()
             self.exp_hash = '{}_v{}'.format(self.name, old_version + 1)
+            self.version = old_version + 1
 
         self.__init_cache_file_if_needed()
 
@@ -137,7 +138,9 @@ class Experiment(object):
             last_version = -1
             for f in os.listdir(exp_cache_file):
                 if '_' in f:
-                    name, version = f.split('_')[0:2]
+                    file_parts = f.split('_')
+                    name = '_'.join(file_parts[:-1])
+                    version = file_parts[-1]
                     if self.name == name:
                         version = int(version.split('.')[0][1:])
                         last_version = max(last_version, version)
@@ -250,15 +253,20 @@ class Experiment(object):
         for i, metric in enumerate(metrics):
             for k, v in metric.items():
                 # if the prefix is a png, save the image and replace the value with the path
-                if 'png_' in k:
+                img_extension = None
+                img_extension = 'png' if 'png_' in k else img_extension
+                img_extension = 'jpg' if 'jpg' in k else img_extension
+                img_extension = 'jpeg' if 'jpeg' in k else img_extension
+
+                if img_extension is not None:
                     # determine the file name
                     img_name = '_'.join(k.split('_')[1:])
                     save_path = get_media_path(self.exp_hash)
-                    save_path = '{}/{}_{}.png'.format(save_path, img_name, i)
+                    save_path = '{}/{}_{}.{}'.format(save_path, img_name, i, img_extension)
 
                     # save image to disk
                     if type(metric[k]) is not str:
-                        img_io.save_as_png(metric[k], save_path)
+                        imsave(save_path, metric[k])
 
                     # replace the image in the metric with the file path
                     metric[k] = save_path
