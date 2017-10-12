@@ -21,9 +21,7 @@ pip install test_tube
 ```python
 from test_tube import Experiment
 
-exp = Experiment(name='dense_model',
-                 debug=False,
-                 save_dir='/Desktop/test_tube')
+exp = Experiment(name='dense_model', save_dir='/Desktop/test_tube')
 
 exp.add_meta_tags({'learning_rate': 0.002, 'nb_layers': 2})
 
