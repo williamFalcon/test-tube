@@ -14,3 +14,13 @@ setup(name='test_tube',
       download_url='https://github.com/williamFalcon/test_tube/archive/{}.tar.gz'.format(version),
       keywords=['testing', 'machine learning', 'deep learning', 'prototyping', 'experimenting', 'modeling']
      )
+
+"""
+To upload change:
+
+git commit -am "updated setup.py"  
+git tag 0.33 -m "test_tube v0.33"  
+git push --tags origin master   
+
+python setup.py sdist upload -r pypi
+"""
