@@ -7,7 +7,6 @@ test_tube_data/
 *.experiment
 example.py
 example.json
-*.png
 
 # C extensions
 *.so
