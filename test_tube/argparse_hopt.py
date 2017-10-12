@@ -21,11 +21,11 @@ class HyperOptArgumentParser(ArgumentParser):
     def add_argument(self, *args, **kwargs):
         super(HyperOptArgumentParser, self).add_argument(*args, **kwargs)
 
-    def add_opt_argument_list(self, *args, opt_values=None, tunnable=False, **kwargs):
+    def add_opt_argument_list(self, *args, options=None, tunnable=False, **kwargs):
         self.add_argument(*args, **kwargs)
         arg_name = args[-1]
         self.opt_args[arg_name] = OptArg(obj_id=arg_name,
-                                         opt_values=opt_values,
+                                         opt_values=options,
                                          tunnable=tunnable)
 
     def add_opt_argument_range(self, *args, start=None, end=None, nb_samples=10, tunnable=False, **kwargs):
