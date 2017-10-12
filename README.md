@@ -2,13 +2,16 @@
 <div style="text-align: center">
 <img src="https://raw.githubusercontent.com/williamfalcon/test_tube/master/imgs/test_tube_logo.png">
 </div>
-<br>
+<br>    
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/williamFalcon/test_tube/blob/master/LICENSE)
+
 
 Log machine learning / data science experiments with ease
 
 ```bash
 pip install test_tube
-```
+```   
+
 
 ## Example use:
 

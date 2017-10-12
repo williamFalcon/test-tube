@@ -2,7 +2,7 @@ site_name: Test tube Documentation
 theme: readthedocs
 docs_dir: docs
 repo_url: https://github.com/williamFalcon/test_tube
-#site_url: http://test_tube.io/
+site_dir: 'site'
 site_description: 'Documentation for Test Tube, the Python Deep Learning and Machine Learning experiment tracking and tuning framework.'
 
 dev_addr: '0.0.0.0:8000'
