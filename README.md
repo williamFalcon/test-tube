@@ -5,7 +5,7 @@
 <br>    
 
 [![PyPI version](https://badge.fury.io/py/test_tube.svg)](https://badge.fury.io/py/test_tube)  
-[![Doc status](https://badge.fury.io/py/test_tube.svg)](https://readthedocs.org/projects/pip/badge/?version=latest)   
+[![Doc status](https://readthedocs.org/projects/pip/badge/?version=latest)](https://readthedocs.org/projects/pip/badge/?version=latest)   
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/williamFalcon/test_tube/blob/master/LICENSE)
 
 
