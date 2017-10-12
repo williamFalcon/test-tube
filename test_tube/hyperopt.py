@@ -2,7 +2,6 @@ import itertools
 import random
 import json
 
-
 class HyperParamOptimizer(object):
 
     def __init__(self, method='grid_search', enabled=True, experiment=None):
