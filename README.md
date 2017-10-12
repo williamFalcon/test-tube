@@ -57,5 +57,3 @@ hparams = parser.parse_args()
 for hparam_trial in hparams.trials(20):
     train_network(hparam_trial)
 ```     
-
-[FULL DOCS](https://williamfalcon.github.io/test_tube/)
