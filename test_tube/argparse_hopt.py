@@ -5,6 +5,8 @@ import re
 from copy import deepcopy
 from .hyper_opt_utils import strategies
 import json
+import math
+import os
 
 
 class HyperOptArgumentParser(ArgumentParser):
@@ -59,6 +61,7 @@ class HyperOptArgumentParser(ArgumentParser):
 
         # attach optimization fx
         old_args['trials'] = self.opt_trials
+        old_args['optimize_parallel'] = self.optimize_parallel
 
         return argparse.Namespace(**old_args)
 
@@ -74,7 +77,39 @@ class HyperOptArgumentParser(ArgumentParser):
         for trial in self.trials:
             ns = self.__namespace_from_trial(trial)
             yield ns
-        pass
+
+    def optimize_parallel(self, train_function, nb_trials, nb_parallel=4):
+        self.trials = strategies.generate_trials(strategy=self.strategy,
+                                                 flat_params=self.__flatten_params(self.opt_args),
+                                                 nb_trials=nb_trials)
+
+        # nb of runs through all parallel systems
+        nb_fork_batches = int(math.ceil(len(self.trials) / nb_parallel))
+        fork_batches = [self.trials[i: i + nb_parallel] for i in range(0, len(self.trials), nb_parallel)]
+        for fork_batch in fork_batches:
+            children = []
+
+            # run n parallel forks
+            for parallel_nb, trial in enumerate(fork_batch):
+
+                # q up the trial and convert to a namespace
+                ns = self.__namespace_from_trial(trial)
+
+                # split new fork
+                pid = os.fork()
+
+                # when the process is a parent
+                if pid:
+                    children.append(pid)
+
+                # when process is a child
+                else:
+                    train_function(ns, parallel_nb)
+                    os._exit(0)
+
+            for i, child in enumerate(children):
+                os.waitpid(child, 0)
+
 
     def __namespace_from_trial(self, trial):
         trial_dict = {d['name']: d['val'] for d in trial}
