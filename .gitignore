@@ -7,7 +7,6 @@ test_tube_data/
 *.experiment
 example.py
 example.json
-update.sh
 *.png
 
 # C extensions
