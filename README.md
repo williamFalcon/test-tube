@@ -4,7 +4,7 @@
 </div>
 <br>    
 
-[![PyPI version](https://badge.fury.io/py/test_tube.svg)](https://badge.fury.io/py/test_tube) [![Python versions](https://badge.fury.io/py/test_tube.svg)](https://pypip.in/py_versions/test_tube/badge.svg)   [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/williamFalcon/test_tube/blob/master/LICENSE)
+[![PyPI version](https://badge.fury.io/py/test_tube.svg)](https://badge.fury.io/py/test_tube)    [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/williamFalcon/test_tube/blob/master/LICENSE)
 
 
 Log machine learning / data science experiments with ease
