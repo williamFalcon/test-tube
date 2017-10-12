@@ -13,7 +13,7 @@ Log and optimize Deep Learning experiments with ease.
 pip install test_tube
 ```   
 
-[FULL DOCS](https://williamfalcon.github.io/test_tube/)    
+[READ THE DOCS](https://williamfalcon.github.io/test_tube/)    
 
 ## Example use:
 
