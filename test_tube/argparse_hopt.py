@@ -1,9 +1,9 @@
 from argparse import ArgumentParser
 import argparse
-import itertools
 import numpy as np
 import re
 from copy import deepcopy
+from .hyper_opt_utils import strategies
 
 
 class HyperOptArgumentParser(ArgumentParser):
@@ -50,7 +50,9 @@ class HyperOptArgumentParser(ArgumentParser):
         return argparse.Namespace(**old_args)
 
     def opt_trials(self, num):
-        self.trials = self.__generate_trials(num)
+        self.trials = strategies.generate_trials(strategy=self.strategy,
+                                                 flat_params=self.__flatten_params(self.opt_args),
+                                                 nb_trials=num)
         for trial in self.trials:
             ns = self.__namespace_from_trial(trial)
             yield ns
@@ -64,57 +66,6 @@ class HyperOptArgumentParser(ArgumentParser):
 
         return argparse.Namespace(**trial_dict)
 
-    def __generate_trials(self, nb_trials=None):
-        """
-        Generates the parameter combinations for each requested trial
-        :return:
-        """
-        flat_params = self.__flatten_params(self.opt_args)
-
-        # permute for grid search
-        if self.strategy == 'grid_search':
-            trials = list(itertools.product(*flat_params))
-
-            if nb_trials:
-                trials = trials[0: nb_trials]
-            return trials
-
-        # generate random search
-        if self.strategy == 'random_search':
-            trials = self.__generate_random_search_trials(flat_params)
-            return trials
-
-    def __generate_random_search_trials(self, params):
-        results = []
-
-        # ensures we have unique results
-        seen_trials = set()
-
-        # shuffle each param list
-        potential_trials = 1
-        for p in params:
-            random.shuffle(p)
-            potential_trials *= len(p)
-
-        # we can't sample more trials than are possible
-        max_iters = min(potential_trials, self.nb_iterations)
-
-        # then for the nb of trials requested, create a new param tuple
-        # by picking a random integer at each param level
-        while len(results) < max_iters:
-            trial = []
-            for param in params:
-                p = random.sample(param, 1)[0]
-                trial.append(p)
-
-            # verify this is a unique trial so we
-            # don't duplicate work
-            trial_str = json.dumps(trial)
-            if trial_str not in seen_trials:
-                seen_trials.add(trial_str)
-                results.append(trial)
-
-        return results
 
     def __flatten_params(self, params):
         """
