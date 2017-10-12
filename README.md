@@ -15,7 +15,8 @@ pip install test_tube
 
 [DOCUMENTATION](https://williamfalcon.github.io/test_tube/)    
 
-## Example use:
+![Screenshot](https://github.com/williamFalcon/test_tube/raw/master/imgs/viz_a.png)
+## Example use:   
 
 ### Log experiments   
 
