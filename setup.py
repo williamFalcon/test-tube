@@ -15,12 +15,3 @@ setup(name='test_tube',
       keywords=['testing', 'machine learning', 'deep learning', 'prototyping', 'experimenting', 'modeling']
      )
 
-"""
-To upload change:
-
-git commit -am "updated setup.py"  
-git tag 0.38 -m "test_tube v0.38"  
-git push --tags origin master   
-
-python setup.py sdist upload -r pypi
-"""
