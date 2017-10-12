@@ -4,6 +4,7 @@ import numpy as np
 import re
 from copy import deepcopy
 from .hyper_opt_utils import strategies
+import json
 
 
 class HyperOptArgumentParser(ArgumentParser):
@@ -17,6 +18,7 @@ class HyperOptArgumentParser(ArgumentParser):
         self.trials = []
         self.parsed_args = None
         self.opt_args = {}
+        self.json_args = None
 
     def add_argument(self, *args, **kwargs):
         super(HyperOptArgumentParser, self).add_argument(*args, **kwargs)
@@ -36,12 +38,27 @@ class HyperOptArgumentParser(ArgumentParser):
                                          nb_samples=nb_samples,
                                          tunnable=tunnable)
 
+    def add_argument_json_file(self, file_path):
+        self.json_args = {}
+
+        with open(file_path) as json_data:
+            json_args = json.load(json_data)
+            for k, v in json_args.items():
+                self.json_args[k] = v
+
     def parse_args(self, args=None, namespace=None):
         # call superclass arg first
         results = super(HyperOptArgumentParser, self).parse_args(args=args, namespace=namespace)
 
         # extract vals
         old_args = vars(results)
+
+        # override with json args if given
+        if self.json_args:
+            for arg, v in self.json_args.items():
+                old_args[arg] = v
+
+        # track args
         self.parsed_args = deepcopy(old_args)
 
         # attach optimization fx
@@ -76,11 +93,12 @@ class HyperOptArgumentParser(ArgumentParser):
         """
         flat_params = []
         for i, (opt_name, opt_arg) in enumerate(params.items()):
-            clean_name = re.sub('-', '', opt_name)
-            param_groups = []
-            for val in opt_arg.opt_values:
-                param_groups.append({'idx': i, 'val': val, 'name': clean_name})
-            flat_params.append(param_groups)
+            if opt_arg.tunnable:
+                clean_name = re.sub('-', '', opt_name)
+                param_groups = []
+                for val in opt_arg.opt_values:
+                    param_groups.append({'idx': i, 'val': val, 'name': clean_name})
+                flat_params.append(param_groups)
         return flat_params
 
 
