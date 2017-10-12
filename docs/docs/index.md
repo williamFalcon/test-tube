@@ -15,7 +15,7 @@ Test Tube is compatible with: Python 3
 
 ---    
 
-### Create [Experiments](experiment_tracking/experiment/)    
+### Create an [Experiment](experiment_tracking/experiment/)    
 ```python
 from test_tube import Experiment
 

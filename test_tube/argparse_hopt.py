@@ -15,7 +15,7 @@ class HyperOptArgumentParser(ArgumentParser):
     Also enables running optimizations across parallel processes
     """
 
-    def __init__(self, strategy='grid_search', enabled=True, experiment=None, **kwargs):
+    def __init__(self, strategy='grid_search', **kwargs):
         """
 
         :param strategy: 'grid_search', 'random_search'
@@ -26,8 +26,6 @@ class HyperOptArgumentParser(ArgumentParser):
         ArgumentParser.__init__(self, **kwargs)
 
         self.strategy = strategy
-        self.enabled = enabled
-        self.experiment = experiment
         self.trials = []
         self.parsed_args = None
         self.opt_args = {}
