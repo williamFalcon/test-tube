@@ -1,0 +1,137 @@
+# Experiment class API
+
+An Experiment holds metadata and the results of the training run, you can instantiate an `Experiment` via:
+
+```python
+from test_tube import Experiment
+
+exp = Experiment(name='dense_model',
+                 debug=False,
+                 save_dir='/Desktop/test_tube')
+
+exp.add_meta_tags({'learning_rate': 0.002, 'nb_layers': 2})
+
+for step in training_steps:
+    tng_err = model.eval(tng_x, tng_y)
+    
+    exp.add_metric_row('tng_err': tng_err)
+
+# training complete!
+# all your logs and data are ready to be visualized at testtube.williamfalcon.com
+```
+---
+## init options    
+
+### version 
+The same Experiment can have multiple versions. Test tube generates these automatically each time you run your model. To set your own version use: 
+```python
+exp = Experiment(name='dense_model',version=1)
+```    
+
+### debug 
+If you're debugging and don't want to create a log file turn debug to True
+```python
+exp = Experiment(name='dense_model',debug=True)
+```
+
+### autosave 
+If you only want to save at the end of training, turn autosave off:   
+```python   
+exp = Experiment(name='dense_model', autosave=False)
+
+# run long training...
+
+# first time any logs are saved
+exp.save()
+```
+
+### create_git_tag
+Ever wanted a flashback to your code when you ran an experiment?   
+Snapshot your code for this experiment using git tags:  
+```python   
+exp = Experiment(name='dense_model', create_git_tag=True)
+```
+
+--- 
+## Methods    
+### add_meta_tag   
+```python
+exp.add_meta_tag(key, val)
+```   
+Adds an arbitrary tag and value to your experiment  
+
+
+**Example**    
+```python   
+exp.add_meta_tag('dataset_name', 'imagenet_1')
+exp.add_meta_tag('learning_rate', 0.002)
+```
+
+### add_meta_tags  
+```python
+exp.add_meta_tags({k: v})
+```   
+Adds an arbitrary dictionary of tags to the experiment 
+
+
+**Example**    
+```python   
+exp.add_meta_tags({'dataset_name': 'imagenet_1', 'learning_rate': 0.0002})
+```
+
+
+### add_metric_row  
+```python
+exp.add_metric_row({k:v})
+```   
+Adds a row of data to the experiments 
+
+
+**Example**    
+```python   
+exp.add_metric_row({'val_loss': 0.22, 'epoch_nb': 1, 'batch_nb': 12})
+
+# you can also add other rows that have separate information
+exp.add_metric_row({'tng_loss': 0.01})   
+
+# or even a numpy array image  
+image = np.imread('image.png')
+exp.add_metric_row({'fake_png': image})   
+```
+
+
+### add_argparse_meta   
+```python
+exp.add_argparse_meta(hparams)
+```   
+Transfers hyperparam information from Argparser or HyperOptArgumentParser   
+
+**Example**    
+```python   
+from test_tube import HyperOptArgumentParser
+
+# parse args
+parser = HyperOptArgumentParser()
+parser.add_argument('--learning_rate', default=0.002, type=float, help='the learning rate')
+hparams = parser.parse_args()
+
+# learning_rate is now a meta tag for your experiment
+exp.add_argparse_meta(hparams)
+```
+
+### save  
+```python
+exp.save()
+```   
+Saves the exp to disk (including images)  
+
+**Example**    
+```python   
+exp = Experiment(name='dense_model', autosave=False)
+
+# run long training...
+
+# first time any logs are saved
+exp.save()
+```
+

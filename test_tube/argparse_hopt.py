@@ -10,8 +10,19 @@ import os
 
 
 class HyperOptArgumentParser(ArgumentParser):
+    """
+    Subclass of argparse ArgumentParser which adds optional calls to sample from lists or ranges
+    Also enables running optimizations across parallel processes
+    """
 
     def __init__(self, strategy='grid_search', enabled=True, experiment=None, **kwargs):
+        """
+
+        :param strategy: 'grid_search', 'random_search'
+        :param enabled:
+        :param experiment:
+        :param kwargs:
+        """
         ArgumentParser.__init__(self, **kwargs)
 
         self.strategy = strategy
