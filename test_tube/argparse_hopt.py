@@ -18,8 +18,7 @@ class HyperOptArgumentParser(ArgumentParser):
         self.trials = []
         self.parsed_args = None
         self.opt_args = {}
-        self.json_args = None
-        self.json_file_path = None
+        self.json_config_arg_name = None
 
     def add_argument(self, *args, **kwargs):
         super(HyperOptArgumentParser, self).add_argument(*args, **kwargs)
@@ -39,14 +38,9 @@ class HyperOptArgumentParser(ArgumentParser):
                                          nb_samples=nb_samples,
                                          tunnable=tunnable)
 
-    def add_argument_json_file(self, file_path):
-        self.json_args = {}
-        self.json_file_path = file_path
-
-        with open(file_path) as json_data:
-            json_args = json.load(json_data)
-            for k, v in json_args.items():
-                self.json_args[k] = v
+    def add_json_config_argument(self, *args, **kwargs):
+        self.add_argument(*args, **kwargs)
+        self.json_config_arg_name = re.sub('-', '', args[-1])
 
     def parse_args(self, args=None, namespace=None):
         # call superclass arg first
@@ -56,9 +50,8 @@ class HyperOptArgumentParser(ArgumentParser):
         old_args = vars(results)
 
         # override with json args if given
-        if self.json_args:
-            old_args['json_args_path'] = self.json_file_path
-            for arg, v in self.json_args.items():
+        if old_args[self.json_config_arg_name]:
+            for arg, v in self.__read_json_config(old_args[self.json_config_arg_name]).items():
                 old_args[arg] = v
 
         # track args
@@ -68,6 +61,11 @@ class HyperOptArgumentParser(ArgumentParser):
         old_args['trials'] = self.opt_trials
 
         return argparse.Namespace(**old_args)
+
+    def __read_json_config(self, file_path):
+        with open(file_path) as json_data:
+            json_args = json.load(json_data)
+            return json_args
 
     def opt_trials(self, num):
         self.trials = strategies.generate_trials(strategy=self.strategy,
