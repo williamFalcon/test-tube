@@ -19,6 +19,7 @@ class HyperOptArgumentParser(ArgumentParser):
         self.parsed_args = None
         self.opt_args = {}
         self.json_args = None
+        self.json_file_path = None
 
     def add_argument(self, *args, **kwargs):
         super(HyperOptArgumentParser, self).add_argument(*args, **kwargs)
@@ -40,6 +41,7 @@ class HyperOptArgumentParser(ArgumentParser):
 
     def add_argument_json_file(self, file_path):
         self.json_args = {}
+        self.json_file_path = file_path
 
         with open(file_path) as json_data:
             json_args = json.load(json_data)
@@ -55,6 +57,7 @@ class HyperOptArgumentParser(ArgumentParser):
 
         # override with json args if given
         if self.json_args:
+            old_args['json_args_path'] = self.json_file_path
             for arg, v in self.json_args.items():
                 old_args[arg] = v
 
