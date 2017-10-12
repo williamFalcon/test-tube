@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from setuptools import setup, find_packages
 
-version = '0.34'
+version = '0.35'
 
 setup(name='test_tube',
       packages=find_packages(),
@@ -19,7 +19,7 @@ setup(name='test_tube',
 To upload change:
 
 git commit -am "updated setup.py"  
-git tag 0.33 -m "test_tube v0.33"  
+git tag 0.35 -m "test_tube v0.35"  
 git push --tags origin master   
 
 python setup.py sdist upload -r pypi
