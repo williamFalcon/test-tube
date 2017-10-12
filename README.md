@@ -39,7 +39,7 @@ for step in training_steps:
 
 ```    
 
-### Optimize your hyperparameters
+### Optimize hyperparameters
 ```python
 from test_tube import HyperOptArgumentParser
 
