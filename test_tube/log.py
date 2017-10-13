@@ -3,6 +3,7 @@ import json
 from datetime import datetime
 from scipy.misc import imsave
 import pandas as pd
+import numpy as np
 
 # constants
 _ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -273,16 +274,39 @@ class Experiment(object):
                     metric[k] = save_path
 
     def __load(self):
+        # load .experiment file
         with open(self.__get_log_name(), 'r') as file:
             data = json.load(file)
             self.name = data['name']
             self.version = data['version']
-            self.tags = data['tags']
-            self.metrics = data['metrics']
             self.autosave = data['autosave']
             self.created_at = data['created_at']
             self.description = data['description']
             self.exp_hash = data['exp_hash']
+
+        # load .tags file
+        meta_tags_path = self.get_data_path(self.name, self.version) + '/meta_tags.json'
+        with open(meta_tags_path, 'r') as file:
+            data = json.load(file)
+            self.tags = data
+
+        # load metrics
+        metrics_file_path = self.get_data_path(self.name, self.version) + '/metrics.csv'
+        df = pd.read_csv(metrics_file_path)
+        self.metrics = df.to_dict(orient='records')
+        
+        # remove nans
+        for metric in self.metrics:
+            to_delete = []
+            for k, v in metric.items():
+                try:
+                    if np.isnan(v):
+                        to_delete.append(k)
+                except Exception as e:
+                    pass
+
+            for k in to_delete:
+                del metric[k]
 
     def get_data_path(self, exp_name, exp_version):
         """
