@@ -88,6 +88,19 @@ for hparam_trial in hparams.trials(20):
     train_network(hparam_trial)
 ```    
 
+### Simple integration if you already use argparse   
+```python    
+import argparse   
+from test_tube import HyperOptArgumentParser
+
+# these lines are equivalent   
+parser = argparse.ArgumentParser(description='Process some integers.')
+parser = HyperOptArgumentParser(description='Process some integers.', strategy='grid_search')   
+
+# do normal argparse stuff    
+...
+```    
+
 ### Log images inline with metrics    
 ```python
 # name must have either jpg, png or jpeg in it
