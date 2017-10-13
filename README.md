@@ -131,11 +131,10 @@ exp.add_metric_row('test_jpg': img, 'val_err': 0.2)
 - [Experiments and hyperparameter optimization for tensorflow across 4 GPUs simultaneously](https://github.com/williamFalcon/test_tube/blob/master/examples/tensorflow_example.py)   
 
 ## How to contribute    
-Feel free to make a pull-request with new features and I'll add you to the list of contributors!   
-
-1. Fork and make your fixes/improvements.   
-2. Write tests for new features.   
-2. Issue a pull-request.   
+Feel free to fix bugs and make improvements!   
+1. Check out the [current bugs here](https://github.com/williamFalcon/test_tube/issues).   
+2. To work on a bug, head over to our [project page](https://github.com/williamFalcon/test_tube/projects/1) and assign yourself the bug.   
+3. We'll add contributor names periodically as people improve the library!   
 
 ## Contributors:    
 1. [William Falcon](https://williamfalcon.com)   
