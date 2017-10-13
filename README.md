@@ -45,6 +45,8 @@ Compatible with:
 ### Log experiments
 
 ```python
+from test_tube import Experiment
+
 exp = Experiment(name='dense_model', save_dir='../some/dir/')
 
 exp.add_meta_tags({'learning_rate': 0.002, 'nb_layers': 2})
