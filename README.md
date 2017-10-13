@@ -8,14 +8,22 @@
 
 
 Log and optimize Deep Learning experiments with ease. 
-
 Nothing is uploaded, it's all done on your machine. Logs are stored to csv files for easy analysis.   
 
 ```bash
 pip install test_tube
 ```   
-
 [DOCUMENTATION](https://williamfalcon.github.io/test_tube/)    
+---  
+Use Test Tube if you need to:   
+
+- Track many [Experiments](experiment_tracking/experiment/) across models.   
+- [Visualize](http://testtube.williamfalcon.com) and compare different experiments without uploading anywhere.    
+- [Optimize your hyperparameters](hyperparameter_optimization/HyperOptArgumentParser/) using grid_search or random_search.   
+- Automatically track ALL parameters for a particular training run.   
+
+Test Tube is compatible with all versions of Python
+---   
 
 ## Example use:   
 
