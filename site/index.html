@@ -52,7 +52,7 @@
     <a class="current" href=".">Home</a>
     <ul class="subnav">
             
-    <li class="toctree-l2"><a href="#test-tube-the-deep-learning-ml-experiment-tracking-and-tuning-library">Test Tube: The Deep Learning / ML experiment tracking and tuning library</a></li>
+    <li class="toctree-l2"><a href="#test-tube-easily-log-and-tune-deep-learning-experiments">Test Tube: Easily log and tune Deep Learning experiments</a></li>
     
         <ul>
         
@@ -121,16 +121,16 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="test-tube-the-deep-learning-ml-experiment-tracking-and-tuning-library">Test Tube: The Deep Learning / ML experiment tracking and tuning library</h1>
-<p>Test Tube allows you to easily log metadata and track your machine learning experiments.   </p>
-<p>Use Test Tube if you need to:   </p>
+                <h1 id="test-tube-easily-log-and-tune-deep-learning-experiments">Test Tube: Easily log and tune Deep Learning experiments</h1>
+<p>Test Tube allows you to easily log metadata and track your machine learning experiments.</p>
+<p>Use Test Tube if you need to:</p>
 <ul>
-<li>Track many <a href="./experiment_tracking/experiment/">Experiments</a> across models.   </li>
-<li><a href="http://testtube.williamfalcon.com">Visualize</a> and compare different experiments without uploading anywhere.    </li>
-<li><a href="./hyperparameter_optimization/HyperOptArgumentParser/">Optimize your hyperparameters</a> using grid_search or random_search.   </li>
-<li>Automatically track ALL parameters for a particular training run.   </li>
+<li>Track many <a href="./experiment_tracking/experiment/">Experiments</a> across models.</li>
+<li><a href="http://testtube.williamfalcon.com">Visualize</a> and compare different experiments without uploading anywhere.</li>
+<li><a href="./hyperparameter_optimization/HyperOptArgumentParser/">Optimize your hyperparameters</a> using grid_search or random_search.</li>
+<li>Automatically track ALL parameters for a particular training run.</li>
 </ul>
-<p>Test Tube is compatible with: Python 3   </p>
+<p>Test Tube is compatible with: Python 3</p>
 <h2 id="getting-started">Getting started</h2>
 <hr />
 <h3 id="create-an-experiment">Create an <a href="./experiment_tracking/experiment/">Experiment</a></h3>
@@ -159,14 +159,14 @@ for step in training_steps:
 parser = HyperOptArgumentParser(strategy='random_search')
 parser.add_argument('--learning_rate', default=0.002, type=float, help='the learning rate')
 
-# let's enable optimizing over the number of layers in the network 
+# let's enable optimizing over the number of layers in the network
 parser.add_opt_argument_list('--nb_layers', default=2, type=int, tunnable=True, options=[2, 4, 8])
 
 # and tune the number of units in each layer
 parser.add_opt_argument_range('--neurons', default=50, type=int, tunnable=True, start=100, end=800, nb_samples=10)
 
 # compile (because it's argparse underneath)
-hparams = parser.parse_args()   
+hparams = parser.parse_args()
 
 # run 20 trials of random search over the hyperparams
 for hparam_trial in hparams.trials(20):
@@ -224,5 +224,5 @@ for hparam_trial in hparams.trials(20):
 
 <!--
 MkDocs version : 0.16.3
-Build Date UTC : 2017-10-12 23:12:01
+Build Date UTC : 2017-10-13 13:18:35
 -->
