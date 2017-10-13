@@ -127,4 +127,7 @@ exp.add_meta_tags({'learning_rate': 0.002, 'nb_layers': 2})
     "learning_rate": 0.002,
     "nb_layers": 2
 }
-``` 
+```   
+
+## Demos   
+- [Experiments and hyperparameter optimization for tensorflow across 4 GPUs simultaneously](https://github.com/williamFalcon/test_tube/blob/master/examples/tensorflow_example.py)  
