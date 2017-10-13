@@ -2,27 +2,11 @@ import os
 import json
 from datetime import datetime
 from scipy.misc import imsave
+import pandas as pd
 
 # constants
 _ROOT = os.path.abspath(os.path.dirname(__file__))
 
-
-def get_data_path():
-    """
-    Returns the path to the local package cache
-    :param path:
-    :return:
-    """
-    return os.path.join(_ROOT, 'test_tube_data')
-
-
-def get_media_path(exp_name):
-    """
-    Returns the path to the local package cache
-    :param path:
-    :return:
-    """
-    return os.path.join(get_data_path(), 'media_{}'.format(exp_name))
 
 # -----------------------------
 # Experiment object
@@ -115,9 +99,9 @@ class Experiment(object):
         Inits a file that we log historical experiments
         :return:
         """
-        exp_cache_file = get_data_path()
-        if not os.path.exists(exp_cache_file):
-            os.mkdir(exp_cache_file)
+        exp_cache_file = self.get_data_path(self.name, self.version)
+        if not os.path.isdir(exp_cache_file):
+            os.makedirs(exp_cache_file)
 
 
     def __create_exp_file(self, version):
@@ -126,18 +110,18 @@ class Experiment(object):
         :param version:
         :return:
         """
-        exp_cache_file = get_data_path()
+        exp_cache_file = self.get_data_path(self.name, self.version)
         # if no exp, then make it
-        path = '{}/{}.experiment'.format(exp_cache_file, self.exp_hash)
+        path = '{}/meta.experiment'.format(exp_cache_file)
         open(path, 'w').close()
         self.version = version
 
         # make the directory for the experiment media assets name
-        os.mkdir(get_media_path(self.exp_hash))
+        os.mkdir(self.get_media_path(self.name, self.version))
 
     def __get_last_experiment_version(self):
         try:
-            exp_cache_file = get_data_path()
+            exp_cache_file = self.get_data_path(self.name, self.version)
             last_version = -1
             for f in os.listdir(exp_cache_file):
                 if '_' in f:
@@ -152,8 +136,8 @@ class Experiment(object):
             return -1
 
     def __get_log_name(self):
-        exp_cache_file = get_data_path()
-        return '{}/{}.experiment'.format(exp_cache_file, self.exp_hash)
+        exp_cache_file = self.get_data_path(self.name, self.version)
+        return '{}/meta.experiment'.format(exp_cache_file)
 
     def add_meta_tag(self, key, val):
         """
@@ -231,19 +215,33 @@ class Experiment(object):
         # save images and replace the image array with the
         # file name
         self.__save_images(self.metrics)
+        metrics_file_path = self.get_data_path(self.name, self.version) + '/metrics.csv'
+        meta_tags_path = self.get_data_path(self.name, self.version) + '/meta_tags.json'
 
         obj = {
             'name': self.name,
             'version': self.version,
-            'tags': self.tags,
-            'metrics': self.metrics,
+            'tags_path': meta_tags_path,
+            'metrics_path': metrics_file_path,
             'autosave': self.autosave,
             'description': self.description,
             'created_at': self.created_at,
             'exp_hash': self.exp_hash
         }
+
+        # save the experiment meta file
         with open(self.__get_log_name(), 'w') as file:
             json.dump(obj, file, ensure_ascii=False)
+
+        # save the metatags file
+        with open(meta_tags_path, 'w') as file:
+            json.dump(self.tags, file, ensure_ascii=False)
+            
+        # save the metrics data
+        df = pd.DataFrame(self.metrics)
+        df.to_csv(metrics_file_path, index=False)
+        
+        
 
     def __save_images(self, metrics):
         """
@@ -264,7 +262,7 @@ class Experiment(object):
                 if img_extension is not None:
                     # determine the file name
                     img_name = '_'.join(k.split('_')[1:])
-                    save_path = get_media_path(self.exp_hash)
+                    save_path = self.get_media_path(self.name, self.version)
                     save_path = '{}/{}_{}.{}'.format(save_path, img_name, i, img_extension)
 
                     # save image to disk
@@ -285,6 +283,22 @@ class Experiment(object):
             self.created_at = data['created_at']
             self.description = data['description']
             self.exp_hash = data['exp_hash']
+
+    def get_data_path(self, exp_name, exp_version):
+        """
+        Returns the path to the local package cache
+        :param path:
+        :return:
+        """
+        return os.path.join(_ROOT, 'test_tube_data', exp_name, 'version_{}'.format(exp_version))
+
+    def get_media_path(self, exp_name, exp_version):
+        """
+        Returns the path to the local package cache
+        :param path:
+        :return:
+        """
+        return os.path.join(self.get_data_path(exp_name, exp_version), 'media')
 
     # ----------------------------
     # OVERWRITES
