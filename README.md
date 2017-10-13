@@ -1,12 +1,13 @@
-# Test tube: Easily log and tune Deep Learning experiments
+# Test tube: Easily log, track and optimize Deep Learning experiments
 
 <div style="text-align: center">
 <img src="https://raw.githubusercontent.com/williamfalcon/test_tube/master/imgs/test_tube_logo.png">
 </div>
 <br>
 
-[![PyPI version](https://badge.fury.io/py/test_tube.svg)](https://badge.fury.io/py/test_tube)    [![Doc status](https://readthedocs.org/projects/pip/badge/?version=latest)](https://readthedocs.org/projects/pip/badge/?version=latest)     [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/williamFalcon/test_tube/blob/master/LICENSE)
-[docs](https://williamfalcon.github.io/test_tube/)
+[![PyPI version](https://badge.fury.io/py/test_tube.svg)](https://badge.fury.io/py/test_tube)    [![Documentation Status](https://readthedocs.org/projects/test-tube/badge/?version=latest)](https://williamfalcon.github.io/test_tube/)
+     [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/williamFalcon/test_tube/blob/master/LICENSE)    
+[DOCS](https://williamfalcon.github.io/test_tube/)
 
 ---
 Test tube is a python library to track and optimize Deep Learning experiments. It's framework agnostic and is built on top of the python argparse API for ease of use.
@@ -24,7 +25,8 @@ Use Test Tube if you need to:
 - Visualize and compare different experiments without uploading anywhere, logs store as csv files.
 - [Optimize your hyperparameters](hyperparameter_optimization/HyperOptArgumentParser/) using grid_search or random_search.
 - Automatically track ALL parameters for a particular training run.
-- Automatically snapshot your code for an experiment using git tags.
+- Automatically snapshot your code for an experiment using git tags.    
+- Save progress images inline with training metrics.    
 
 Test Tube is compatible with all versions of Python and all Python deep learning libraries.
 
@@ -45,7 +47,7 @@ for step in training_steps:
     exp.add_metric_row('tng_err': tng_err)
 
 # training complete!
-# all your logs and data are ready to be visualized at testtube.williamfalcon.com
+# all your logs and data are ready to be visualized on any csv plotting tool
 
 ```
 
@@ -69,6 +71,16 @@ hparams = parser.parse_args()
 # run 20 trials of random search over the hyperparams
 for hparam_trial in hparams.trials(20):
     train_network(hparam_trial)
+```    
+
+### Log images inline with metrics    
+```python
+# name must have either jpg, png or jpeg in it
+img = np.imread('a.jpg')
+exp.add_metric_row('test_jpg': img, 'val_err': 0.2)
+
+# saves image to ../exp/version/media/test_0.jpg  
+# csv has file path to that image in that cell   
 ```
 
 ## Visualize and access your data
