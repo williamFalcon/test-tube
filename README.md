@@ -35,6 +35,10 @@ Compatible with:
 - Pytorch   
 - Caffe, Caffe2   
 - Chainer   
+- MXNet   
+- Theano   
+- Torch   
+- Any python based ML or DL library   
 - Runs seamlessly on CPU and GPU.   
 
 ## Example use:
