@@ -21,6 +21,7 @@ Use Test Tube if you need to:
 - [Visualize](http://testtube.williamfalcon.com) and compare different experiments without uploading anywhere.    
 - [Optimize your hyperparameters](hyperparameter_optimization/HyperOptArgumentParser/) using grid_search or random_search.   
 - Automatically track ALL parameters for a particular training run.   
+- Automatically snapshot your code for an experiment using git tags.   
 
 Test Tube is compatible with all versions of Python
 ---   
