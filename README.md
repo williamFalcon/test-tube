@@ -27,9 +27,15 @@ Use Test Tube if you need to:
 - Automatically track ALL parameters for a particular training run.
 - Automatically snapshot your code for an experiment using git tags.    
 - Save progress images inline with training metrics.    
-- Runs seamlessly on CPU and GPU.   
 
-Test Tube is compatible with all versions of Python and all Python deep learning libraries.
+Compatible with:   
+- Python 2, 3
+- Tensorflow   
+- Keras  
+- Pytorch   
+- Caffe, Caffe2   
+- Chainer   
+- Runs seamlessly on CPU and GPU.   
 
 ## Example use:
 
