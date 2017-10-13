@@ -57,8 +57,10 @@ for step in training_steps:
     exp.add_metric_row('tng_err': tng_err)
 
 # training complete!
-# all your logs and data are ready to be visualized on any csv plotting tool
-
+# load /Desktop/test_tube/dense_model/version_0/metrics.csv into your favorite viz tool   
+import pandas as pd
+df = pd.read_csv('/Desktop/test_tube/dense_model/version_0/metrics.csv')
+df.plot('learning_rate')
 ```
 
 ### Optimize hyperparameters
