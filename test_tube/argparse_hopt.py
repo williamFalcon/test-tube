@@ -61,7 +61,7 @@ class HyperOptArgumentParser(ArgumentParser):
         old_args = vars(results)
 
         # override with json args if given
-        if old_args[self.json_config_arg_name]:
+        if self.json_config_arg_name and old_args[self.json_config_arg_name]:
             for arg, v in self.__read_json_config(old_args[self.json_config_arg_name]).items():
                 old_args[arg] = v
 
