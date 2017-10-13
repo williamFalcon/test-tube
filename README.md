@@ -22,11 +22,12 @@ pip install test_tube
 Use Test Tube if you need to:
 
 - Track multiple [Experiments](experiment_tracking/experiment/) across models.
-- Visualize and compare different experiments without uploading anywhere, logs store as csv files.
 - [Optimize your hyperparameters](hyperparameter_optimization/HyperOptArgumentParser/) using grid_search or random_search.
+- Visualize experiments without uploading anywhere, logs store as csv files.
 - Automatically track ALL parameters for a particular training run.
 - Automatically snapshot your code for an experiment using git tags.    
 - Save progress images inline with training metrics.    
+- Runs seamlessly on CPU and GPU.   
 
 Test Tube is compatible with all versions of Python and all Python deep learning libraries.
 
