@@ -24,7 +24,6 @@ Use Test Tube if you need to:
 - Automatically snapshot your code for an experiment using git tags.   
 
 Test Tube is compatible with all versions of Python
----   
 
 ## Example use:   
 
