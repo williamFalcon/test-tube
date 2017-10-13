@@ -32,7 +32,7 @@
         },
         {
             "location": "/experiment_tracking/experiment/",
-            "text": "Experiment class API\n\n\nAn Experiment holds metadata and the results of the training run, you can instantiate an \nExperiment\n via:\n\n\nfrom test_tube import Experiment\n\nexp = Experiment(name='dense_model',\n                 debug=False,\n                 save_dir='/Desktop/test_tube')\n\nexp.add_meta_tags({'learning_rate': 0.002, 'nb_layers': 2})\n\nfor step in training_steps:\n    tng_err = model.eval(tng_x, tng_y)\n\n    exp.add_metric_row('tng_err': tng_err)\n\n# training complete!\n# all your logs and data are ready to be visualized at testtube.williamfalcon.com\n\n\n\n\n\n\ninit options\n\n\nversion\n\n\nThe same Experiment can have multiple versions. Test tube generates these automatically each time you run your model. To set your own version use: \n\n\nexp = Experiment(name='dense_model',version=1)\n\n\n\n\ndebug\n\n\nIf you're debugging and don't want to create a log file turn debug to True\n\n\nexp = Experiment(name='dense_model',debug=True)\n\n\n\n\nautosave\n\n\nIf you only want to save at the end of training, turn autosave off:   \n\n\nexp = Experiment(name='dense_model', autosave=False)\n\n# run long training...\n\n# first time any logs are saved\nexp.save()\n\n\n\n\ncreate_git_tag\n\n\nEver wanted a flashback to your code when you ran an experiment? \n\nSnapshot your code for this experiment using git tags:  \n\n\nexp = Experiment(name='dense_model', create_git_tag=True)\n\n\n\n\n\n\nMethods\n\n\nadd_meta_tag\n\n\nexp.add_meta_tag(key, val)\n\n\n\n\nAdds an arbitrary tag and value to your experiment  \n\n\nExample\n    \n\n\nexp.add_meta_tag('dataset_name', 'imagenet_1')\nexp.add_meta_tag('learning_rate', 0.002)\n\n\n\n\nadd_meta_tags\n\n\nexp.add_meta_tags({k: v})\n\n\n\n\nAdds an arbitrary dictionary of tags to the experiment \n\n\nExample\n    \n\n\nexp.add_meta_tags({'dataset_name': 'imagenet_1', 'learning_rate': 0.0002})\n\n\n\n\nadd_metric_row\n\n\nexp.add_metric_row({k:v})\n\n\n\n\nAdds a row of data to the experiments \n\n\nExample\n    \n\n\nexp.add_metric_row({'val_loss': 0.22, 'epoch_nb': 1, 'batch_nb': 12})\n\n# you can also add other rows that have separate information\nexp.add_metric_row({'tng_loss': 0.01})   \n\n# or even a numpy array image  \nimage = np.imread('image.png')\nexp.add_metric_row({'fake_png': image})   \n\n\n\n\nadd_argparse_meta\n\n\nexp.add_argparse_meta(hparams)\n\n\n\n\nTransfers hyperparam information from Argparser or HyperOptArgumentParser   \n\n\nExample\n    \n\n\nfrom test_tube import HyperOptArgumentParser\n\n# parse args\nparser = HyperOptArgumentParser()\nparser.add_argument('--learning_rate', default=0.002, type=float, help='the learning rate')\nhparams = parser.parse_args()\n\n# learning_rate is now a meta tag for your experiment\nexp.add_argparse_meta(hparams)\n\n\n\n\nsave\n\n\nexp.save()\n\n\n\n\nSaves the exp to disk (including images)  \n\n\nExample\n    \n\n\nexp = Experiment(name='dense_model', autosave=False)\n\n# run long training...\n\n# first time any logs are saved\nexp.save()",
+            "text": "Experiment class API\n\n\nAn Experiment holds metadata and the results of the training run, you can instantiate an \nExperiment\n via:\n\n\nfrom test_tube import Experiment\n\nexp = Experiment(name='dense_model',\n                 debug=False,\n                 save_dir='/Desktop/test_tube')\n\nexp.add_meta_tags({'learning_rate': 0.002, 'nb_layers': 2})\n\nfor step in training_steps:\n    tng_err = model.eval(tng_x, tng_y)\n\n    exp.add_metric_row('tng_err': tng_err)\n\n# training complete!\n# all your logs and data are ready to be visualized at testtube.williamfalcon.com\n\n\n\n\n\n\ninit options\n\n\nversion\n\n\nThe same Experiment can have multiple versions. Test tube generates these automatically each time you run your model. To set your own version use:\n\n\nexp = Experiment(name='dense_model',version=1)\n\n\n\n\ndebug\n\n\nIf you're debugging and don't want to create a log file turn debug to True\n\n\nexp = Experiment(name='dense_model',debug=True)\n\n\n\n\nautosave\n\n\nIf you only want to save at the end of training, turn autosave off:\n\n\nexp = Experiment(name='dense_model', autosave=False)\n\n# run long training...\n\n# first time any logs are saved\nexp.save()\n\n\n\n\ncreate_git_tag\n\n\nEver wanted a flashback to your code when you ran an experiment?\nSnapshot your code for this experiment using git tags:\n\n\nexp = Experiment(name='dense_model', create_git_tag=True)\n\n\n\n\n\n\nMethods\n\n\nadd_meta_tag\n\n\nexp.add_meta_tag(key, val)\n\n\n\n\nAdds an arbitrary tag and value to your experiment\n\n\nExample\n\n\nexp.add_meta_tag('dataset_name', 'imagenet_1')\nexp.add_meta_tag('learning_rate', 0.002)\n\n\n\n\nadd_meta_tags\n\n\nexp.add_meta_tags({k: v})\n\n\n\n\nAdds an arbitrary dictionary of tags to the experiment\n\n\nExample\n\n\nexp.add_meta_tags({'dataset_name': 'imagenet_1', 'learning_rate': 0.0002})\n\n\n\n\nadd_metric_row\n\n\nexp.add_metric_row({k:v})\n\n\n\n\nAdds a row of data to the experiments\n\n\nExample\n\n\nexp.add_metric_row({'val_loss': 0.22, 'epoch_nb': 1, 'batch_nb': 12})\n\n# you can also add other rows that have separate information\nexp.add_metric_row({'tng_loss': 0.01})\n\n# or even a numpy array image\nimage = np.imread('image.png')\nexp.add_metric_row({'fake_png': image})\n\n\n\n\nSaving images Example\n\n\n# name must have either jpg, png or jpeg in it\nimg = np.imread('a.jpg')\nexp.add_metric_row('test_jpg': img, 'val_err': 0.2)\n\n# saves image to ../exp/version/media/test_0.jpg\n# csv has file path to that image in that cell\n\n\n\n\nTo save an image, add \njpg\n, \npng\n or \njpeg\n to the key corresponding with the image array. The image must be formatted the same as skimage's \nimsave\n function\n\n\nadd_argparse_meta\n\n\nexp.add_argparse_meta(hparams)\n\n\n\n\nTransfers hyperparam information from Argparser or HyperOptArgumentParser\n\n\nExample\n\n\nfrom test_tube import HyperOptArgumentParser\n\n# parse args\nparser = HyperOptArgumentParser()\nparser.add_argument('--learning_rate', default=0.002, type=float, help='the learning rate')\nhparams = parser.parse_args()\n\n# learning_rate is now a meta tag for your experiment\nexp.add_argparse_meta(hparams)\n\n\n\n\nsave\n\n\nexp.save()\n\n\n\n\nSaves the exp to disk (including images)\n\n\nExample\n\n\nexp = Experiment(name='dense_model', autosave=False)\n\n# run long training...\n\n# first time any logs are saved\nexp.save()",
             "title": "Experiment"
         },
         {
@@ -47,7 +47,7 @@
         },
         {
             "location": "/experiment_tracking/experiment/#version",
-            "text": "The same Experiment can have multiple versions. Test tube generates these automatically each time you run your model. To set your own version use:   exp = Experiment(name='dense_model',version=1)",
+            "text": "The same Experiment can have multiple versions. Test tube generates these automatically each time you run your model. To set your own version use:  exp = Experiment(name='dense_model',version=1)",
             "title": "version"
         },
         {
@@ -57,12 +57,12 @@
         },
         {
             "location": "/experiment_tracking/experiment/#autosave",
-            "text": "If you only want to save at the end of training, turn autosave off:     exp = Experiment(name='dense_model', autosave=False)\n\n# run long training...\n\n# first time any logs are saved\nexp.save()",
+            "text": "If you only want to save at the end of training, turn autosave off:  exp = Experiment(name='dense_model', autosave=False)\n\n# run long training...\n\n# first time any logs are saved\nexp.save()",
             "title": "autosave"
         },
         {
             "location": "/experiment_tracking/experiment/#create_git_tag",
-            "text": "Ever wanted a flashback to your code when you ran an experiment?  \nSnapshot your code for this experiment using git tags:    exp = Experiment(name='dense_model', create_git_tag=True)",
+            "text": "Ever wanted a flashback to your code when you ran an experiment?\nSnapshot your code for this experiment using git tags:  exp = Experiment(name='dense_model', create_git_tag=True)",
             "title": "create_git_tag"
         },
         {
@@ -72,27 +72,27 @@
         },
         {
             "location": "/experiment_tracking/experiment/#add_meta_tag",
-            "text": "exp.add_meta_tag(key, val)  Adds an arbitrary tag and value to your experiment    Example       exp.add_meta_tag('dataset_name', 'imagenet_1')\nexp.add_meta_tag('learning_rate', 0.002)",
+            "text": "exp.add_meta_tag(key, val)  Adds an arbitrary tag and value to your experiment  Example  exp.add_meta_tag('dataset_name', 'imagenet_1')\nexp.add_meta_tag('learning_rate', 0.002)",
             "title": "add_meta_tag"
         },
         {
             "location": "/experiment_tracking/experiment/#add_meta_tags",
-            "text": "exp.add_meta_tags({k: v})  Adds an arbitrary dictionary of tags to the experiment   Example       exp.add_meta_tags({'dataset_name': 'imagenet_1', 'learning_rate': 0.0002})",
+            "text": "exp.add_meta_tags({k: v})  Adds an arbitrary dictionary of tags to the experiment  Example  exp.add_meta_tags({'dataset_name': 'imagenet_1', 'learning_rate': 0.0002})",
             "title": "add_meta_tags"
         },
         {
             "location": "/experiment_tracking/experiment/#add_metric_row",
-            "text": "exp.add_metric_row({k:v})  Adds a row of data to the experiments   Example       exp.add_metric_row({'val_loss': 0.22, 'epoch_nb': 1, 'batch_nb': 12})\n\n# you can also add other rows that have separate information\nexp.add_metric_row({'tng_loss': 0.01})   \n\n# or even a numpy array image  \nimage = np.imread('image.png')\nexp.add_metric_row({'fake_png': image})",
+            "text": "exp.add_metric_row({k:v})  Adds a row of data to the experiments  Example  exp.add_metric_row({'val_loss': 0.22, 'epoch_nb': 1, 'batch_nb': 12})\n\n# you can also add other rows that have separate information\nexp.add_metric_row({'tng_loss': 0.01})\n\n# or even a numpy array image\nimage = np.imread('image.png')\nexp.add_metric_row({'fake_png': image})  Saving images Example  # name must have either jpg, png or jpeg in it\nimg = np.imread('a.jpg')\nexp.add_metric_row('test_jpg': img, 'val_err': 0.2)\n\n# saves image to ../exp/version/media/test_0.jpg\n# csv has file path to that image in that cell  To save an image, add  jpg ,  png  or  jpeg  to the key corresponding with the image array. The image must be formatted the same as skimage's  imsave  function",
             "title": "add_metric_row"
         },
         {
             "location": "/experiment_tracking/experiment/#add_argparse_meta",
-            "text": "exp.add_argparse_meta(hparams)  Transfers hyperparam information from Argparser or HyperOptArgumentParser     Example       from test_tube import HyperOptArgumentParser\n\n# parse args\nparser = HyperOptArgumentParser()\nparser.add_argument('--learning_rate', default=0.002, type=float, help='the learning rate')\nhparams = parser.parse_args()\n\n# learning_rate is now a meta tag for your experiment\nexp.add_argparse_meta(hparams)",
+            "text": "exp.add_argparse_meta(hparams)  Transfers hyperparam information from Argparser or HyperOptArgumentParser  Example  from test_tube import HyperOptArgumentParser\n\n# parse args\nparser = HyperOptArgumentParser()\nparser.add_argument('--learning_rate', default=0.002, type=float, help='the learning rate')\nhparams = parser.parse_args()\n\n# learning_rate is now a meta tag for your experiment\nexp.add_argparse_meta(hparams)",
             "title": "add_argparse_meta"
         },
         {
             "location": "/experiment_tracking/experiment/#save",
-            "text": "exp.save()  Saves the exp to disk (including images)    Example       exp = Experiment(name='dense_model', autosave=False)\n\n# run long training...\n\n# first time any logs are saved\nexp.save()",
+            "text": "exp.save()  Saves the exp to disk (including images)  Example  exp = Experiment(name='dense_model', autosave=False)\n\n# run long training...\n\n# first time any logs are saved\nexp.save()",
             "title": "save"
         },
         {
