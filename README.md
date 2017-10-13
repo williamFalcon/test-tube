@@ -9,7 +9,7 @@
 
 Log and optimize Deep Learning experiments with ease. 
 
-Nothing is uploaded, it's all done on your machine.   
+Nothing is uploaded, it's all done on your machine. Logs are stored to csv files for easy analysis.   
 
 ```bash
 pip install test_tube
