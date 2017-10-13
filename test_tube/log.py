@@ -81,7 +81,7 @@ class Experiment(object):
     def add_argparse_meta(self, argparser):
         parsed = vars(argparser)
         to_add = {}
-        
+
         # don't store methods
         for k, v in parsed.items():
             if not callable(v):
@@ -133,7 +133,7 @@ class Experiment(object):
             exp_cache_file = '/'.join(self.get_data_path(self.name, self.version).split('/')[:-1])
             last_version = -1
             for f in os.listdir(exp_cache_file):
-                if '_' in f:
+                if 'version_' in f:
                     file_parts = f.split('_')
                     version = int(file_parts[-1])
                     last_version = max(last_version, version)
@@ -242,12 +242,12 @@ class Experiment(object):
         # save the metatags file
         with open(meta_tags_path, 'w') as file:
             json.dump(self.tags, file, ensure_ascii=False)
-            
+
         # save the metrics data
         df = pd.DataFrame(self.metrics)
         df.to_csv(metrics_file_path, index=False)
-        
-        
+
+
 
     def __save_images(self, metrics):
         """
@@ -299,7 +299,7 @@ class Experiment(object):
         metrics_file_path = self.get_data_path(self.name, self.version) + '/metrics.csv'
         df = pd.read_csv(metrics_file_path)
         self.metrics = df.to_dict(orient='records')
-        
+
         # remove nans
         for metric in self.metrics:
             to_delete = []

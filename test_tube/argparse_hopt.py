@@ -7,6 +7,7 @@ from .hyper_opt_utils import strategies
 import json
 import math
 import os
+from time import sleep
 
 
 class HyperOptArgumentParser(ArgumentParser):
@@ -113,6 +114,8 @@ class HyperOptArgumentParser(ArgumentParser):
 
                 # when process is a child
                 else:
+                    # slight delay to make sure we don't overwrite over test tube log versions
+                    sleep(parallel_nb * 0.5)
                     train_function(ns, parallel_nb)
                     os._exit(0)
 
