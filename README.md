@@ -71,10 +71,10 @@ for hparam_trial in hparams.trials(20):
     train_network(hparam_trial)
 ```     
 
-## Visualizing and accessing your data   
+## Visualize and access your data   
 
 [Example test_tube output](https://github.com/williamFalcon/test_tube/tree/master/examples/saved_logs/example_test_tube_data)    
-Test tube saves each experiment in a folder structure like:   
+Test tube saves experimentes directly to csv files along with relevant metadata. An experiment is a folder structure like:   
 ```
 test_tube_data
     /my_exp_name_A
