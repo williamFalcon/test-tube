@@ -4,8 +4,11 @@ from time import time
 from test_tube import Experiment, HyperOptArgumentParser
 
 """
-This script demonstrates how to do a hyperparameter search over 1 parameter in tensorflow
-on 4 simultaneous GPUs. Each trial will also save its own experiment logs
+This script demonstrates how to do a hyperparameter search over 2 parameters in tensorflow
+on 4 simultaneous GPUs. Each trial will also save its own experiment logs.   
+
+A single trial gets allocated on a single GPU until all trials have completed.   
+This means for 10 trials and 4 GPUs, we'll run 4 in parallel twice and the last 2 trials in parallel.   
 """
 
 
