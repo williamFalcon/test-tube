@@ -28,14 +28,16 @@ def train(hparams):
     exp.save()
 
 
-# build a wrapper around a tng function so we can use the correct gpu
+# build a wrapper around a tng function so we can use the correct gpu    
+# the optimizer passes in the hyperparams and the job index as arguments
+# to the function to optimize   
 def parallelize_on_gpus(trial_params, job_index_nb):
     gpu_nb = str(job_index_nb)
     os.environ["CUDA_VISIBLE_DEVICES"] = gpu_nb
     train(trial_params)
 
 
-# set up our argparser and make the y_val tunable
+# set up our argparser and make the y_val tunnable
 parser = HyperOptArgumentParser(strategy='random_search')
 parser.add_argument('--path', default='some/path')
 parser.add_opt_argument_list('--y_val', default=12, options=[1, 2, 3, 4], tunnable=True)
