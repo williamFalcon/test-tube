@@ -58,7 +58,16 @@ for hparam_trial in hparams.trials(20):
 ```
 
 ---
-### [Visualize](http://testtube.williamfalcon.com) results and compare across arbitrary trials
-![Screenshot](img/viz_a.png)
+### Visualize
+
+```python
+import pandas as pd
+import matplotlib
+
+# each experiment is saved to a metrics.csv file which can be imported anywhere
+# images save to exp/version/images
+df = pd.read_csv('../some/dir/test_tube_data/dense_model/version_0/metrics.csv')
+df.tng_err.plot()
+```
 
 

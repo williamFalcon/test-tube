@@ -130,7 +130,7 @@
 <li><a href="./hyperparameter_optimization/HyperOptArgumentParser/">Optimize your hyperparameters</a> using grid_search or random_search.</li>
 <li>Automatically track ALL parameters for a particular training run.</li>
 </ul>
-<p>Test Tube is compatible with: Python 3</p>
+<p>Test Tube is compatible with: Python 2 and 3</p>
 <h2 id="getting-started">Getting started</h2>
 <hr />
 <h3 id="create-an-experiment">Create an <a href="./experiment_tracking/experiment/">Experiment</a></h3>
@@ -174,8 +174,15 @@ for hparam_trial in hparams.trials(20):
 </code></pre>
 
 <hr />
-<h3 id="visualize-results-and-compare-across-arbitrary-trials"><a href="http://testtube.williamfalcon.com">Visualize</a> results and compare across arbitrary trials</h3>
-<p><img alt="Screenshot" src="./img/viz_a.png" /></p>
+<h3 id="visualize">Visualize</h3>
+<pre><code class="python">import pandas as pd
+import matplotlib
+
+# each experiment is saved to a metrics.csv file which can be imported anywhere
+# images save to exp/version/images
+df = pd.read_csv('../some/dir/test_tube_data/dense_model/version_0/metrics.csv')
+df.tng_err.plot()
+</code></pre>
               
             </div>
           </div>
@@ -224,5 +231,5 @@ for hparam_trial in hparams.trials(20):
 
 <!--
 MkDocs version : 0.16.3
-Build Date UTC : 2017-10-13 13:18:35
+Build Date UTC : 2017-10-13 17:17:28
 -->
