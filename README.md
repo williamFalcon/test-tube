@@ -51,7 +51,7 @@ Compatible with:
 - Chainer   
 - MXNet   
 - Theano   
-- SKLearn   
+- Scikit-learn   
 - Any python based ML or DL library   
 - Runs seamlessly on CPU and GPU.   
 
