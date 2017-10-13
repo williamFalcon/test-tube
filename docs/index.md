@@ -9,7 +9,7 @@ Use Test Tube if you need to:
 - [Optimize your hyperparameters](hyperparameter_optimization/HyperOptArgumentParser/) using grid_search or random_search.
 - Automatically track ALL parameters for a particular training run.
 
-Test Tube is compatible with: Python 3
+Test Tube is compatible with: Python 2 and 3
 
 ## Getting started
 
