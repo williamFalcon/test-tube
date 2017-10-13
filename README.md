@@ -26,7 +26,7 @@ Use Test Tube if you need to:
 - [Optimize your hyperparameters](hyperparameter_optimization/HyperOptArgumentParser/) using grid_search or random_search.
 - Automatically track ALL parameters for a particular training run.
 - Automatically snapshot your code for an experiment using git tags.    
-- Save progress images inline with your metrics.    
+- Save progress images inline with training metrics.    
 
 Test Tube is compatible with all versions of Python and all Python deep learning libraries.
 
