@@ -60,3 +60,70 @@ hparams = parser.parse_args()
 for hparam_trial in hparams.trials(20):
     train_network(hparam_trial)
 ```     
+
+## Visualizing and accessing your data   
+
+Test tube saves each experiment in a folder structure like:   
+```
+test_tube_data
+    /my_exp_name_A
+        /version_0
+        /version_1
+            meta.experiment
+            meta_tags.json
+            metrics.csv
+            media/
+                test_img_0.jpg
+                test_img_1.jpg
+         /version_2   
+         
+    /my_exp_name_B
+        ...
+```    
+
+#### Media files    
+
+Any saved images are saved to `/media`:   
+
+**example**   
+```python
+img = np.imread('a.jpg')
+exp.add_metric_row('test_jpg': img, 'val_err': 0.2)    
+
+# saves image to /media/test_0.jpg
+```   
+     
+     
+#### Metrics file
+metrics.csv is a standard csv with rows for each `add_metric_row` call and columns for each key across all rows   
+
+**example**   
+```python
+exp.add_metric_row('val_err': 0.2, 'epoch': 1)    
+exp.add_metric_row('test_err': 0.2, 'epoch': 1)    
+```    
+
+`metrics.csv`    
+*created_at is added automatically*     
+
+|  val_err |  epoch | test_err | created_at |
+|---|---|---| --- |
+| 0.2  |  1 | - | 2017-10-13 01:34:14 |
+| -  | 1  | 0.2| 2017-10-13 01:34:18 |
+
+
+#### Meta tags file 
+`meta_tags.json` contains a json file with the information for your experiment    
+
+**example**   
+```python
+exp.add_meta_tags({'learning_rate': 0.002, 'nb_layers': 2})
+```    
+
+`meta_tags.json`   
+```json
+{
+    "learning_rate": 0.002,
+    "nb_layers": 2
+}
+``` 
