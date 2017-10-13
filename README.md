@@ -19,7 +19,9 @@
 </p>
 
 
-**Documentation available** [here](https://williamfalcon.github.io/test_tube/)   
+## Docs
+
+**[View the docs here](https://williamfalcon.github.io/test_tube/)**
 
 ---
 Test tube is a python library to track and optimize Deep Learning experiments. It's framework agnostic and is built on top of the python argparse API for ease of use.
