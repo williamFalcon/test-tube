@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 data/
 test_tube_data/
+*.experiment
 example.py
 example.json
 
