@@ -63,6 +63,7 @@ for hparam_trial in hparams.trials(20):
 
 ## Visualizing and accessing your data   
 
+[Example test_tube output](https://github.com/williamFalcon/test_tube/tree/master/examples/saved_logs/example_test_tube_data)    
 Test tube saves each experiment in a folder structure like:   
 ```
 test_tube_data
