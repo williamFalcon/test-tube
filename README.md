@@ -45,22 +45,22 @@ Compatible with:
 ### Log experiments
 
 ```python
-from test_tube import Experiment
-
-exp = Experiment(name='dense_model', save_dir='/Desktop/test_tube')
+exp = Experiment(name='dense_model', save_dir='../some/dir/')
 
 exp.add_meta_tags({'learning_rate': 0.002, 'nb_layers': 2})
 
-for step in training_steps:
-    tng_err = model.eval(tng_x, tng_y)
+training_steps = 10
+for step in range(1, training_steps):
+    tng_err = 1.0 / step # model.eval(tng_x, tng_y)
 
-    exp.add_metric_row('tng_err': tng_err)
+    exp.add_metric_row({'tng_err': tng_err})
 
 # training complete!
-# load /Desktop/test_tube/dense_model/version_0/metrics.csv into your favorite viz tool   
-import pandas as pd
-df = pd.read_csv('/Desktop/test_tube/dense_model/version_0/metrics.csv')
-df.plot('learning_rate')
+# load the resulting metrics.csv into your favorite viz tool   
+import pandas as pd    
+import matplotlib   
+df = pd.read_csv('../some/dir/test_tube_data/dense_model/version_0/metrics.csv')
+df.tng_err.plot()
 ```
 
 ### Optimize hyperparameters
