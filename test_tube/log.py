@@ -79,7 +79,15 @@ class Experiment(object):
                 print('Test tube created git tag:', 'tt_{}'.format(self.exp_hash))
 
     def add_argparse_meta(self, argparser):
-        self.add_meta_tags(vars(argparser))
+        parsed = vars(argparser)
+        to_add = {}
+        
+        # don't store methods
+        for k, v in parsed.items():
+            if not callable(v):
+                to_add[k] = v
+
+        self.add_meta_tags(to_add)
 
     def add_meta_from_hyperopt(self, hypo):
         """
