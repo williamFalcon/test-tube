@@ -88,7 +88,7 @@ for hparam_trial in hparams.trials(20):
     train_network(hparam_trial)
 ```    
 
-### Simple integration if you already use argparse   
+### Convert your argparse params into searchable params by changing 1 line     
 ```python    
 import argparse   
 from test_tube import HyperOptArgumentParser
