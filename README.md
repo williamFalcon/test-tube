@@ -1,23 +1,33 @@
-# Test tube
+# Test tube: Easily log and tune Deep Learning experiments
+
 <div style="text-align: center">
 <img src="https://raw.githubusercontent.com/williamfalcon/test_tube/master/imgs/test_tube_logo.png">
 </div>
 <br>
 
 [![PyPI version](https://badge.fury.io/py/test_tube.svg)](https://badge.fury.io/py/test_tube)    [![Doc status](https://readthedocs.org/projects/pip/badge/?version=latest)](https://readthedocs.org/projects/pip/badge/?version=latest)     [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/williamFalcon/test_tube/blob/master/LICENSE)
+[docs](https://williamfalcon.github.io/test_tube/)
 
+---
+Test tube is a python library to track and optimize Deep Learning experiments. It's framework agnostic and is built on top of the python argparse API for ease of use.
 
-Log and optimize Deep Learning experiments with ease.
-
-Nothing is uploaded, it's all done on your machine.
+Nothing is uploaded, it's all done on your machine. Logs are stored to csv files for easy analysis.
 
 ```bash
 pip install test_tube
 ```
 
-[DOCUMENTATION](https://williamfalcon.github.io/test_tube/)
+---
+Use Test Tube if you need to:
 
-![Screenshot](https://github.com/williamFalcon/test_tube/raw/master/imgs/viz_a.png)
+- Track multiple [Experiments](experiment_tracking/experiment/) across models.
+- Visualize and compare different experiments without uploading anywhere, logs store as csv files.
+- [Optimize your hyperparameters](hyperparameter_optimization/HyperOptArgumentParser/) using grid_search or random_search.
+- Automatically track ALL parameters for a particular training run.
+- Automatically snapshot your code for an experiment using git tags.
+
+Test Tube is compatible with all versions of Python and all Python deep learning libraries.
+
 ## Example use:
 
 ### Log experiments
@@ -61,10 +71,10 @@ for hparam_trial in hparams.trials(20):
     train_network(hparam_trial)
 ```
 
-## Visualizing and accessing your data
+## Visualize and access your data
 
 [Example test_tube output](https://github.com/williamFalcon/test_tube/tree/master/examples/saved_logs/example_test_tube_data)
-Test tube saves each experiment in a folder structure like:
+Test tube saves experimentes directly to csv files along with relevant metadata. An experiment is a folder structure like:
 ```
 test_tube_data
     /my_exp_name_A
