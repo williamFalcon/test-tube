@@ -130,16 +130,13 @@ class Experiment(object):
 
     def __get_last_experiment_version(self):
         try:
-            exp_cache_file = self.get_data_path(self.name, self.version)
+            exp_cache_file = '/'.join(self.get_data_path(self.name, self.version).split('/')[:-1])
             last_version = -1
             for f in os.listdir(exp_cache_file):
                 if '_' in f:
                     file_parts = f.split('_')
-                    name = '_'.join(file_parts[:-1])
-                    version = file_parts[-1]
-                    if self.name == name:
-                        version = int(version.split('.')[0][1:])
-                        last_version = max(last_version, version)
+                    version = int(file_parts[-1])
+                    last_version = max(last_version, version)
             return last_version
         except Exception as e:
             return -1
