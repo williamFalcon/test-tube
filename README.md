@@ -1,4 +1,4 @@
-# Test tube: Easily log and tune Deep Learning experiments
+# Test tube: Easily log, track and tune Deep Learning experiments
 
 <div style="text-align: center">
 <img src="https://raw.githubusercontent.com/williamfalcon/test_tube/master/imgs/test_tube_logo.png">
