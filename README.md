@@ -46,7 +46,7 @@ for step in training_steps:
     exp.add_metric_row('tng_err': tng_err)
 
 # training complete!
-# all your logs and data are ready to be visualized at testtube.williamfalcon.com
+# all your logs and data are ready to be visualized on any csv plotting tool
 
 ```
 
