@@ -12,7 +12,7 @@
 ---
 Test tube is a python library to track and optimize Deep Learning experiments. It's framework agnostic and is built on top of the python argparse API for ease of use.
 
-Nothing is uploaded, it's all done on your machine. Logs are stored to csv files for easy analysis.
+Test tube stores logs in csv files on your machine for easy analysis.
 
 ```bash
 pip install test_tube
@@ -85,8 +85,8 @@ exp.add_metric_row('test_jpg': img, 'val_err': 0.2)
 
 ## Visualize and access your data
 
-[Example test_tube output](https://github.com/williamFalcon/test_tube/tree/master/examples/saved_logs/example_test_tube_data)
-Test tube saves experimentes directly to csv files along with relevant metadata. An experiment is a folder structure like:
+[Example test_tube output](https://github.com/williamFalcon/test_tube/tree/master/examples/saved_logs/example_test_tube_data)    
+Test tube saves experiments directly to csv files along with relevant metadata. An experiment is a folder structure like:
 ```
 test_tube_data
     /my_exp_name_A
