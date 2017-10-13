@@ -1,4 +1,4 @@
-# Test tube: Deep Learning experiment tracking and tuning for Python   
+# Test tube: Easily log and tune Deep Learning experiments
 
 <div style="text-align: center">
 <img src="https://raw.githubusercontent.com/williamfalcon/test_tube/master/imgs/test_tube_logo.png">
