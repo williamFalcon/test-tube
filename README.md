@@ -1,4 +1,5 @@
 # Test tube
+## The Deep Learning / ML experiment tracking and tuning library
 <div style="text-align: center">
 <img src="https://raw.githubusercontent.com/williamfalcon/test_tube/master/imgs/test_tube_logo.png">
 </div>
