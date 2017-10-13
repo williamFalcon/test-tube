@@ -25,7 +25,8 @@ Use Test Tube if you need to:
 - Visualize and compare different experiments without uploading anywhere, logs store as csv files.
 - [Optimize your hyperparameters](hyperparameter_optimization/HyperOptArgumentParser/) using grid_search or random_search.
 - Automatically track ALL parameters for a particular training run.
-- Automatically snapshot your code for an experiment using git tags.
+- Automatically snapshot your code for an experiment using git tags.    
+- Save progress images inline with your metrics.    
 
 Test Tube is compatible with all versions of Python and all Python deep learning libraries.
 
@@ -70,6 +71,16 @@ hparams = parser.parse_args()
 # run 20 trials of random search over the hyperparams
 for hparam_trial in hparams.trials(20):
     train_network(hparam_trial)
+```    
+
+### Log images inline with metrics    
+```python
+# name must have either jpg, png or jpeg in it
+img = np.imread('a.jpg')
+exp.add_metric_row('test_jpg': img, 'val_err': 0.2)
+
+# saves image to ../exp/version/media/test_0.jpg  
+# csv has file path to that image in that cell   
 ```
 
 ## Visualize and access your data
