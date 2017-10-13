@@ -5,7 +5,7 @@
 </div>
 <br>
 
-[![PyPI version](https://badge.fury.io/py/test_tube.svg)](https://badge.fury.io/py/test_tube)    [![Documentation Status](https://readthedocs.org/projects/test-tube/badge/?version=latest)](http://test-tube.readthedocs.io/en/latest/?badge=latest)
+[![PyPI version](https://badge.fury.io/py/test_tube.svg)](https://badge.fury.io/py/test_tube)    [![Documentation Status](https://readthedocs.org/projects/test-tube/badge/?version=latest)](https://williamfalcon.github.io/test_tube/)
      [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/williamFalcon/test_tube/blob/master/LICENSE)    
 [DOCS](https://williamfalcon.github.io/test_tube/)
 
