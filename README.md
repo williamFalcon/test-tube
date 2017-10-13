@@ -63,22 +63,23 @@ Compatible with:
 from test_tube import Experiment
 
 exp = Experiment(name='dense_model', save_dir='../some/dir/')
-
 exp.add_meta_tags({'learning_rate': 0.002, 'nb_layers': 2})
 
-training_steps = 10
-for step in range(1, training_steps):
-    tng_err = 1.0 / step # model.eval(tng_x, tng_y)
-
+for step in range(1, 10):
+    tng_err = 1.0 / step
     exp.add_metric_row({'tng_err': tng_err})
+```   
 
-# training complete!
-# load the resulting metrics.csv into your favorite viz tool   
+### Visualize experiments   
+```python  
 import pandas as pd    
 import matplotlib   
+
+# each experiment is saved to a metrics.csv file which can be imported anywhere
+# images save to exp/version/images   
 df = pd.read_csv('../some/dir/test_tube_data/dense_model/version_0/metrics.csv')
-df.tng_err.plot()
-```
+df.tng_err.plot()   
+```    
 
 ### Optimize hyperparameters
 ```python
