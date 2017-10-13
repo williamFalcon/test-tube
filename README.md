@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://github.com/williamFalcon/test_tube">
+  <a href="https://williamfalcon.github.io/test_tube/">
     <img alt="react-router" src="https://raw.githubusercontent.com/williamfalcon/test_tube/master/imgs/test_tube_logo.png" width="50">
   </a>
 </p>
