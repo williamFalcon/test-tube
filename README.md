@@ -8,8 +8,9 @@
 [![PyPI version](https://badge.fury.io/py/test_tube.svg)](https://badge.fury.io/py/test_tube)    [![Doc status](https://readthedocs.org/projects/pip/badge/?version=latest)](https://readthedocs.org/projects/pip/badge/?version=latest)     [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/williamFalcon/test_tube/blob/master/LICENSE)   
 [docs](https://williamfalcon.github.io/test_tube/)    
 
+---
+Test tube is a python library to track and optimize Deep Learning experiments. It's framework agnostic and is built on top of the python argparse API for ease of use.   
 
-Log and optimize Deep Learning experiments with ease. 
 Nothing is uploaded, it's all done on your machine. Logs are stored to csv files for easy analysis.   
 
 ```bash
@@ -19,13 +20,13 @@ pip install test_tube
 ---  
 Use Test Tube if you need to:   
 
-- Track many [Experiments](experiment_tracking/experiment/) across models.   
-- [Visualize](http://testtube.williamfalcon.com) and compare different experiments without uploading anywhere.    
+- Track multiple [Experiments](experiment_tracking/experiment/) across models.   
+- Visualize and compare different experiments without uploading anywhere, logs store as csv files.       
 - [Optimize your hyperparameters](hyperparameter_optimization/HyperOptArgumentParser/) using grid_search or random_search.   
 - Automatically track ALL parameters for a particular training run.   
 - Automatically snapshot your code for an experiment using git tags.   
 
-Test Tube is compatible with all versions of Python
+Test Tube is compatible with all versions of Python and all Python deep learning libraries.    
 
 ## Example use:   
 
