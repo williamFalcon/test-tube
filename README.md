@@ -37,7 +37,6 @@ Compatible with:
 - Chainer   
 - MXNet   
 - Theano   
-- Torch   
 - Any python based ML or DL library   
 - Runs seamlessly on CPU and GPU.   
 
