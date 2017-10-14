@@ -1,6 +1,6 @@
 <p align="center">
-  <a href="https://williamfalcon.github.io/test_tube/">
-    <img alt="react-router" src="https://raw.githubusercontent.com/williamfalcon/test_tube/master/imgs/test_tube_logo.png" width="50">
+  <a href="https://williamfalcon.github.io/test-tube/">
+    <img alt="react-router" src="https://raw.githubusercontent.com/williamfalcon/test-tube/master/imgs/test_tube_logo.png" width="50">
   </a>
 </p>
 
