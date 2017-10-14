@@ -14,14 +14,14 @@
 
 <p align="center">
   <a href="https://badge.fury.io/py/test_tube"><img src="https://badge.fury.io/py/test_tube.svg"></a>
-  <a href="https://williamfalcon.github.io/test_tube/"><img src="https://readthedocs.org/projects/test-tube/badge/?version=latest"></a>
-  <a href="https://github.com/williamFalcon/test_tube/blob/master/LICENSE.txt"><img src="https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000"></a>   
+  <a href="https://williamfalcon.github.io/test-tube/"><img src="https://readthedocs.org/projects/test-tube/badge/?version=latest"></a>
+  <a href="https://github.com/williamFalcon/test-tube/blob/master/LICENSE.txt"><img src="https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000"></a>   
 </p>
 
 
 ## Docs
 
-**[View the docs here](https://williamfalcon.github.io/test_tube/)**
+**[View the docs here](https://williamfalcon.github.io/test-tube/)**
 
 ---
 Test tube is a python library to track and optimize Deep Learning experiments. It's framework agnostic and is built on top of the python argparse API for ease of use.
@@ -128,12 +128,12 @@ exp.add_metric_row('test_jpg': img, 'val_err': 0.2)
 
 
 ## Demos
-- [Experiments and hyperparameter optimization for tensorflow across 4 GPUs simultaneously](https://github.com/williamFalcon/test_tube/blob/master/examples/tensorflow_example.py)   
+- [Experiments and hyperparameter optimization for tensorflow across 4 GPUs simultaneously](https://github.com/williamFalcon/test-tube/blob/master/examples/tensorflow_example.py)   
 
 ## How to contribute    
 Feel free to fix bugs and make improvements!   
-1. Check out the [current bugs here](https://github.com/williamFalcon/test_tube/issues).   
-2. To work on a bug, head over to our [project page](https://github.com/williamFalcon/test_tube/projects/1) and assign yourself the bug.   
+1. Check out the [current bugs here](https://github.com/williamFalcon/test-tube/issues).   
+2. To work on a bug, head over to our [project page](https://github.com/williamFalcon/test-tube/projects/1) and assign yourself the bug.   
 3. We'll add contributor names periodically as people improve the library!   
 
 ## Contributors:    
