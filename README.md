@@ -55,6 +55,9 @@ Compatible with:
 - Any python based ML or DL library   
 - Runs seamlessly on CPU and GPU.   
 
+### Why Test Tube   
+If you're a researcher, test-tube is highly encouraged as a way to post your paper's training logs to help add transparency and show others what you've tried that didn't work.   
+
 ## Examples
 
 ### Log experiments
@@ -135,6 +138,19 @@ Feel free to fix bugs and make improvements!
 1. Check out the [current bugs here](https://github.com/williamFalcon/test-tube/issues).   
 2. To work on a bug, head over to our [project page](https://github.com/williamFalcon/test-tube/projects/1) and assign yourself the bug.   
 3. We'll add contributor names periodically as people improve the library!   
+
+## Bibtex   
+To cite the framework use:    
+```
+@misc{Falcon2017,
+  author = {Falcon, W.A.},
+  title = {Test Tube},
+  year = {2017},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/williamfalcon/test-tube}}
+}
+```
 
 ## Contributors:    
 1. [William Falcon](https://williamfalcon.com)   
