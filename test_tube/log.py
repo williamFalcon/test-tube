@@ -222,7 +222,7 @@ class Experiment(object):
         # file name
         self.__save_images(self.metrics)
         metrics_file_path = self.get_data_path(self.name, self.version) + '/metrics.csv'
-        meta_tags_path = self.get_data_path(self.name, self.version) + '/meta_tags.json'
+        meta_tags_path = self.get_data_path(self.name, self.version) + '/meta_tags.csv'
 
         obj = {
             'name': self.name,
@@ -240,14 +240,12 @@ class Experiment(object):
             json.dump(obj, file, ensure_ascii=False)
 
         # save the metatags file
-        with open(meta_tags_path, 'w') as file:
-            json.dump(self.tags, file, ensure_ascii=False)
+        df = pd.DataFrame({'key': list(self.tags.keys()), 'value': list(self.tags.values())})
+        df.to_csv(meta_tags_path, index=False)
 
         # save the metrics data
         df = pd.DataFrame(self.metrics)
         df.to_csv(metrics_file_path, index=False)
-
-
 
     def __save_images(self, metrics):
         """
@@ -290,10 +288,9 @@ class Experiment(object):
             self.exp_hash = data['exp_hash']
 
         # load .tags file
-        meta_tags_path = self.get_data_path(self.name, self.version) + '/meta_tags.json'
-        with open(meta_tags_path, 'r') as file:
-            data = json.load(file)
-            self.tags = data
+        meta_tags_path = self.get_data_path(self.name, self.version) + '/meta_tags.csv'
+        df = pd.read_csv(meta_tags_path)
+        self.tags = df.to_dict(orient='records')
 
         # load metrics
         metrics_file_path = self.get_data_path(self.name, self.version) + '/metrics.csv'
