@@ -129,7 +129,7 @@ class HyperOptArgumentParser(ArgumentParser):
             if k not in trial_dict:
                 trial_dict[k] = v
 
-        return argparse.Namespace(**trial_dict)
+        return TTNamespace(**trial_dict)
 
 
     def __flatten_params(self, params):
@@ -148,6 +148,14 @@ class HyperOptArgumentParser(ArgumentParser):
                     param_groups.append({'idx': i, 'val': val, 'name': clean_name})
                 flat_params.append(param_groups)
         return flat_params
+
+
+class TTNamespace(argparse.Namespace):
+    def __str__(self):
+        result = '-'*100 + '\nHyperparameters:\n'
+        for k, v in self.__dict__.items():
+            result += '{0:20}: {1}\n'.format(k, v)
+        return result
 
 
 class OptArg(object):
