@@ -8,7 +8,7 @@
   
   
   <link rel="shortcut icon" href="../../img/favicon.ico">
-  <title>HyperOptArgumentParser - Test tube Documentation</title>
+  <title>HyperOptArgumentParser class API - Test tube Documentation</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   <link rel="stylesheet" href="../../css/theme.css" type="text/css" />
@@ -17,7 +17,7 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "HyperOptArgumentParser";
+    var mkdocs_page_name = "HyperOptArgumentParser class API";
     var mkdocs_page_input_path = "hyperparameter_optimization/HyperOptArgumentParser.md";
     var mkdocs_page_url = "/hyperparameter_optimization/HyperOptArgumentParser/";
   </script>
@@ -49,7 +49,7 @@
           
             <li class="toctree-l1">
 		
-    <a class="" href="../..">Home</a>
+    <a class="" href="../..">Test Tube: Easily log and tune Deep Learning experiments</a>
 	    </li>
           
             <li class="toctree-l1">
@@ -58,7 +58,7 @@
     <ul class="subnav">
                 <li class="">
                     
-    <a class="" href="../../experiment_tracking/experiment/">Experiment</a>
+    <a class="" href="../../experiment_tracking/experiment/">Experiment class API</a>
                 </li>
     </ul>
 	    </li>
@@ -69,7 +69,7 @@
     <ul class="subnav">
                 <li class=" current">
                     
-    <a class="current" href="./">HyperOptArgumentParser</a>
+    <a class="current" href="./">HyperOptArgumentParser class API</a>
     <ul class="subnav">
             
     <li class="toctree-l3"><a href="#hyperoptargumentparser-class-api">HyperOptArgumentParser class API</a></li>
@@ -114,7 +114,7 @@
         
       
     
-    <li>HyperOptArgumentParser</li>
+    <li>HyperOptArgumentParser class API</li>
     <li class="wy-breadcrumbs-aside">
       
         <a href="https://github.com/williamFalcon/test_tube/edit/master/docs/hyperparameter_optimization/HyperOptArgumentParser.md"
@@ -128,7 +128,7 @@
             <div class="section">
               
                 <h1 id="hyperoptargumentparser-class-api">HyperOptArgumentParser class API</h1>
-<p>The HyperOptArgumentParser is a subclass of python's <a href="https://docs.python.org/3/library/argparse.html">argparse</a>, with added finctionality to change parameters on the fly as determined by a sampling strategy.  </p>
+<p>The HyperOptArgumentParser is a subclass of python's <a href="https://docs.python.org/3/library/argparse.html">argparse</a>, with added finctionality to change parameters on the fly as determined by a sampling strategy.</p>
 <p>You can instantiate an <code>HyperOptArgumentParser</code> via:</p>
 <pre><code class="python">from test_tube import HyperOptArgumentParser
 
@@ -136,14 +136,14 @@
 parser = HyperOptArgumentParser(strategy='random_search')
 parser.add_argument('--learning_rate', default=0.002, type=float, help='the learning rate')
 
-# let's enable optimizing over the number of layers in the network 
+# let's enable optimizing over the number of layers in the network
 parser.add_opt_argument_list('--nb_layers', default=2, type=int, tunnable=True, options=[2, 4, 8])
 
 # and tune the number of units in each layer
 parser.add_opt_argument_range('--neurons', default=50, type=int, tunnable=True, start=100, end=800, nb_samples=10)
 
 # compile (because it's argparse underneath)
-hparams = parser.parse_args()   
+hparams = parser.parse_args()
 
 # run 20 trials of random search over the hyperparams
 for hparam_trial in hparams.trials(20):
@@ -153,21 +153,21 @@ for hparam_trial in hparams.trials(20):
 <hr />
 <h2 id="init-options">init options</h2>
 <h3 id="strategy">strategy</h3>
-<p>Use either <a href="http://www.jmlr.org/papers/volume13/bergstra12a/bergstra12a.pdf">random search</a> or <a href="http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html">grid search</a> for tuning: </p>
+<p>Use either <a href="http://www.jmlr.org/papers/volume13/bergstra12a/bergstra12a.pdf">random search</a> or <a href="http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html">grid search</a> for tuning:</p>
 <pre><code class="python">parser = HyperOptArgumentParser(strategy='grid_search')
 </code></pre>
 
 <hr />
 <h2 id="methods">Methods</h2>
-<p>All the functionality from argparse works but we've added the following functionality:    </p>
+<p>All the functionality from argparse works but we've added the following functionality:</p>
 <h3 id="add_opt_argument_list">add_opt_argument_list</h3>
 <pre><code class="python">parser.add_opt_argument_list('--nb_layers', default=2, type=int, tunnable=True, options=[2, 4, 8])
 </code></pre>
 
-<p>Enables searching over a list of values for this parameter. The tunable values ONLY replace the argparse values when running a hyperparameter optimization search. This is on purpose so your code doesn't have to change when you want to tune it.    </p>
-<p><strong>Example</strong>    </p>
+<p>Enables searching over a list of values for this parameter. The tunable values ONLY replace the argparse values when running a hyperparameter optimization search. This is on purpose so your code doesn't have to change when you want to tune it.</p>
+<p><strong>Example</strong></p>
 <pre><code class="python">parser.add_opt_argument_list('--nb_layers', default=2, type=int, tunnable=True, options=[2, 4, 8])
-hparams = parser.parse_args()   
+hparams = parser.parse_args()
 # hparams.nb_layers = 2
 
 for trial in hparams.trials(2):
@@ -180,10 +180,10 @@ for trial in hparams.trials(2):
 <pre><code class="python">parser.add_opt_argument_range('--neurons', default=50, type=int, tunnable=True, start=100, end=800, nb_samples=8)
 </code></pre>
 
-<p>Enables searching over a range of values chosen linearly using the nb_samples given. The tunable values ONLY replace the argparse values when running a hyperparameter optimization search. This is on purpose so your code doesn't have to change when you want to tune it.    </p>
-<p><strong>Example</strong>    </p>
+<p>Enables searching over a range of values chosen linearly using the nb_samples given. The tunable values ONLY replace the argparse values when running a hyperparameter optimization search. This is on purpose so your code doesn't have to change when you want to tune it.</p>
+<p><strong>Example</strong></p>
 <pre><code class="python">parser.add_opt_argument_range('--neurons', default=50, type=int, tunnable=True, start=100, end=800, nb_samples=8)
-hparams = parser.parse_args()   
+hparams = parser.parse_args()
 # hparams.neurons = 50
 
 for trial in hparams.trials(2):
@@ -196,7 +196,7 @@ for trial in hparams.trials(2):
 </code></pre>
 
 <p>Replaces default values in the parser with those read from the json file</p>
-<p><strong>Example</strong>  <br />
+<p><strong>Example</strong>
 <em>example.json</em></p>
 <pre><code class="json">{
     &quot;learning_rate&quot;: 200
@@ -205,9 +205,9 @@ for trial in hparams.trials(2):
 
 <pre><code class="python">parser.add_argument('--learning_rate', default=0.002, type=float, help='the learning rate')
 parser.add_json_config_argument('--config', default='example.json')
-hparams = parser.parse_args()   
+hparams = parser.parse_args()
 
-# hparams.learning_rate = 200 
+# hparams.learning_rate = 200
 </code></pre>
 
 <h3 id="trials">trials</h3>
@@ -215,20 +215,21 @@ hparams = parser.parse_args()
 </code></pre>
 
 <p>Computes the trials needed for these experiments and serves them via a generator</p>
-<p><strong>Example</strong>    </p>
-<pre><code class="python">hparams = parser.parse_args()   
+<p><strong>Example</strong></p>
+<pre><code class="python">hparams = parser.parse_args()
 for trial_hparams in hparams.trials(2):
     # trial_hparams now has values sampled from the training routine
 </code></pre>
 
 <h3 id="optimize_parallel">optimize_parallel</h3>
-<pre><code class="python">hparams = parser.parse_args() 
+<p><code>DEPRECATED... see optimize_parallel_gpu / _cpu</code></p>
+<pre><code class="python">hparams = parser.parse_args()
 hparams.optimize_parallel(function_to_optimize, nb_trials=20, nb_parallel=2)
 </code></pre>
 
-<p>Parallelize the trials across nb_parallel processes.<br />
+<p>Parallelize the trials across nb_parallel processes.
 Arguments passed into the <code>function_to_optimize</code> are the <code>trial_params</code> and index of process it's in.</p>
-<p><strong>Example</strong>    </p>
+<p><strong>Example</strong></p>
 <pre><code class="python"># parallelize tuning on 2 gpus
 # this will place each trial in n into a given gpu
 def opt_function(trial_params, process_index):
@@ -236,8 +237,48 @@ def opt_function(trial_params, process_index):
     os.environ[&quot;CUDA_VISIBLE_DEVICES&quot;] = GPUs[process_index]
     train_main(trial_params)
 
-hparams = parser.parse_args()   
+hparams = parser.parse_args()
 hparams.optimize_parallel(opt_function, nb_trials=20, nb_parallel=2)
+
+# at the end of the optimize_parallel function, all 20 trials will be completed
+# in this case by running 10 sets of 2 trials in parallel
+</code></pre>
+
+<h3 id="optimize_parallel_gpu_cuda">optimize_parallel_gpu_cuda</h3>
+<pre><code class="python">hparams = parser.parse_args()
+hparams.optimize_parallel_gpu_cuda(function_to_optimize, gpu_ids=['1', '0, 2'], nb_trials=20, nb_workers=2)
+</code></pre>
+
+<p>Parallelize the trials across nb_workers processes. Auto assign the correct gpus.
+Argument passed into the <code>function_to_optimize</code> is the <code>trial_params</code> argument.</p>
+<p><strong>Example</strong></p>
+<pre><code class="python"># parallelize tuning on 2 gpus
+# this will place each trial in n into a given gpu
+def train_main(trial_params):
+    # train your model, etc here...
+
+hparams = parser.parse_args()
+hparams.optimize_parallel_gpu_cuda(train_main, gpu_ids=['1', '0, 2'], nb_trials=20, nb_workers=2)
+
+# at the end of the optimize_parallel function, all 20 trials will be completed
+# in this case by running 10 sets of 2 trials in parallel
+</code></pre>
+
+<h3 id="optimize_parallel_cpu">optimize_parallel_cpu</h3>
+<pre><code class="python">hparams = parser.parse_args()
+hparams.optimize_parallel_cpu(function_to_optimize, nb_trials=20, nb_workers=2)
+</code></pre>
+
+<p>Parallelize the trials across nb_workers cpus.
+Argument passed into the <code>function_to_optimize</code> is the <code>trial_params</code> argument.</p>
+<p><strong>Example</strong></p>
+<pre><code class="python"># parallelize tuning on 2 cpus
+# this will place each trial in n into a given gpu
+def train_main(trial_params):
+    # train your model, etc here...
+
+hparams = parser.parse_args()
+hparams.optimize_parallel_cpu(train_main, nb_trials=20, nb_workers=2)
 
 # at the end of the optimize_parallel function, all 20 trials will be completed
 # in this case by running 10 sets of 2 trials in parallel
@@ -250,7 +291,7 @@ hparams.optimize_parallel(opt_function, nb_trials=20, nb_parallel=2)
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="../../experiment_tracking/experiment/" class="btn btn-neutral" title="Experiment"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../experiment_tracking/experiment/" class="btn btn-neutral" title="Experiment class API"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -264,18 +305,18 @@ hparams.optimize_parallel(opt_function, nb_trials=20, nb_parallel=2)
 
   Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-	  
+      
         </div>
       </div>
 
     </section>
-    
+
   </div>
 
   <div class="rst-versions" role="note" style="cursor: pointer">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
-          <a href="https://github.com/williamFalcon/test_tube" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+          <a href="https://github.com/williamFalcon/test_tube/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
         <span><a href="../../experiment_tracking/experiment/" style="color: #fcfcfc;">&laquo; Previous</a></span>
@@ -283,7 +324,10 @@ hparams.optimize_parallel(opt_function, nb_trials=20, nb_parallel=2)
       
     </span>
 </div>
+    <script>var base_url = '../..';</script>
     <script src="../../js/theme.js"></script>
+      <script src="../../search/require.js"></script>
+      <script src="../../search/search.js"></script>
 
 </body>
 </html>
