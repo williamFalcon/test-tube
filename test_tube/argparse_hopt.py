@@ -32,6 +32,18 @@ def optimize_parallel_gpu_cuda_private(args):
     return True
 
 
+def optimize_parallel_cpu_private(args):
+    trial_params, train_function = args[0], args[1]
+
+    sleep(random.randint(0, 4))
+
+    # run training fx on the specific gpus
+    train_function(trial_params)
+
+    # True = completed
+    return True
+
+
 class HyperOptArgumentParser(ArgumentParser):
     """
     Subclass of argparse ArgumentParser which adds optional calls to sample from lists or ranges
@@ -95,6 +107,7 @@ class HyperOptArgumentParser(ArgumentParser):
         old_args['trials'] = self.opt_trials
         old_args['optimize_parallel'] = self.optimize_parallel
         old_args['optimize_parallel_gpu_cuda'] = self.optimize_parallel_gpu_cuda
+        old_args['optimize_parallel_cpu'] = self.optimize_parallel_cpu
 
         return argparse.Namespace(**old_args)
 
@@ -132,11 +145,6 @@ class HyperOptArgumentParser(ArgumentParser):
         for gpu_id in gpu_ids:
             gpu_q.put(gpu_id)
 
-        trial_param_q = Queue()
-        for trial_params in self.trials:
-            trial_param_q.put({'a': 1})
-            # trial_param_q.put(trial_params)
-
         # called by the Pool when a process starts
         def init(local_gpu_q):
             global g_gpu_id_q
@@ -147,6 +155,26 @@ class HyperOptArgumentParser(ArgumentParser):
 
         # apply parallelization
         pool.map(optimize_parallel_gpu_cuda_private, self.trials)
+
+    def optimize_parallel_cpu(self, train_function, nb_trials, nb_workers=4):
+        """
+        Runs optimization across n cpus
+        :param train_function:
+        :param nb_trials:
+        :param nb_workers:
+        :return:
+        """
+        self.trials = strategies.generate_trials(strategy=self.strategy,
+                                                 flat_params=self.__flatten_params(self.opt_args),
+                                                 nb_trials=nb_trials)
+
+        self.trials = [(self.__namespace_from_trial(x), train_function) for x in self.trials]
+
+        # init a pool with the nb of worker threads we want
+        pool = Pool(processes=nb_workers)
+
+        # apply parallelization
+        pool.map(optimize_parallel_cpu_private, self.trials)
 
     def optimize_parallel(self, train_function, nb_trials, nb_parallel=4):
         self.trials = strategies.generate_trials(strategy=self.strategy,
