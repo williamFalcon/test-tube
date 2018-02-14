@@ -15,7 +15,7 @@ This means for 10 trials and 4 GPUs, we'll run 4 in parallel twice and the last 
 # main training function (very simple)
 def train(hparams):
     # init exp and track all the parameters from the HyperOptArgumentParser
-    exp = Experiment(name='dense_model', save_dir='/some/path/Desktop/test_tube', autosave=False)
+    exp = Experiment(name='dense_model', save_dir='/some/path', autosave=False)
     exp.add_argparse_meta(hparams)
 
     # define tensorflow graph
@@ -34,15 +34,6 @@ def train(hparams):
     exp.save()
 
 
-# build a wrapper around a tng function so we can use the correct gpu
-# the optimizer passes in the hyperparams and the job index as arguments
-# to the function to optimize
-def parallelize_on_gpus(trial_params, job_index_nb):
-    gpu_nb = str(job_index_nb)
-    os.environ["CUDA_VISIBLE_DEVICES"] = gpu_nb
-    train(trial_params)
-
-
 # set up our argparser and make the y_val tunnable
 parser = HyperOptArgumentParser(strategy='random_search')
 parser.add_argument('--path', default='some/path')
@@ -52,4 +43,4 @@ hyperparams = parser.parse_args()
 
 # optimize on 4 gpus at the same time
 # each gpu will get 1 experiment with a set of hyperparams
-hyperparams.optimize_parallel(parallelize_on_gpus, nb_trials=10, nb_parallel=4)
+hyperparams.optimize_parallel_gpu_cuda(train, gpu_ids=['1', '0', '3', '2'], nb_trials=4, nb_workers=4)

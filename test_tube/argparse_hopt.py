@@ -8,6 +8,28 @@ import json
 import math
 import os
 from time import sleep
+from multiprocessing import Pool, Queue
+import random
+
+
+def optimize_parallel_gpu_cuda_private(args):
+    trial_params, train_function = args[0], args[1]
+
+    # get set of gpu ids
+    gpu_id_set = g_gpu_id_q.get(block=True)
+    sleep(random.randint(0, 4))
+
+    # enable the proper gpus
+    os.environ["CUDA_VISIBLE_DEVICES"] = gpu_id_set
+
+    # run training fx on the specific gpus
+    train_function(trial_params)
+
+    # when done, free up the gpus
+    g_gpu_id_q.put(gpu_id_set, block=True)
+
+    # True = completed
+    return True
 
 
 class HyperOptArgumentParser(ArgumentParser):
@@ -72,6 +94,7 @@ class HyperOptArgumentParser(ArgumentParser):
         # attach optimization fx
         old_args['trials'] = self.opt_trials
         old_args['optimize_parallel'] = self.optimize_parallel
+        old_args['optimize_parallel_gpu_cuda'] = self.optimize_parallel_gpu_cuda
 
         return argparse.Namespace(**old_args)
 
@@ -88,6 +111,43 @@ class HyperOptArgumentParser(ArgumentParser):
             ns = self.__namespace_from_trial(trial)
             yield ns
 
+    def optimize_parallel_gpu_cuda(self, train_function, nb_trials, gpu_ids, nb_workers=4):
+        """
+        Runs optimization across gpus with cuda drivers
+        :param train_function:
+        :param nb_trials:
+        :param gpu_ids: List of strings like: ['0', '1, 3']
+        :param nb_workers:
+        :return:
+        """
+        self.trials = strategies.generate_trials(strategy=self.strategy,
+                                                 flat_params=self.__flatten_params(self.opt_args),
+                                                 nb_trials=nb_trials)
+
+        self.trials = [(self.__namespace_from_trial(x), train_function) for x in self.trials]
+
+        # build q of gpu ids so we can use them in each process
+        # this is thread safe so each process can pull out a gpu id, run its task and put it back when done
+        gpu_q = Queue()
+        for gpu_id in gpu_ids:
+            gpu_q.put(gpu_id)
+
+        trial_param_q = Queue()
+        for trial_params in self.trials:
+            trial_param_q.put({'a': 1})
+            # trial_param_q.put(trial_params)
+
+        # called by the Pool when a process starts
+        def init(local_gpu_q):
+            global g_gpu_id_q
+            g_gpu_id_q = local_gpu_q
+
+        # init a pool with the nb of worker threads we want
+        pool = Pool(processes=nb_workers, initializer=init, initargs=(gpu_q, ))
+
+        # apply parallelization
+        pool.map(optimize_parallel_gpu_cuda_private, self.trials)
+
     def optimize_parallel(self, train_function, nb_trials, nb_parallel=4):
         self.trials = strategies.generate_trials(strategy=self.strategy,
                                                  flat_params=self.__flatten_params(self.opt_args),
@@ -96,6 +156,7 @@ class HyperOptArgumentParser(ArgumentParser):
         # nb of runs through all parallel systems
         nb_fork_batches = int(math.ceil(len(self.trials) / nb_parallel))
         fork_batches = [self.trials[i: i + nb_parallel] for i in range(0, len(self.trials), nb_parallel)]
+
         for fork_batch in fork_batches:
             children = []
 
