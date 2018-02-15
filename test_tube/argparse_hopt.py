@@ -14,11 +14,11 @@ import traceback
 
 
 def optimize_parallel_gpu_cuda_private(args):
-    try:
-        trial_params, train_function = args[0], args[1]
+    trial_params, train_function = args[0], args[1]
 
-        # get set of gpu ids
-        gpu_id_set = g_gpu_id_q.get(block=True)
+    # get set of gpu ids
+    gpu_id_set = g_gpu_id_q.get(block=True)
+    try:
         sleep(random.randint(0, 4))
 
         # enable the proper gpus
@@ -27,9 +27,6 @@ def optimize_parallel_gpu_cuda_private(args):
         # run training fx on the specific gpus
         train_function(trial_params)
 
-        # when done, free up the gpus
-        g_gpu_id_q.put(gpu_id_set, block=True)
-
     except Exception as e:
         print('Caught exception in worker thread')
 
@@ -37,6 +34,10 @@ def optimize_parallel_gpu_cuda_private(args):
         # current exception being handled.
         traceback.print_exc()
         raise e
+
+    finally:
+        # when done, free up the gpus
+        g_gpu_id_q.put(gpu_id_set, block=True)
 
     return True
 
