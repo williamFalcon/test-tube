@@ -10,26 +10,35 @@ import os
 from time import sleep
 from multiprocessing import Pool, Queue
 import random
+import traceback
 
 
 def optimize_parallel_gpu_cuda_private(args):
-    trial_params, train_function = args[0], args[1]
+    try:
+        trial_params, train_function = args[0], args[1]
 
-    # get set of gpu ids
-    gpu_id_set = g_gpu_id_q.get(block=True)
-    sleep(random.randint(0, 4))
+        # get set of gpu ids
+        gpu_id_set = g_gpu_id_q.get(block=True)
+        sleep(random.randint(0, 4))
 
-    # enable the proper gpus
-    os.environ["CUDA_VISIBLE_DEVICES"] = gpu_id_set
+        # enable the proper gpus
+        os.environ["CUDA_VISIBLE_DEVICES"] = gpu_id_set
 
-    # run training fx on the specific gpus
-    train_function(trial_params)
+        # run training fx on the specific gpus
+        train_function(trial_params)
 
-    # when done, free up the gpus
-    g_gpu_id_q.put(gpu_id_set, block=True)
+        # when done, free up the gpus
+        g_gpu_id_q.put(gpu_id_set, block=True)
 
-    # True = completed
-    return True
+        return True
+
+    except Exception as e:
+        print('Caught exception in worker thread (x = %d):' % x)
+
+        # This prints the type, value, and stack trace of the
+        # current exception being handled.
+        traceback.print_exc()
+        raise e
 
 
 def optimize_parallel_cpu_private(args):
