@@ -43,6 +43,9 @@ def optimize_parallel_gpu_cuda_private(args):
 
 
 def optimize_parallel_cpu_private(args):
+    # get set of gpu ids
+    gpu_id_set = g_gpu_id_q.get(block=True)
+
     try:
         trial_params, train_function = args[0], args[1]
         sleep(random.randint(0, 4))
@@ -57,7 +60,10 @@ def optimize_parallel_cpu_private(args):
         traceback.print_exc()
         raise e
 
-    # True = completed
+    finally:
+        # when done, free up the gpus
+        g_gpu_id_q.put(gpu_id_set, block=True)
+
     return True
 
 
