@@ -30,24 +30,31 @@ def optimize_parallel_gpu_cuda_private(args):
         # when done, free up the gpus
         g_gpu_id_q.put(gpu_id_set, block=True)
 
-        return True
-
     except Exception as e:
-        print('Caught exception in worker thread (x = %d):' % x)
+        print('Caught exception in worker thread')
 
         # This prints the type, value, and stack trace of the
         # current exception being handled.
         traceback.print_exc()
         raise e
 
+    return True
+
 
 def optimize_parallel_cpu_private(args):
-    trial_params, train_function = args[0], args[1]
+    try:
+        trial_params, train_function = args[0], args[1]
+        sleep(random.randint(0, 4))
+        # run training fx on the specific gpus
+        train_function(trial_params)
 
-    sleep(random.randint(0, 4))
+    except Exception as e:
+        print('Caught exception in worker thread')
 
-    # run training fx on the specific gpus
-    train_function(trial_params)
+        # This prints the type, value, and stack trace of the
+        # current exception being handled.
+        traceback.print_exc()
+        raise e
 
     # True = completed
     return True
@@ -163,7 +170,8 @@ class HyperOptArgumentParser(ArgumentParser):
         pool = Pool(processes=nb_workers, initializer=init, initargs=(gpu_q, ))
 
         # apply parallelization
-        pool.map(optimize_parallel_gpu_cuda_private, self.trials)
+        results = pool.map(optimize_parallel_gpu_cuda_private, self.trials)
+        return results
 
     def optimize_parallel_cpu(self, train_function, nb_trials, nb_workers=4):
         """
@@ -183,7 +191,8 @@ class HyperOptArgumentParser(ArgumentParser):
         pool = Pool(processes=nb_workers)
 
         # apply parallelization
-        pool.map(optimize_parallel_cpu_private, self.trials)
+        results = pool.map(optimize_parallel_cpu_private, self.trials)
+        return results
 
     def optimize_parallel(self, train_function, nb_trials, nb_parallel=4):
         self.trials = strategies.generate_trials(strategy=self.strategy,
