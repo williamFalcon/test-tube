@@ -35,8 +35,8 @@ pip install test_tube
 ---
 Use Test Tube if you need to:
 
-- Track multiple [Experiments](experiment_tracking/experiment/) across models.
-- [Optimize your hyperparameters](hyperparameter_optimization/HyperOptArgumentParser/) using grid_search or random_search.
+- Track multiple [Experiments](https://williamfalcon.github.io/test-tube/experiment_tracking/experiment/) across models.
+- [Optimize your hyperparameters](https://williamfalcon.github.io/test-tube/hyperparameter_optimization/HyperOptArgumentParser/) using grid_search or random_search.
 - Visualize experiments without uploading anywhere, logs store as csv files.
 - Automatically track ALL parameters for a particular training run.
 - Automatically snapshot your code for an experiment using git tags.
