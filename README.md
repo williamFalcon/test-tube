@@ -162,8 +162,8 @@ exp.add_metric_row('test_jpg': img, 'val_err': 0.2)
 
 ## How to contribute
 Feel free to fix bugs and make improvements!
-1. Check out the [current bugs here](https://github.com/williamFalcon/test-tube/issues).
-2. To work on a bug, head over to our [project page](https://github.com/williamFalcon/test-tube/projects/1) and assign yourself the bug.
+1. Check out the [current bugs here](https://github.com/williamFalcon/test-tube/issues) or [feature requests](https://github.com/williamFalcon/test-tube/projects/1).
+2. To work on a bug or feature, head over to our [project page](https://github.com/williamFalcon/test-tube/projects/1) and assign yourself the bug.
 3. We'll add contributor names periodically as people improve the library!
 
 ## Bibtex
