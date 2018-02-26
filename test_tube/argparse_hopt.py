@@ -14,12 +14,12 @@ import traceback
 
 
 def optimize_parallel_gpu_cuda_private(args):
-    try:
-        trial_params, train_function = args[0], args[1]
+    trial_params, train_function = args[0], args[1]
 
-        # get set of gpu ids
-        gpu_id_set = g_gpu_id_q.get(block=True)
-        sleep(random.randint(0, 4))
+    # get set of gpu ids
+    gpu_id_set = g_gpu_id_q.get(block=True)
+
+    try:
 
         # enable the proper gpus
         os.environ["CUDA_VISIBLE_DEVICES"] = gpu_id_set
@@ -27,18 +27,18 @@ def optimize_parallel_gpu_cuda_private(args):
         # run training fx on the specific gpus
         results = train_function(trial_params)
 
-        # when done, free up the gpus
-        g_gpu_id_q.put(gpu_id_set, block=True)
-
         return [trial_params, results]
 
     except Exception as e:
-        print('Caught exception in worker thread (x = %d):' % x)
+        print('Caught exception in worker thread (x = %d):' % e)
 
         # This prints the type, value, and stack trace of the
         # current exception being handled.
         traceback.print_exc()
         raise e
+
+    finally:
+        g_gpu_id_q.put(gpu_id_set, block=True)
 
 
 def optimize_parallel_cpu_private(args):
@@ -152,8 +152,11 @@ class HyperOptArgumentParser(ArgumentParser):
         :param nb_workers:
         :return:
         """
-        self.trials = self.generate_trials(nb_trials)
-        self.trials = [(x, train_function) for x in self.trials]
+        self.trials = strategies.generate_trials(strategy=self.strategy,
+                                                 flat_params=self.__flatten_params(self.opt_args),
+                                                 nb_trials=nb_trials)
+
+        self.trials = [(self.__namespace_from_trial(x), train_function) for x in self.trials]
 
         # build q of gpu ids so we can use them in each process
         # this is thread safe so each process can pull out a gpu id, run its task and put it back when done
