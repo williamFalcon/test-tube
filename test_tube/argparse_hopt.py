@@ -29,9 +29,7 @@ def optimize_parallel_gpu_cuda_private(args):
         # run training fx on the specific gpus
         results = train_function(trial_params)
 
-        # when done, free up the gpus
-        g_gpu_id_q.put(gpu_id_set, block=True)
-
+        print('results: ', results)
         return [trial_params, results]
 
     except Exception as e:
