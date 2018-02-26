@@ -1,168 +1,244 @@
-import itertools
-import random
+from argparse import ArgumentParser
+import argparse
+import numpy as np
+import re
+from copy import deepcopy
+from .hyper_opt_utils import strategies
 import json
+import math
+import os
+from time import sleep
+from multiprocessing import Pool, Queue
+import random
+import traceback
 
-class HyperParamOptimizer(object):
 
-    def __init__(self, method='grid_search', enabled=True, experiment=None):
+def optimize_parallel_gpu_cuda_private(args):
+    try:
+        trial_params, train_function = args[0], args[1]
+
+        # get set of gpu ids
+        print('getting gpu ', gpu_id_set)
+        gpu_id_set = g_gpu_id_q.get(block=True)
+        sleep(random.randint(0, 4))
+
+        # enable the proper gpus
+        os.environ["CUDA_VISIBLE_DEVICES"] = gpu_id_set
+
+        # run training fx on the specific gpus
+        results = train_function(trial_params)
+
+        # when done, free up the gpus
+        g_gpu_id_q.put(gpu_id_set, block=True)
+
+        return [trial_params, results]
+
+    except Exception as e:
+        print('Caught exception in worker thread (x = %d):' % x)
+
+        # This prints the type, value, and stack trace of the
+        # current exception being handled.
+        traceback.print_exc()
+        raise e
+
+
+def optimize_parallel_cpu_private(args):
+    trial_params, train_function = args[0], args[1]
+
+    sleep(random.randint(0, 4))
+
+    # run training fx on the specific gpus
+    results = train_function(trial_params)
+
+    # True = completed
+    return [trial_params, results]
+
+
+class HyperOptArgumentParser(ArgumentParser):
+    """
+    Subclass of argparse ArgumentParser which adds optional calls to sample from lists or ranges
+    Also enables running optimizations across parallel processes
+    """
+
+    def __init__(self, strategy='grid_search', **kwargs):
         """
-        :param method: 'grid_search', 'random_search'
+
+        :param strategy: 'grid_search', 'random_search'
         :param enabled:
+        :param experiment:
+        :param kwargs:
         """
-        self.method = method
-        self.enabled = enabled
-        self.experiment = experiment
-        self.seen_params = {}
-        self.current_iteration = 0
+        ArgumentParser.__init__(self, **kwargs)
 
-        # the params to use at each trial
-        self.trials = None
+        self.strategy = strategy
+        self.trials = []
+        self.parsed_args = None
+        self.opt_args = {}
+        self.json_config_arg_name = None
 
-        # total iterations we're doing
-        self.nb_iterations = None
+    def add_argument(self, *args, **kwargs):
+        super(HyperOptArgumentParser, self).add_argument(*args, **kwargs)
 
-        # details about each param
-        self.params = []
+    def add_opt_argument_list(self, *args, options=None, tunnable=False, **kwargs):
+        self.add_argument(*args, **kwargs)
+        arg_name = args[-1]
+        self.opt_args[arg_name] = OptArg(obj_id=arg_name,
+                                         opt_values=options,
+                                         tunnable=tunnable)
 
-    # -----------------------------
-    # PARAMETER CHOICES
-    # -----------------------------
-    def tune_uniform(self, low, high, samples, default, name):
-        # how this fx samples for the data
-        def gen_samples():
-            vals = [random.uniform(low, high) for i in range(samples)]
-            return vals
+    def add_opt_argument_range(self, *args, start=None, end=None, nb_samples=10, tunnable=False, **kwargs):
+        self.add_argument(*args, **kwargs)
+        arg_name = args[-1]
+        self.opt_args[arg_name] = OptArg(obj_id=arg_name,
+                                         opt_values=[start, end],
+                                         nb_samples=nb_samples,
+                                         tunnable=tunnable)
 
-        return self.__resolve_param(gen_samples, default, name)
+    def add_json_config_argument(self, *args, **kwargs):
+        self.add_argument(*args, **kwargs)
+        self.json_config_arg_name = re.sub('-', '', args[-1])
 
-    def tune_odds(self, low, high, default, name):
-        start = low if low %2 != 0 else low + 1
-        def gen_samples():
-            return range(start, high+1, 2)
+    def parse_args(self, args=None, namespace=None):
+        # call superclass arg first
+        results = super(HyperOptArgumentParser, self).parse_args(args=args, namespace=namespace)
 
-        return self.__resolve_param(gen_samples, default, name)
+        # extract vals
+        old_args = vars(results)
 
-    def tune_evens(self, low, high, default, name):
-        start = low if low %2 == 0 else low + 1
-        def gen_samples():
-            return range(start, high+1, 2)
+        # override with json args if given
+        if self.json_config_arg_name and old_args[self.json_config_arg_name]:
+            for arg, v in self.__read_json_config(old_args[self.json_config_arg_name]).items():
+                old_args[arg] = v
 
-        return self.__resolve_param(gen_samples, default, name)
+        # track args
+        self.parsed_args = deepcopy(old_args)
 
-    def tune_choice(self, options, default, name):
-        def gen_samples():
-            return options
+        # attach optimization fx
+        old_args['trials'] = self.opt_trials
+        old_args['optimize_parallel'] = self.optimize_parallel
+        old_args['optimize_parallel_gpu_cuda'] = self.optimize_parallel_gpu_cuda
+        old_args['optimize_parallel_cpu'] = self.optimize_parallel_cpu
+        old_args['generate_trials'] = self.generate_trials
 
-        return self.__resolve_param(gen_samples, default, name)
+        return argparse.Namespace(**old_args)
 
-    def __resolve_param(self, gen_fx, default, name):
-        # case when no action was requested
-        if not self.enabled:
-            return default
+    def __read_json_config(self, file_path):
+        with open(file_path) as json_data:
+            json_args = json.load(json_data)
+            return json_args
 
-        # create the param when it's new
-        # return the first value in this case
-        if name not in self.seen_params:
-            vals = gen_fx()
-            param = {'vals': vals, 'name': name}
-            self.seen_params[name] = {'idx': len(self.params)}
-            self.params.append(param)
-            return vals[0]
+    def opt_trials(self, num):
+        self.trials = strategies.generate_trials(strategy=self.strategy,
+                                                 flat_params=self.__flatten_params(self.opt_args),
+                                                 nb_trials=num)
+        for trial in self.trials:
+            ns = self.__namespace_from_trial(trial)
+            yield ns
 
-        # not the first iteration so return the ith element
-        # in the possible values
-        iteration_params = self.trials[self.current_iteration]
-        param_i = self.seen_params[name]['idx']
-        param = iteration_params[param_i]
-        return param['val']
+    def generate_trials(self, nb_trials):
+        trials = strategies.generate_trials(
+            strategy=self.strategy,
+            flat_params=self.__flatten_params(self.opt_args),
+            nb_trials=nb_trials)
 
-    # -----------------------------
-    # OPTIMIZATION
-    # -----------------------------
-    def optimize(self, fx, nb_iterations=None):
+        trials = [self.__namespace_from_trial(x) for x in trials]
+        return trials
+
+    def optimize_parallel_gpu_cuda(self, train_function, nb_trials, gpu_ids, nb_workers=4):
         """
-        Primary entry point into the optimization
-        :param fx:
-        :param nb_iterations:
+        Runs optimization across gpus with cuda drivers
+        :param train_function:
+        :param nb_trials:
+        :param gpu_ids: List of strings like: ['0', '1, 3']
+        :param nb_workers:
         :return:
         """
-        self.nb_iterations = nb_iterations
+        self.trials = self.generate_trials(nb_trials)
+        self.trials = [(x, train_function) for x in self.trials]
 
-        # run first iteration
-        result = fx(self)
+        # build q of gpu ids so we can use them in each process
+        # this is thread safe so each process can pull out a gpu id, run its task and put it back when done
+        gpu_q = Queue()
+        for gpu_id in gpu_ids:
+            gpu_q.put(gpu_id)
 
-        # log if requested
-        if self.experiment is not None:
-            result['hypo_iter_nb'] = self.current_iteration
-            self.experiment.add_metric_row(result)
+        # called by the Pool when a process starts
+        def init(local_gpu_q):
+            global g_gpu_id_q
+            g_gpu_id_q = local_gpu_q
 
-        self.current_iteration += 1
+        # init a pool with the nb of worker threads we want
+        pool = Pool(processes=nb_workers, initializer=init, initargs=(gpu_q, ))
 
-        # generate the rest of the training seq
-        # we couldn't do this before because we don't know
-        # how many params the user needed
-        self.__generate_trials()
+        # apply parallelization
+        results = pool.map(optimize_parallel_gpu_cuda_private, self.trials)
+        return results
 
-        # run trials for the rest of the iterations
-        # we either know the iterations or they're
-        # calculated from the strategy used
-        for i in range(1, len(self.trials)):
-            result = fx(self)
-            result['hypo_iter_nb'] = self.current_iteration
-
-            # log if requested
-            if self.experiment is not None:
-                self.experiment.add_metric_row(result)
-
-            self.current_iteration += 1
-
-    # -----------------------------
-    # INTERFACE WITH LOGGER
-    # -----------------------------
-    def get_current_trial_meta(self):
-        meta_results = []
-
-        # when we have trials, means we've already done 1 run
-        # we can just get the params that are about to be run
-        # otherwise we need to infer params from the current param list
-        # this assumes the user feeds the opt into the experiment after
-        # they're done setting up the params
-        is_first_trial = self.trials is not None and len(self.trials) > 0
-        if is_first_trial:
-            trial_params = self.trials[self.current_iteration]
-            for trial_param in trial_params:
-                root_param = self.params[trial_param['idx']]
-                meta_results.append({'hypo_' + root_param['name']: trial_param['val']})
-
-        # if we haven't done a pass through the data yet,
-        # we need to infer from the params in the list
-        else:
-            for param in self.params:
-                meta_results.append({'hypo_' + param['name']: param['vals'][0]})
-
-        # add shared meta
-        meta_results.append({'hypo_iter_nb': self.current_iteration})
-        return meta_results
-
-    # -----------------------------
-    # TRIALS HELPER
-    # -----------------------------
-    def __generate_trials(self):
+    def optimize_parallel_cpu(self, train_function, nb_trials, nb_workers=4):
         """
-        Generates the parameter combinations for each requested trial
+        Runs optimization across n cpus
+        :param train_function:
+        :param nb_trials:
+        :param nb_workers:
         :return:
         """
-        flat_params = self.__flatten_params(self.params)
+        self.trials = strategies.generate_trials(strategy=self.strategy,
+                                                 flat_params=self.__flatten_params(self.opt_args),
+                                                 nb_trials=nb_trials)
 
-        # permute for grid search
-        if self.method == 'grid_search':
-            self.trials = list(itertools.product(*flat_params))
+        self.trials = [(self.__namespace_from_trial(x), train_function) for x in self.trials]
 
-            if self.nb_iterations is not None:
-                self.trials = self.trials[0: self.nb_iterations]
+        # init a pool with the nb of worker threads we want
+        pool = Pool(processes=nb_workers)
 
-        if self.method == 'random_search':
-            self.trials = self.__generate_random_search_trials(flat_params)
+        # apply parallelization
+        results = pool.map(optimize_parallel_cpu_private, self.trials)
+        return results
+
+    def optimize_parallel(self, train_function, nb_trials, nb_parallel=4):
+        self.trials = strategies.generate_trials(strategy=self.strategy,
+                                                 flat_params=self.__flatten_params(self.opt_args),
+                                                 nb_trials=nb_trials)
+
+        # nb of runs through all parallel systems
+        nb_fork_batches = int(math.ceil(len(self.trials) / nb_parallel))
+        fork_batches = [self.trials[i: i + nb_parallel] for i in range(0, len(self.trials), nb_parallel)]
+
+        for fork_batch in fork_batches:
+            children = []
+
+            # run n parallel forks
+            for parallel_nb, trial in enumerate(fork_batch):
+
+                # q up the trial and convert to a namespace
+                ns = self.__namespace_from_trial(trial)
+
+                # split new fork
+                pid = os.fork()
+
+                # when the process is a parent
+                if pid:
+                    children.append(pid)
+
+                # when process is a child
+                else:
+                    # slight delay to make sure we don't overwrite over test tube log versions
+                    sleep(parallel_nb * 0.5)
+                    train_function(ns, parallel_nb)
+                    os._exit(0)
+
+            for i, child in enumerate(children):
+                os.waitpid(child, 0)
+
+
+    def __namespace_from_trial(self, trial):
+        trial_dict = {d['name']: d['val'] for d in trial}
+        for k, v in self.parsed_args.items():
+            if k not in trial_dict:
+                trial_dict[k] = v
+
+        return TTNamespace(**trial_dict)
+
 
     def __flatten_params(self, params):
         """
@@ -172,41 +248,35 @@ class HyperParamOptimizer(object):
         :return:
         """
         flat_params = []
-        for i, param in enumerate(params):
-            param_groups = []
-            for val in param['vals']:
-                param_groups.append({'idx': i, 'val': val})
-            flat_params.append(param_groups)
+        for i, (opt_name, opt_arg) in enumerate(params.items()):
+            if opt_arg.tunnable:
+                clean_name = re.sub('-', '', opt_name)
+                param_groups = []
+                for val in opt_arg.opt_values:
+                    param_groups.append({'idx': i, 'val': val, 'name': clean_name})
+                flat_params.append(param_groups)
         return flat_params
 
-    def __generate_random_search_trials(self, params):
-        results = []
 
-        # ensures we have unique results
-        seen_trials = set()
+class TTNamespace(argparse.Namespace):
+    def __str__(self):
+        result = '-'*100 + '\nHyperparameters:\n'
+        for k, v in self.__dict__.items():
+            result += '{0:20}: {1}\n'.format(k, v)
+        return result
 
-        # shuffle each param list
-        potential_trials = 1
-        for p in params:
-            random.shuffle(p)
-            potential_trials *= len(p)
 
-        # we can't sample more trials than are possible
-        max_iters = min(potential_trials, self.nb_iterations)
+class OptArg(object):
 
-        # then for the nb of trials requested, create a new param tuple
-        # by picking a random integer at each param level
-        while len(results) < max_iters:
-            trial = []
-            for param in params:
-                p = random.sample(param, 1)[0]
-                trial.append(p)
+    def __init__(self, obj_id, opt_values, nb_samples=None, tunnable=False):
+        self.opt_values = opt_values
+        self.obj_id = obj_id
+        self.nb_samples = nb_samples
+        self.tunnable = tunnable
 
-            # verify this is a unique trial so we
-            # don't duplicate work
-            trial_str = json.dumps(trial)
-            if trial_str not in seen_trials:
-                seen_trials.add(trial_str)
-                results.append(trial)
+        # convert range to list of values
+        if nb_samples:
+            self.opt_values = np.linspace(opt_values[0], opt_values[1], num=nb_samples, endpoint=True)
 
-        return results
+
+
