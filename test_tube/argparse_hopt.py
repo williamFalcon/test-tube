@@ -43,6 +43,7 @@ def optimize_parallel_gpu_cuda_private(args):
         raise e
 
     finally:
+        print('putting back', gpu_id_set)
         g_gpu_id_q.put(gpu_id_set, block=True)
 
 
