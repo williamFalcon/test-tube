@@ -17,9 +17,7 @@ def optimize_parallel_gpu_cuda_private(args):
     trial_params, train_function = args[0], args[1]
 
     # get set of gpu ids
-    print('getting gpu ', g_gpu_id_q)
     gpu_id_set = g_gpu_id_q.get(block=True)
-    print('gpu:', gpu_id_set)
 
     try:
 
@@ -29,7 +27,6 @@ def optimize_parallel_gpu_cuda_private(args):
         # run training fx on the specific gpus
         results = train_function(trial_params)
 
-        print('results: ', results)
         return [trial_params, results]
 
     except Exception as e:
@@ -41,7 +38,6 @@ def optimize_parallel_gpu_cuda_private(args):
         raise e
 
     finally:
-        print('putting back', gpu_id_set)
         g_gpu_id_q.put(gpu_id_set, block=True)
 
 
