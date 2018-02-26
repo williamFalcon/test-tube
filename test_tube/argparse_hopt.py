@@ -18,9 +18,8 @@ def optimize_parallel_gpu_cuda_private(args):
         trial_params, train_function = args[0], args[1]
 
         # get set of gpu ids
-        print('getting gpu ', gpu_id_set)
+        print('getting gpu ', g_gpu_id_q)
         gpu_id_set = g_gpu_id_q.get(block=True)
-        sleep(random.randint(0, 4))
 
         # enable the proper gpus
         os.environ["CUDA_VISIBLE_DEVICES"] = gpu_id_set
@@ -153,8 +152,11 @@ class HyperOptArgumentParser(ArgumentParser):
         :param nb_workers:
         :return:
         """
-        self.trials = self.generate_trials(nb_trials)
-        self.trials = [(x, train_function) for x in self.trials]
+        self.trials = strategies.generate_trials(strategy=self.strategy,
+                                                 flat_params=self.__flatten_params(self.opt_args),
+                                                 nb_trials=nb_trials)
+
+        self.trials = [(self.__namespace_from_trial(x), train_function) for x in self.trials]
 
         # build q of gpu ids so we can use them in each process
         # this is thread safe so each process can pull out a gpu id, run its task and put it back when done
