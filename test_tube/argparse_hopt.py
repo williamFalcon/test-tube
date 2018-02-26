@@ -19,6 +19,7 @@ def optimize_parallel_gpu_cuda_private(args):
     # get set of gpu ids
     gpu_id_set = g_gpu_id_q.get(block=True)
 
+    return_vals = [trial_params, None]
     try:
 
         # enable the proper gpus
@@ -27,7 +28,7 @@ def optimize_parallel_gpu_cuda_private(args):
         # run training fx on the specific gpus
         results = train_function(trial_params)
 
-        return [trial_params, results]
+        return_vals = [trial_params, results]
 
     except Exception as e:
         print('Caught exception in worker thread', e)
@@ -35,10 +36,11 @@ def optimize_parallel_gpu_cuda_private(args):
         # This prints the type, value, and stack trace of the
         # current exception being handled.
         traceback.print_exc()
-        return [trial_params, None]
 
     finally:
         g_gpu_id_q.put(gpu_id_set, block=True)
+
+    return return_vals
 
 
 def optimize_parallel_cpu_private(args):
