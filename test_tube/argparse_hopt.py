@@ -14,12 +14,13 @@ import traceback
 
 
 def optimize_parallel_gpu_cuda_private(args):
-    try:
-        trial_params, train_function = args[0], args[1]
+    trial_params, train_function = args[0], args[1]
 
-        # get set of gpu ids
-        print('getting gpu ', g_gpu_id_q)
-        gpu_id_set = g_gpu_id_q.get(block=True)
+    # get set of gpu ids
+    print('getting gpu ', g_gpu_id_q)
+    gpu_id_set = g_gpu_id_q.get(block=True)
+
+    try:
 
         # enable the proper gpus
         os.environ["CUDA_VISIBLE_DEVICES"] = gpu_id_set
@@ -39,6 +40,9 @@ def optimize_parallel_gpu_cuda_private(args):
         # current exception being handled.
         traceback.print_exc()
         raise e
+
+    finally:
+        g_gpu_id_q.put(gpu_id_set, block=True)
 
 
 def optimize_parallel_cpu_private(args):
