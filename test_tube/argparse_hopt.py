@@ -207,6 +207,7 @@ class HyperOptArgumentParser(ArgumentParser):
 
         # apply parallelization
         results = pool.map(optimize_parallel_gpu_cuda_private, self.trials)
+        gpu_q.close()
         return results
 
     def optimize_parallel_cpu(self, train_function, nb_trials, nb_workers=4):
