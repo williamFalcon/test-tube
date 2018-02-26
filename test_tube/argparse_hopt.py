@@ -18,7 +18,7 @@ def optimize_parallel_gpu_cuda_private(args):
 
     # get set of gpu ids
     print('getting gpu ', g_gpu_id_q)
-    gpu_id_set = g_gpu_id_q.get(block=True)
+    gpu_id_set = g_gpu_id_q.get(block=False)
     print('gpu:', gpu_id_set)
 
     try:
