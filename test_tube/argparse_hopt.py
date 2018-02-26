@@ -18,6 +18,7 @@ def optimize_parallel_gpu_cuda_private(args):
         trial_params, train_function = args[0], args[1]
 
         # get set of gpu ids
+        print('getting gpu ', gpu_id_set)
         gpu_id_set = g_gpu_id_q.get(block=True)
         sleep(random.randint(0, 4))
 
