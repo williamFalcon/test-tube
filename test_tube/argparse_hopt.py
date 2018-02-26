@@ -30,7 +30,7 @@ def optimize_parallel_gpu_cuda_private(args):
         return [trial_params, results]
 
     except Exception as e:
-        print('Caught exception in worker thread (x = %d):' % e)
+        print('Caught exception in worker thread', e)
 
         # This prints the type, value, and stack trace of the
         # current exception being handled.
