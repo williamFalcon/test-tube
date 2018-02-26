@@ -42,7 +42,7 @@ def optimize_parallel_gpu_cuda_private(args):
 
     finally:
         print('putting back', gpu_id_set)
-        g_gpu_id_q.put(gpu_id_set, block=True)
+        g_gpu_id_q.put(gpu_id_set, block=False)
 
 
 def optimize_parallel_cpu_private(args):
