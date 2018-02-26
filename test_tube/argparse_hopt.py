@@ -35,7 +35,7 @@ def optimize_parallel_gpu_cuda_private(args):
         # This prints the type, value, and stack trace of the
         # current exception being handled.
         traceback.print_exc()
-        raise e
+        return [trial_params, None]
 
     finally:
         g_gpu_id_q.put(gpu_id_set, block=True)
