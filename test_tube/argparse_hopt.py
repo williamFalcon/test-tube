@@ -35,7 +35,7 @@ def optimize_parallel_gpu_cuda_private(args):
         # This prints the type, value, and stack trace of the
         # current exception being handled.
         traceback.print_exc()
-        raise e
+        return [trial_params, None]
 
     finally:
         g_gpu_id_q.put(gpu_id_set, block=True)
@@ -74,6 +74,7 @@ class HyperOptArgumentParser(ArgumentParser):
         self.parsed_args = None
         self.opt_args = {}
         self.json_config_arg_name = None
+        self.pool = None
 
     def add_argument(self, *args, **kwargs):
         super(HyperOptArgumentParser, self).add_argument(*args, **kwargs)
@@ -118,6 +119,7 @@ class HyperOptArgumentParser(ArgumentParser):
         old_args['optimize_parallel_gpu_cuda'] = self.optimize_parallel_gpu_cuda
         old_args['optimize_parallel_cpu'] = self.optimize_parallel_cpu
         old_args['generate_trials'] = self.generate_trials
+        old_args['optimize_trials_parallel_gpu_cuda'] = self.optimize_trials_parallel_gpu_cuda
 
         return argparse.Namespace(**old_args)
 
@@ -160,20 +162,52 @@ class HyperOptArgumentParser(ArgumentParser):
 
         # build q of gpu ids so we can use them in each process
         # this is thread safe so each process can pull out a gpu id, run its task and put it back when done
-        gpu_q = Queue()
-        for gpu_id in gpu_ids:
-            gpu_q.put(gpu_id)
+        if self.pool == None:
+            gpu_q = Queue()
+            for gpu_id in gpu_ids:
+                gpu_q.put(gpu_id)
 
-        # called by the Pool when a process starts
-        def init(local_gpu_q):
-            global g_gpu_id_q
-            g_gpu_id_q = local_gpu_q
+            # called by the Pool when a process starts
+            def init(local_gpu_q):
+                global g_gpu_id_q
+                g_gpu_id_q = local_gpu_q
 
-        # init a pool with the nb of worker threads we want
-        pool = Pool(processes=nb_workers, initializer=init, initargs=(gpu_q, ))
+            # init a pool with the nb of worker threads we want
+            self.pool = Pool(processes=nb_workers, initializer=init, initargs=(gpu_q, ))
 
         # apply parallelization
-        results = pool.map(optimize_parallel_gpu_cuda_private, self.trials)
+        results = self.pool.map(optimize_parallel_gpu_cuda_private, self.trials)
+        return results
+
+    def optimize_trials_parallel_gpu_cuda(self, train_function, nb_trials, trials, gpu_ids, nb_workers=4):
+        """
+        Runs optimization across gpus with cuda drivers
+        :param train_function:
+        :param nb_trials:
+        :param gpu_ids: List of strings like: ['0', '1, 3']
+        :param nb_workers:
+        :return:
+        """
+        self.trials = trials
+        self.trials = [(x, train_function) for x in self.trials]
+
+        # build q of gpu ids so we can use them in each process
+        # this is thread safe so each process can pull out a gpu id, run its task and put it back when done
+        if self.pool == None:
+            gpu_q = Queue()
+            for gpu_id in gpu_ids:
+                gpu_q.put(gpu_id)
+
+            # called by the Pool when a process starts
+            def init(local_gpu_q):
+                global g_gpu_id_q
+                g_gpu_id_q = local_gpu_q
+
+            # init a pool with the nb of worker threads we want
+            self.pool = Pool(processes=nb_workers, initializer=init, initargs=(gpu_q, ))
+
+        # apply parallelization
+        results = self.pool.map(optimize_parallel_gpu_cuda_private, self.trials)
         return results
 
     def optimize_parallel_cpu(self, train_function, nb_trials, nb_workers=4):
@@ -191,10 +225,11 @@ class HyperOptArgumentParser(ArgumentParser):
         self.trials = [(self.__namespace_from_trial(x), train_function) for x in self.trials]
 
         # init a pool with the nb of worker threads we want
-        pool = Pool(processes=nb_workers)
+        if self.pool == None:
+            self.pool = Pool(processes=nb_workers)
 
         # apply parallelization
-        results = pool.map(optimize_parallel_cpu_private, self.trials)
+        results = self.pool.map(optimize_parallel_cpu_private, self.trials)
         return results
 
     def optimize_parallel(self, train_function, nb_trials, nb_parallel=4):
