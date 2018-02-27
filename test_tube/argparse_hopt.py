@@ -174,8 +174,6 @@ class HyperOptArgumentParser(ArgumentParser):
 
             # init a pool with the nb of worker threads we want
             self.pool = Pool(processes=nb_workers, initializer=init, initargs=(gpu_q, ))
-        else:
-            print('--------------------------------------')
 
         # apply parallelization
         results = self.pool.map(optimize_parallel_gpu_cuda_private, self.trials)
@@ -207,8 +205,6 @@ class HyperOptArgumentParser(ArgumentParser):
 
             # init a pool with the nb of worker threads we want
             self.pool = Pool(processes=nb_workers, initializer=init, initargs=(gpu_q, ))
-        else:
-            print('--------------------------------------')
 
         # apply parallelization
         results = self.pool.map(optimize_parallel_gpu_cuda_private, self.trials)
