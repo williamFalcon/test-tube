@@ -195,7 +195,6 @@ class HyperOptArgumentParser(ArgumentParser):
         gpu_q = Queue()
         for gpu_id in gpu_ids:
             gpu_q.put(gpu_id)
-        print(len(gpu_q))
 
         # called by the Pool when a process starts
         def init(local_gpu_q):
