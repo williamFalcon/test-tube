@@ -192,18 +192,21 @@ class HyperOptArgumentParser(ArgumentParser):
 
         # build q of gpu ids so we can use them in each process
         # this is thread safe so each process can pull out a gpu id, run its task and put it back when done
-        gpu_q = Queue()
-        for gpu_id in gpu_ids:
-            gpu_q.put(gpu_id)
-
-        # called by the Pool when a process starts
-        def init(local_gpu_q):
-            global g_gpu_id_q
-            g_gpu_id_q = local_gpu_q
-
-        # init a pool with the nb of worker threads we want
         if self.pool == None:
+            gpu_q = Queue()
+            for gpu_id in gpu_ids:
+                gpu_q.put(gpu_id)
+
+            # called by the Pool when a process starts
+            def init(local_gpu_q):
+                global g_gpu_id_q
+                g_gpu_id_q = local_gpu_q
+
+            # init a pool with the nb of worker threads we want
             self.pool = Pool(processes=nb_workers, initializer=init, initargs=(gpu_q, ))
+        else:
+            global g_gpu_id_q
+            print(g_gpu_id_q.qsize())
 
         # apply parallelization
         results = self.pool.map(optimize_parallel_gpu_cuda_private, self.trials)
