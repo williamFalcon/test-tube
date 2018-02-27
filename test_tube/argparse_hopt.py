@@ -225,10 +225,11 @@ class HyperOptArgumentParser(ArgumentParser):
         self.trials = [(self.__namespace_from_trial(x), train_function) for x in self.trials]
 
         # init a pool with the nb of worker threads we want
-        pool = Pool(processes=nb_workers)
+        if self.pool == None:
+            self.pool = Pool(processes=nb_workers)
 
         # apply parallelization
-        results = pool.map(optimize_parallel_cpu_private, self.trials)
+        results = self.pool.map(optimize_parallel_cpu_private, self.trials)
         return results
 
     def optimize_parallel(self, train_function, nb_trials, nb_parallel=4):
