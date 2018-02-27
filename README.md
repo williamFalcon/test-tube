@@ -178,6 +178,3 @@ To cite the framework use:
   howpublished = {\url{https://github.com/williamfalcon/test-tube}}
 }
 ```
-
-## Contributors:
-1. [William Falcon](https://williamfalcon.com)
