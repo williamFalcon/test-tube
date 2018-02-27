@@ -19,7 +19,6 @@ def optimize_parallel_gpu_cuda_private(args):
     # get set of gpu ids
     gpu_id_set = g_gpu_id_q.get(block=True)
 
-    return_vals = [trial_params, None]
     try:
 
         # enable the proper gpus
@@ -28,7 +27,7 @@ def optimize_parallel_gpu_cuda_private(args):
         # run training fx on the specific gpus
         results = train_function(trial_params)
 
-        return_vals = [trial_params, results]
+        return [trial_params, results]
 
     except Exception as e:
         print('Caught exception in worker thread', e)
@@ -36,11 +35,10 @@ def optimize_parallel_gpu_cuda_private(args):
         # This prints the type, value, and stack trace of the
         # current exception being handled.
         traceback.print_exc()
+        return [trial_params, None]
 
     finally:
         g_gpu_id_q.put(gpu_id_set, block=True)
-
-    return return_vals
 
 
 def optimize_parallel_cpu_private(args):
@@ -76,6 +74,7 @@ class HyperOptArgumentParser(ArgumentParser):
         self.parsed_args = None
         self.opt_args = {}
         self.json_config_arg_name = None
+        self.pool = None
 
     def add_argument(self, *args, **kwargs):
         super(HyperOptArgumentParser, self).add_argument(*args, **kwargs)
@@ -196,6 +195,7 @@ class HyperOptArgumentParser(ArgumentParser):
         gpu_q = Queue()
         for gpu_id in gpu_ids:
             gpu_q.put(gpu_id)
+        print(len(gpu_q))
 
         # called by the Pool when a process starts
         def init(local_gpu_q):
@@ -203,11 +203,11 @@ class HyperOptArgumentParser(ArgumentParser):
             g_gpu_id_q = local_gpu_q
 
         # init a pool with the nb of worker threads we want
-        pool = Pool(processes=nb_workers, initializer=init, initargs=(gpu_q, ))
+        if self.pool == None:
+            self.pool = Pool(processes=nb_workers, initializer=init, initargs=(gpu_q, ))
 
         # apply parallelization
-        results = pool.map(optimize_parallel_gpu_cuda_private, self.trials)
-        gpu_q.close()
+        results = self.pool.map(optimize_parallel_gpu_cuda_private, self.trials)
         return results
 
     def optimize_parallel_cpu(self, train_function, nb_trials, nb_workers=4):
