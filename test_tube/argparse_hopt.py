@@ -206,6 +206,7 @@ class HyperOptArgumentParser(ArgumentParser):
             self.pool = Pool(processes=nb_workers, initializer=init, initargs=(gpu_q, ))
         else:
             global g_gpu_id_q
+            print('--------------------------------------')
             print(g_gpu_id_q.qsize())
 
         # apply parallelization
