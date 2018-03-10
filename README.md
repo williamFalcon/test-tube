@@ -93,10 +93,10 @@ parser = HyperOptArgumentParser(strategy='random_search')
 parser.add_argument('--learning_rate', default=0.002, type=float, help='the learning rate')
 
 # let's enable optimizing over the number of layers in the network
-parser.add_opt_argument_list('--nb_layers', default=2, type=int, tunnable=True, options=[2, 4, 8])
+parser.add_opt_argument_list('--nb_layers', default=2, type=int, tunable=True, options=[2, 4, 8])
 
 # and tune the number of units in each layer
-parser.add_opt_argument_range('--neurons', default=50, type=int, tunnable=True, start=100, end=800, nb_samples=10)
+parser.add_opt_argument_range('--neurons', default=50, type=int, tunable=True, start=100, end=800, nb_samples=10)
 
 # compile (because it's argparse underneath)
 hparams = parser.parse_args()
@@ -120,10 +120,10 @@ parser = HyperOptArgumentParser(strategy='random_search')
 parser.add_argument('--learning_rate', default=0.002, type=float, help='the learning rate')
 
 # let's enable optimizing over the number of layers in the network
-parser.add_opt_argument_list('--nb_layers', default=2, type=int, tunnable=True, options=[2, 4, 8])
+parser.add_opt_argument_list('--nb_layers', default=2, type=int, tunable=True, options=[2, 4, 8])
 
 # and tune the number of units in each layer
-parser.add_opt_argument_range('--neurons', default=50, type=int, tunnable=True, start=100, end=800, nb_samples=10)
+parser.add_opt_argument_range('--neurons', default=50, type=int, tunable=True, start=100, end=800, nb_samples=10)
 
 # compile (because it's argparse underneath)
 hparams = parser.parse_args()
