@@ -6,10 +6,15 @@ git commit -am "release v$version"
 git tag $version -m "test_tube v$version"
 git push --tags origin master
 
-python setup.py sdist upload -r pypi
+# push to pypi
+rm -rf /dist/*
+python setup.py sdist
+twine upload dist/*
 
 
 
 # to update docs
 # cd to root dir
 # mkdocs gh-deploy
+
+
