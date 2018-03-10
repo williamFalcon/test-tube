@@ -34,11 +34,11 @@ def train(hparams):
     exp.save()
 
 
-# set up our argparser and make the y_val tunnable
+# set up our argparser and make the y_val tunable
 parser = HyperOptArgumentParser(strategy='random_search')
 parser.add_argument('--path', default='some/path')
-parser.add_opt_argument_list('--y_val', default=12, options=[1, 2, 3, 4], tunnable=True)
-parser.add_opt_argument_list('--x_val', default=12, options=[20, 12, 30, 45], tunnable=True)
+parser.add_opt_argument_list('--y_val', default=12, options=[1, 2, 3, 4], tunable=True)
+parser.add_opt_argument_list('--x_val', default=12, options=[20, 12, 30, 45], tunable=True)
 hyperparams = parser.parse_args()
 
 # optimize on 4 gpus at the same time

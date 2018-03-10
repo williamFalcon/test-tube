@@ -79,20 +79,20 @@ class HyperOptArgumentParser(ArgumentParser):
     def add_argument(self, *args, **kwargs):
         super(HyperOptArgumentParser, self).add_argument(*args, **kwargs)
 
-    def add_opt_argument_list(self, *args, options=None, tunnable=False, **kwargs):
+    def add_opt_argument_list(self, *args, options=None, tunable=False, **kwargs):
         self.add_argument(*args, **kwargs)
         arg_name = args[-1]
         self.opt_args[arg_name] = OptArg(obj_id=arg_name,
                                          opt_values=options,
-                                         tunnable=tunnable)
+                                         tunable=tunable)
 
-    def add_opt_argument_range(self, *args, start=None, end=None, nb_samples=10, tunnable=False, **kwargs):
+    def add_opt_argument_range(self, *args, start=None, end=None, nb_samples=10, tunable=False, **kwargs):
         self.add_argument(*args, **kwargs)
         arg_name = args[-1]
         self.opt_args[arg_name] = OptArg(obj_id=arg_name,
                                          opt_values=[start, end],
                                          nb_samples=nb_samples,
-                                         tunnable=tunnable)
+                                         tunable=tunable)
 
     def add_json_config_argument(self, *args, **kwargs):
         self.add_argument(*args, **kwargs)
@@ -286,7 +286,7 @@ class HyperOptArgumentParser(ArgumentParser):
         """
         flat_params = []
         for i, (opt_name, opt_arg) in enumerate(params.items()):
-            if opt_arg.tunnable:
+            if opt_arg.tunable:
                 clean_name = re.sub('-', '', opt_name)
                 param_groups = []
                 for val in opt_arg.opt_values:
@@ -305,11 +305,11 @@ class TTNamespace(argparse.Namespace):
 
 class OptArg(object):
 
-    def __init__(self, obj_id, opt_values, nb_samples=None, tunnable=False):
+    def __init__(self, obj_id, opt_values, nb_samples=None, tunable=False):
         self.opt_values = opt_values
         self.obj_id = obj_id
         self.nb_samples = nb_samples
-        self.tunnable = tunnable
+        self.tunable = tunable
 
         # convert range to list of values
         if nb_samples:
