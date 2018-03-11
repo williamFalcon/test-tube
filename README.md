@@ -9,7 +9,7 @@
 </h3>
 
 <p align="center">
-  Log, organize and optimize Deep Learning experiments
+  Log, organize and parallelize hyperparameter search for Deep Learning experiments
 </p>
 
 <p align="center">
@@ -24,9 +24,10 @@
 **[View the docs here](https://williamfalcon.github.io/test-tube/)**
 
 ---
-Test tube is a python library to track and optimize Deep Learning experiments. It's framework agnostic and is built on top of the python argparse API for ease of use.
+Test tube is a python library to track and parallelize hyperparameter search for Deep Learning and ML experiments. It's framework agnostic and built on top of the python argparse API for ease of use.
 
-Test tube stores logs in csv files on your machine for easy analysis.
+Test tube stores logs in csv files on your machine for easy analysis.   
+Test tube currently supports grid search and random search to parallelize your hyperparameter search.   
 
 ```bash
 pip install test_tube
