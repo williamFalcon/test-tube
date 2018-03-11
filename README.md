@@ -24,10 +24,7 @@
 **[View the docs here](https://williamfalcon.github.io/test-tube/)**
 
 ---
-Test tube is a python library to track and parallelize hyperparameter search for Deep Learning and ML experiments. It's framework agnostic and built on top of the python argparse API for ease of use.
-
-Test tube stores logs in csv files on your machine for easy analysis.   
-Test tube currently supports grid search and random search to parallelize your hyperparameter search.   
+Test tube is a python library to track and parallelize hyperparameter search for Deep Learning and ML experiments. It's framework agnostic and built on top of the python argparse API for ease of use. 
 
 ```bash
 pip install test_tube
@@ -36,8 +33,8 @@ pip install test_tube
 ---
 Use Test Tube if you need to:
 
+- [Parallelize hyperparameter optimization](https://williamfalcon.github.io/test-tube/hyperparameter_optimization/HyperOptArgumentParser/)(across multiple gpus or cpus).   
 - Track multiple [Experiments](https://williamfalcon.github.io/test-tube/experiment_tracking/experiment/) across models.
-- [Optimize your hyperparameters](https://williamfalcon.github.io/test-tube/hyperparameter_optimization/HyperOptArgumentParser/) using grid_search or random_search.
 - Visualize experiments without uploading anywhere, logs store as csv files.
 - Automatically track ALL parameters for a particular training run.
 - Automatically snapshot your code for an experiment using git tags.
