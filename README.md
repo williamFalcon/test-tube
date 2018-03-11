@@ -33,7 +33,7 @@ pip install test_tube
 ---
 Use Test Tube if you need to:
 
-- [Parallelize hyperparameter optimization](https://williamfalcon.github.io/test-tube/hyperparameter_optimization/HyperOptArgumentParser/)(across multiple gpus or cpus).   
+- [Parallelize hyperparameter optimization](https://williamfalcon.github.io/test-tube/hyperparameter_optimization/HyperOptArgumentParser/) (across multiple gpus or cpus).   
 - Track multiple [Experiments](https://williamfalcon.github.io/test-tube/experiment_tracking/experiment/) across models.
 - Visualize experiments without uploading anywhere, logs store as csv files.
 - Automatically track ALL parameters for a particular training run.
