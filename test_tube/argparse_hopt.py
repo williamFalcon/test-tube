@@ -342,7 +342,6 @@ class OptArg(object):
     def __init__(self, obj_id, opt_values, nb_samples=None, tunable=False):
         self.opt_values = opt_values
         self.obj_id = obj_id
-        self.nb_samples = nb_samples
         self.tunable = tunable
 
         # convert range to list of values
