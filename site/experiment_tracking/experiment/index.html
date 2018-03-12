@@ -209,8 +209,8 @@ exp.add_metric_row('test_jpg': img, 'val_err': 0.2)
 </code></pre>
 
 <p>To save an image, add <code>jpg</code>, <code>png</code> or <code>jpeg</code> to the key corresponding with the image array. The image must be formatted the same as skimage's <a href="http://scikit-image.org/docs/dev/api/skimage.io.html#skimage.io.imsave">imsave</a> function</p>
-<h3 id="add_argparse_meta">add_argparse_meta</h3>
-<pre><code class="python">exp.add_argparse_meta(hparams)
+<h3 id="argparse">argparse</h3>
+<pre><code class="python">exp.argparse(hparams)
 </code></pre>
 
 <p>Transfers hyperparam information from Argparser or HyperOptArgumentParser</p>
@@ -223,7 +223,7 @@ parser.add_argument('--learning_rate', default=0.002, type=float, help='the lear
 hparams = parser.parse_args()
 
 # learning_rate is now a meta tag for your experiment
-exp.add_argparse_meta(hparams)
+exp.argparse(hparams)
 </code></pre>
 
 <h3 id="save">save</h3>

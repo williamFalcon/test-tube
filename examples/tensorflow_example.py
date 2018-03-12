@@ -16,7 +16,7 @@ This means for 10 trials and 4 GPUs, we'll run 4 in parallel twice and the last 
 def train(hparams):
     # init exp and track all the parameters from the HyperOptArgumentParser
     exp = Experiment(name='dense_model', save_dir='/some/path', autosave=False)
-    exp.add_argparse_meta(hparams)
+    exp.argparse(hparams)
 
     # define tensorflow graph
     x = tf.placeholder(dtype=tf.int32, name='x')

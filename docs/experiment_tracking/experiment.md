@@ -103,10 +103,10 @@ exp.log('test_jpg': img, 'val_err': 0.2)
 To save an image, add `jpg`, `png` or `jpeg` to the key corresponding with the image array. The image must be formatted the same as skimage's [imsave](http://scikit-image.org/docs/dev/api/skimage.io.html#skimage.io.imsave) function
 
 
+### argparse
 
-### add_argparse_meta
-```python
-exp.add_argparse_meta(hparams)
+``` {.python}
+exp.argparse(hparams)
 ```
 Transfers hyperparam information from Argparser or HyperOptArgumentParser
 
@@ -120,7 +120,7 @@ parser.add_argument('--learning_rate', default=0.002, type=float, help='the lear
 hparams = parser.parse_args()
 
 # learning_rate is now a meta tag for your experiment
-exp.add_argparse_meta(hparams)
+exp.argparse(hparams)
 ```
 
 ### save

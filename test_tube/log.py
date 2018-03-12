@@ -78,7 +78,7 @@ class Experiment(object):
                 os.system(cmd)
                 print('Test tube created git tag:', 'tt_{}'.format(self.exp_hash))
 
-    def add_argparse_meta(self, argparser):
+    def argparse(self, argparser):
         parsed = vars(argparser)
         to_add = {}
 

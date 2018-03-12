@@ -86,9 +86,9 @@
             "title": "add_metric_row"
         },
         {
-            "location": "/experiment_tracking/experiment/#add_argparse_meta",
-            "text": "exp.add_argparse_meta(hparams)  Transfers hyperparam information from Argparser or HyperOptArgumentParser  Example  from test_tube import HyperOptArgumentParser\n\n# parse args\nparser = HyperOptArgumentParser()\nparser.add_argument('--learning_rate', default=0.002, type=float, help='the learning rate')\nhparams = parser.parse_args()\n\n# learning_rate is now a meta tag for your experiment\nexp.add_argparse_meta(hparams)",
-            "title": "add_argparse_meta"
+            "location": "/experiment_tracking/experiment/#argparse",
+            "text": "exp.argparse(hparams)  Transfers hyperparam information from Argparser or HyperOptArgumentParser  Example  from test_tube import HyperOptArgumentParser\n\n# parse args\nparser = HyperOptArgumentParser()\nparser.add_argument('--learning_rate', default=0.002, type=float, help='the learning rate')\nhparams = parser.parse_args()\n\n# learning_rate is now a meta tag for your experiment\nexp.argparse(hparams)",
+            "title": "argparse"
         },
         {
             "location": "/experiment_tracking/experiment/#save",
