@@ -77,13 +77,17 @@ for trial in hparams.trials(2):
 ### `opt_range`
 
 ``` {.python}
-parser.opt_range('--neurons', default=50, type=int, tunable=True, low=100, high=800, nb_samples=8)
+parser.opt_range('--neurons', default=50, type=int, tunable=True, low=100, high=800, nb_samples=8, log_base=None)
 ```
 
-Enables searching over a range of values chosen linearly using the
-`nb_samples` given. The tunable values ONLY replace the argparse values
-when running a hyperparameter optimization search. This is on purpose so
-your code doesn't have to change when you want to tune it.
+Enables searching over a range of values chosen randomly using the
+`nb_samples` given. The tunable values *only* replace the argparse
+values when running a hyperparameter optimization search. This is on
+purpose so your code doesn't have to change when you want to tune it.
+
+If `log_base` is set to a positive number, it will randomly search over
+a log scale, where the log base is `log_base`. This is better for search
+over several orders of magnitude efficiently.
 
 **Example**
 

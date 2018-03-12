@@ -86,8 +86,17 @@ class HyperOptArgumentParser(ArgumentParser):
         arg_name = args[-1]
         self.opt_args[arg_name] = OptArg(obj_id=arg_name, opt_values=options, tunable=tunable)
 
+    def opt_range(
+        self,
+        *args,
         low=None,
         high=None,
+        nb_samples=10,
+        tunable=False,
+        log_base=None,
+        **kwargs,
+    ):
+
         self.add_argument(*args, **kwargs)
         arg_name = args[-1]
         self.opt_args[arg_name] = OptArg(
@@ -95,6 +104,7 @@ class HyperOptArgumentParser(ArgumentParser):
             opt_values=[low, high],
             nb_samples=nb_samples,
             tunable=tunable,
+            log_base=log_base,
         )
 
     def json_config(self, *args, **kwargs):
@@ -339,14 +349,29 @@ class TTNamespace(argparse.Namespace):
 
 
 class OptArg(object):
-    def __init__(self, obj_id, opt_values, nb_samples=None, tunable=False):
+    def __init__(
+        self,
+        obj_id,
+        opt_values,
+        nb_samples=None,
+        tunable=False,
+        log_base=None,
+    ):
         self.opt_values = opt_values
         self.obj_id = obj_id
         self.tunable = tunable
 
         # convert range to list of values
         if nb_samples:
-            self.opt_values = np.linspace(
-                opt_values[0], opt_values[1], num=nb_samples, endpoint=True
-            )
             low, high = opt_values
+
+            if log_base is None:
+                # random search on uniform scale
+                opt_values = np.random.uniform(low, high, nb_samples)
+            else:
+                # random search on log scale with specified base
+                assert high >= low > 0, "`opt_values` must be positive to do log-scale search."
+
+                log_low, log_high = math.log(low, log_base), math.log(high, log_base)
+
+                self.opt_values = log_base**np.random.uniform(log_low, log_high)

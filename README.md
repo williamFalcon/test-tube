@@ -133,6 +133,30 @@ for hparam_trial in hparams.trials(20):
     train_network(hparam_trial)
 ```
 
+You can also optimize on a *log* scale to allow better search over
+magnitudes of hyperparameter values, with a chosen base (disabled by
+default). Keep in mind that the range you search over must be strictly
+positive.
+
+``` {.python}
+from test_tube import HyperOptArgumentParser
+
+# subclass of argparse
+parser = HyperOptArgumentParser(strategy='random_search')
+
+# Randomly searches over the (log-transformed) range [100,800).
+
+parser.opt_range('--neurons', default=50, type=int, tunable=True, low=100, high=800, nb_samples=10, log_base=10)
+
+
+# compile (because it's argparse underneath)
+hparams = parser.parse_args()
+
+# run 20 trials of random search over the hyperparams
+for hparam_trial in hparams.trials(20):
+    train_network(hparam_trial)
+```
+
 ### Convert your argparse params into searchable params by changing 1 line
 
 ``` {.python}
