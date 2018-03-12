@@ -137,10 +137,10 @@ parser = HyperOptArgumentParser(strategy='random_search')
 parser.add_argument('--learning_rate', default=0.002, type=float, help='the learning rate')
 
 # let's enable optimizing over the number of layers in the network
-parser.add_opt_argument_list('--nb_layers', default=2, type=int, tunable=True, options=[2, 4, 8])
+parser.opt_list('--nb_layers', default=2, type=int, tunable=True, options=[2, 4, 8])
 
 # and tune the number of units in each layer
-parser.add_opt_argument_range('--neurons', default=50, type=int, tunable=True, start=100, end=800, nb_samples=10)
+parser.opt_range('--neurons', default=50, type=int, tunable=True, start=100, end=800, nb_samples=10)
 
 # compile (because it's argparse underneath)
 hparams = parser.parse_args()
@@ -160,13 +160,13 @@ for hparam_trial in hparams.trials(20):
 <hr />
 <h2 id="methods">Methods</h2>
 <p>All the functionality from argparse works but we've added the following functionality:</p>
-<h3 id="add_opt_argument_list">add_opt_argument_list</h3>
-<pre><code class="python">parser.add_opt_argument_list('--nb_layers', default=2, type=int, tunable=True, options=[2, 4, 8])
+<h3 id="opt_list">opt_list</h3>
+<pre><code class="python">parser.opt_list('--nb_layers', default=2, type=int, tunable=True, options=[2, 4, 8])
 </code></pre>
 
 <p>Enables searching over a list of values for this parameter. The tunable values ONLY replace the argparse values when running a hyperparameter optimization search. This is on purpose so your code doesn't have to change when you want to tune it.</p>
 <p><strong>Example</strong></p>
-<pre><code class="python">parser.add_opt_argument_list('--nb_layers', default=2, type=int, tunable=True, options=[2, 4, 8])
+<pre><code class="python">parser.opt_list('--nb_layers', default=2, type=int, tunable=True, options=[2, 4, 8])
 hparams = parser.parse_args()
 # hparams.nb_layers = 2
 
@@ -176,13 +176,13 @@ for trial in hparams.trials(2):
 
 </code></pre>
 
-<h3 id="add_opt_argument_range">add_opt_argument_range</h3>
-<pre><code class="python">parser.add_opt_argument_range('--neurons', default=50, type=int, tunable=True, start=100, end=800, nb_samples=8)
+<h3 id="opt_range">opt_range</h3>
+<pre><code class="python">parser.opt_range('--neurons', default=50, type=int, tunable=True, start=100, end=800, nb_samples=8)
 </code></pre>
 
 <p>Enables searching over a range of values chosen linearly using the nb_samples given. The tunable values ONLY replace the argparse values when running a hyperparameter optimization search. This is on purpose so your code doesn't have to change when you want to tune it.</p>
 <p><strong>Example</strong></p>
-<pre><code class="python">parser.add_opt_argument_range('--neurons', default=50, type=int, tunable=True, start=100, end=800, nb_samples=8)
+<pre><code class="python">parser.opt_range('--neurons', default=50, type=int, tunable=True, start=100, end=800, nb_samples=8)
 hparams = parser.parse_args()
 # hparams.neurons = 50
 
