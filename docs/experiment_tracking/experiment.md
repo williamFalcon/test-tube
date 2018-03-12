@@ -54,17 +54,10 @@ exp = Experiment(name='dense_model', create_git_tag=True)
 
 ---
 ## Methods
-### add_meta_tag
-```python
-exp.add_meta_tag(key, val)
-```
-Adds an arbitrary tag and value to your experiment
 
 
-**Example**
-```python
-exp.add_meta_tag('dataset_name', 'imagenet_1')
-exp.add_meta_tag('learning_rate', 0.002)
+``` {.python}
+exp.tag({k: v})
 ```
 
 ### add_meta_tags

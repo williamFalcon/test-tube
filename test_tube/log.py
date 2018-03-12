@@ -87,7 +87,7 @@ class Experiment(object):
             if not callable(v):
                 to_add[k] = v
 
-        self.add_meta_tags(to_add)
+        self.tag(to_add)
 
     def add_meta_from_hyperopt(self, hypo):
         """
@@ -145,29 +145,13 @@ class Experiment(object):
         exp_cache_file = self.get_data_path(self.name, self.version)
         return '{}/meta.experiment'.format(exp_cache_file)
 
-    def add_meta_tag(self, key, val):
-        """
-        Adds a tag to the experiment.
-        Tags are metadata for the exp
-
-        >> e.add_meta_tag({"model": "Convnet A"})
-
-        :param key:
-        :param val:
-        :return:
-        """
-        if self.debug: return
-
-        self.tags[key] = val
-        if self.autosave == True:
-            self.save()
 
     def add_meta_tags(self, tag_dict):
         """
         Adds a tag to the experiment.
         Tags are metadata for the exp
 
-        >> e.add_meta_tag({"model": "Convnet A"})
+        >> e.add_meta_tags({"model": "Convnet A"})
 
         :param key:
         :param val:
