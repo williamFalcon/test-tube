@@ -13,7 +13,7 @@ import random
 import traceback
 
 
-def optimize_parallel_gpu_cuda_private(args):
+def optimize_parallel_gpu_private(args):
     trial_params, train_function = args[0], args[1]
 
     # get set of gpu ids
@@ -116,10 +116,10 @@ class HyperOptArgumentParser(ArgumentParser):
         # attach optimization fx
         old_args['trials'] = self.opt_trials
         old_args['optimize_parallel'] = self.optimize_parallel
-        old_args['optimize_parallel_gpu_cuda'] = self.optimize_parallel_gpu_cuda
+        old_args['optimize_parallel_gpu'] = self.optimize_parallel_gpu
         old_args['optimize_parallel_cpu'] = self.optimize_parallel_cpu
         old_args['generate_trials'] = self.generate_trials
-        old_args['optimize_trials_parallel_gpu_cuda'] = self.optimize_trials_parallel_gpu_cuda
+        old_args['optimize_trials_parallel_gpu'] = self.optimize_trials_parallel_gpu
 
         return argparse.Namespace(**old_args)
 
@@ -145,7 +145,7 @@ class HyperOptArgumentParser(ArgumentParser):
         trials = [self.__namespace_from_trial(x) for x in trials]
         return trials
 
-    def optimize_parallel_gpu_cuda(self, train_function, nb_trials, gpu_ids, nb_workers=4):
+    def optimize_parallel_gpu(self, train_function, nb_trials, gpu_ids, nb_workers=4):
         """
         Runs optimization across gpus with cuda drivers
         :param train_function:
@@ -176,10 +176,10 @@ class HyperOptArgumentParser(ArgumentParser):
             self.pool = Pool(processes=nb_workers, initializer=init, initargs=(gpu_q, ))
 
         # apply parallelization
-        results = self.pool.map(optimize_parallel_gpu_cuda_private, self.trials)
+        results = self.pool.map(optimize_parallel_gpu_private, self.trials)
         return results
 
-    def optimize_trials_parallel_gpu_cuda(self, train_function, nb_trials, trials, gpu_ids, nb_workers=4):
+    def optimize_trials_parallel_gpu(self, train_function, nb_trials, trials, gpu_ids, nb_workers=4):
         """
         Runs optimization across gpus with cuda drivers
         :param train_function:
@@ -207,7 +207,7 @@ class HyperOptArgumentParser(ArgumentParser):
             self.pool = Pool(processes=nb_workers, initializer=init, initargs=(gpu_q, ))
 
         # apply parallelization
-        results = self.pool.map(optimize_parallel_gpu_cuda_private, self.trials)
+        results = self.pool.map(optimize_parallel_gpu_private, self.trials)
         return results
 
     def optimize_parallel_cpu(self, train_function, nb_trials, nb_workers=4):

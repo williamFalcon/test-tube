@@ -146,9 +146,9 @@
             "title": "optimize_parallel"
         },
         {
-            "location": "/hyperparameter_optimization/HyperOptArgumentParser/#optimize_parallel_gpu_cuda",
-            "text": "hparams = parser.parse_args()\nhparams.optimize_parallel_gpu_cuda(function_to_optimize, gpu_ids=['1', '0, 2'], nb_trials=20, nb_workers=2)  Parallelize the trials across nb_workers processes. Auto assign the correct gpus.\nArgument passed into the  function_to_optimize  is the  trial_params  argument.  Example  # parallelize tuning on 2 gpus\n# this will place each trial in n into a given gpu\ndef train_main(trial_params):\n    # train your model, etc here...\n\nhparams = parser.parse_args()\nhparams.optimize_parallel_gpu_cuda(train_main, gpu_ids=['1', '0, 2'], nb_trials=20, nb_workers=2)\n\n# at the end of the optimize_parallel function, all 20 trials will be completed\n# in this case by running 10 sets of 2 trials in parallel",
-            "title": "optimize_parallel_gpu_cuda"
+            "location": "/hyperparameter_optimization/HyperOptArgumentParser/#optimize_parallel_gpu",
+            "text": "hparams = parser.parse_args()\nhparams.optimize_parallel_gpu(function_to_optimize, gpu_ids=['1', '0, 2'], nb_trials=20, nb_workers=2)  Parallelize the trials across nb_workers processes. Auto assign the correct gpus.\nArgument passed into the  function_to_optimize  is the  trial_params  argument.  Example  # parallelize tuning on 2 gpus\n# this will place each trial in n into a given gpu\ndef train_main(trial_params):\n    # train your model, etc here...\n\nhparams = parser.parse_args()\nhparams.optimize_parallel_gpu(train_main, gpu_ids=['1', '0, 2'], nb_trials=20, nb_workers=2)\n\n# at the end of the optimize_parallel function, all 20 trials will be completed\n# in this case by running 10 sets of 2 trials in parallel",
+            "title": "optimize_parallel_gpu"
         },
         {
             "location": "/hyperparameter_optimization/HyperOptArgumentParser/#optimize_parallel_cpu",

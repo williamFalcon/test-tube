@@ -101,7 +101,7 @@ hparams = parser.parse_args()
 
 # optimize across 4 gpus
 # use 2 gpus together and the other two separately
-hparams.optimize_parallel_gpu_cuda(MyModel.fit, gpu_ids=['1', '2,3', '0'], nb_trials=192, nb_workers=4)
+hparams.optimize_parallel_gpu(MyModel.fit, gpu_ids=['1', '2,3', '0'], nb_trials=192, nb_workers=4)
 ```
 
 Or... across CPUs

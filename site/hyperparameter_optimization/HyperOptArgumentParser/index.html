@@ -244,9 +244,9 @@ hparams.optimize_parallel(opt_function, nb_trials=20, nb_parallel=2)
 # in this case by running 10 sets of 2 trials in parallel
 </code></pre>
 
-<h3 id="optimize_parallel_gpu_cuda">optimize_parallel_gpu_cuda</h3>
+<h3 id="optimize_parallel_gpu">optimize_parallel_gpu</h3>
 <pre><code class="python">hparams = parser.parse_args()
-hparams.optimize_parallel_gpu_cuda(function_to_optimize, gpu_ids=['1', '0, 2'], nb_trials=20, nb_workers=2)
+hparams.optimize_parallel_gpu(function_to_optimize, gpu_ids=['1', '0, 2'], nb_trials=20, nb_workers=2)
 </code></pre>
 
 <p>Parallelize the trials across nb_workers processes. Auto assign the correct gpus.
@@ -258,7 +258,7 @@ def train_main(trial_params):
     # train your model, etc here...
 
 hparams = parser.parse_args()
-hparams.optimize_parallel_gpu_cuda(train_main, gpu_ids=['1', '0, 2'], nb_trials=20, nb_workers=2)
+hparams.optimize_parallel_gpu(train_main, gpu_ids=['1', '0, 2'], nb_trials=20, nb_workers=2)
 
 # at the end of the optimize_parallel function, all 20 trials will be completed
 # in this case by running 10 sets of 2 trials in parallel

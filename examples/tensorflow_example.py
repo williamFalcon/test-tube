@@ -43,4 +43,4 @@ hyperparams = parser.parse_args()
 
 # optimize on 4 gpus at the same time
 # each gpu will get 1 experiment with a set of hyperparams
-hyperparams.optimize_parallel_gpu_cuda(train, gpu_ids=['1', '0', '3', '2'], nb_trials=4, nb_workers=4)
+hyperparams.optimize_parallel_gpu(train, gpu_ids=['1', '0', '3', '2'], nb_trials=4, nb_workers=4)
