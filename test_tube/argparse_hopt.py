@@ -86,12 +86,13 @@ class HyperOptArgumentParser(ArgumentParser):
         arg_name = args[-1]
         self.opt_args[arg_name] = OptArg(obj_id=arg_name, opt_values=options, tunable=tunable)
 
-    def opt_range(self, *args, start=None, end=None, nb_samples=10, tunable=False, **kwargs):
+        low=None,
+        high=None,
         self.add_argument(*args, **kwargs)
         arg_name = args[-1]
         self.opt_args[arg_name] = OptArg(
             obj_id=arg_name,
-            opt_values=[start, end],
+            opt_values=[low, high],
             nb_samples=nb_samples,
             tunable=tunable,
         )
@@ -350,3 +351,4 @@ class OptArg(object):
             self.opt_values = np.linspace(
                 opt_values[0], opt_values[1], num=nb_samples, endpoint=True
             )
+            low, high = opt_values

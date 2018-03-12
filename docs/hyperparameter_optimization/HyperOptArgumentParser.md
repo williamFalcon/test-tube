@@ -18,7 +18,7 @@ parser.add_argument('--learning_rate', default=0.002, type=float, help='the lear
 parser.opt_list('--nb_layers', default=2, type=int, tunable=True, options=[2, 4, 8])
 
 # and tune the number of units in each layer
-parser.opt_range('--neurons', default=50, type=int, tunable=True, start=100, end=800, nb_samples=10)
+parser.opt_range('--neurons', default=50, type=int, tunable=True, low=100, high=800, nb_samples=10)
 
 # compile (because it's argparse underneath)
 hparams = parser.parse_args()
@@ -77,7 +77,7 @@ for trial in hparams.trials(2):
 ### `opt_range`
 
 ``` {.python}
-parser.opt_range('--neurons', default=50, type=int, tunable=True, start=100, end=800, nb_samples=8)
+parser.opt_range('--neurons', default=50, type=int, tunable=True, low=100, high=800, nb_samples=8)
 ```
 
 Enables searching over a range of values chosen linearly using the
@@ -88,7 +88,7 @@ your code doesn't have to change when you want to tune it.
 **Example**
 
 ``` {.python}
-parser.opt_range('--neurons', default=50, type=int, tunable=True, start=100, end=800, nb_samples=8)
+parser.opt_range('--neurons', default=50, type=int, tunable=True, low=100, high=800, nb_samples=8)
 hparams = parser.parse_args()
 # hparams.neurons = 50
 
