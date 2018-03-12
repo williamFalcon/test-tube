@@ -9,7 +9,7 @@ exp = Experiment(name='dense_model',
                  debug=False,
                  save_dir='/Desktop/test_tube')
 
-exp.add_meta_tags({'learning_rate': 0.002, 'nb_layers': 2})
+exp.tag({'learning_rate': 0.002, 'nb_layers': 2})
 
 for step in training_steps:
     tng_err = model.eval(tng_x, tng_y)
@@ -55,21 +55,18 @@ exp = Experiment(name='dense_model', create_git_tag=True)
 ---
 ## Methods
 
+### tag
 
 ``` {.python}
 exp.tag({k: v})
 ```
 
-### add_meta_tags
-```python
-exp.add_meta_tags({k: v})
-```
 Adds an arbitrary dictionary of tags to the experiment
 
-
 **Example**
-```python
-exp.add_meta_tags({'dataset_name': 'imagenet_1', 'learning_rate': 0.0002})
+
+``` {.python}
+exp.tag({'dataset_name': 'imagenet_1', 'learning_rate': 0.0002})
 ```
 
 

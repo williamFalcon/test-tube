@@ -140,7 +140,7 @@ exp = Experiment(name='dense_model',
                  debug=False,
                  save_dir='/Desktop/test_tube')
 
-exp.add_meta_tags({'learning_rate': 0.002, 'nb_layers': 2})
+exp.tag({'learning_rate': 0.002, 'nb_layers': 2})
 
 for step in training_steps:
     tng_err = model.eval(tng_x, tng_y)

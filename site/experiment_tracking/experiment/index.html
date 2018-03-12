@@ -174,18 +174,6 @@ Snapshot your code for this experiment using git tags:</p>
 <pre><code class="python">exp = Experiment(name='dense_model', create_git_tag=True)
 </code></pre>
 
-<hr />
-<h2 id="methods">Methods</h2>
-<h3 id="add_meta_tag">add_meta_tag</h3>
-<pre><code class="python">exp.add_meta_tag(key, val)
-</code></pre>
-
-<p>Adds an arbitrary tag and value to your experiment</p>
-<p><strong>Example</strong></p>
-<pre><code class="python">exp.add_meta_tag('dataset_name', 'imagenet_1')
-exp.add_meta_tag('learning_rate', 0.002)
-</code></pre>
-
 <h3 id="add_meta_tags">add_meta_tags</h3>
 <pre><code class="python">exp.add_meta_tags({k: v})
 </code></pre>

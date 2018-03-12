@@ -64,7 +64,7 @@ If you're a researcher, test-tube is highly encouraged as a way to post your pap
 from test_tube import Experiment
 
 exp = Experiment(name='dense_model', save_dir='../some/dir/')
-exp.add_meta_tags({'learning_rate': 0.002, 'nb_layers': 2})
+exp.tag({'learning_rate': 0.002, 'nb_layers': 2})
 
 for step in range(1, 10):
     tng_err = 1.0 / step
