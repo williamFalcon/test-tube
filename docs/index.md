@@ -1,22 +1,28 @@
 # Test Tube: Easily log and tune Deep Learning experiments
 
-Test Tube allows you to easily log metadata and track your machine learning experiments.
+Test Tube allows you to easily log metadata and track your machine
+learning experiments.
 
 Use Test Tube if you need to:
 
-- Track many [Experiments](experiment_tracking/experiment/) across models.
-- [Visualize](http://testtube.williamfalcon.com) and compare different experiments without uploading anywhere.
-- [Optimize your hyperparameters](hyperparameter_optimization/HyperOptArgumentParser/) using grid_search or random_search.
-- Automatically track ALL parameters for a particular training run.
+-   Track many [Experiments](experiment_tracking/experiment/) across
+    models.
+-   [Visualize](http://testtube.williamfalcon.com) and compare different
+    experiments without uploading anywhere.
+-   [Optimize your
+    hyperparameters](hyperparameter_optimization/HyperOptArgumentParser/)
+    using grid search or random search.
+-   Automatically track ALL parameters for a particular training run.
 
 Test Tube is compatible with: Python 2 and 3
 
 ## Getting started
 
----
+------------------------------------------------------------------------
 
 ### Create an [Experiment](experiment_tracking/experiment/)
-```python
+
+``` {.python}
 from test_tube import Experiment
 
 exp = Experiment(name='dense_model',
@@ -34,9 +40,11 @@ for step in training_steps:
 # all your logs and data are ready to be visualized at testtube.williamfalcon.com
 ```
 
----
+------------------------------------------------------------------------
+
 ### Optimize your [hyperparameters](hyperparameter_optimization/HyperOptArgumentParser/)
-```python
+
+``` {.python}
 from test_tube import HyperOptArgumentParser
 
 # subclass of argparse
@@ -57,10 +65,11 @@ for hparam_trial in hparams.trials(20):
     train_network(hparam_trial)
 ```
 
----
+------------------------------------------------------------------------
+
 ### Visualize
 
-```python
+``` {.python}
 import pandas as pd
 import matplotlib
 
@@ -69,5 +78,3 @@ import matplotlib
 df = pd.read_csv('../some/dir/test_tube_data/dense_model/version_0/metrics.csv')
 df.tng_err.plot()
 ```
-
-

@@ -1,8 +1,9 @@
 # Experiment class API
 
-An Experiment holds metadata and the results of the training run, you can instantiate an `Experiment` via:
+An Experiment holds metadata and the results of the training run, you
+can instantiate an `Experiment` via:
 
-```python
+``` {.python}
 from test_tube import Experiment
 
 exp = Experiment(name='dense_model',
@@ -19,24 +20,35 @@ for step in training_steps:
 # training complete!
 # all your logs and data are ready to be visualized at testtube.williamfalcon.com
 ```
----
+
+------------------------------------------------------------------------
+
 ## init options
 
 ### version
-The same Experiment can have multiple versions. Test tube generates these automatically each time you run your model. To set your own version use:
-```python
+
+The same Experiment can have multiple versions. Test tube generates
+these automatically each time you run your model. To set your own
+version use:
+
+``` {.python}
 exp = Experiment(name='dense_model',version=1)
 ```
 
 ### debug
-If you're debugging and don't want to create a log file turn debug to True
-```python
+
+If you're debugging and don't want to create a log file turn debug to
+True
+
+``` {.python}
 exp = Experiment(name='dense_model',debug=True)
 ```
 
 ### autosave
+
 If you only want to save at the end of training, turn autosave off:
-```python
+
+``` {.python}
 exp = Experiment(name='dense_model', autosave=False)
 
 # run long training...
@@ -45,14 +57,17 @@ exp = Experiment(name='dense_model', autosave=False)
 exp.save()
 ```
 
-### create_git_tag
+### `create_git_tag`
+
 Ever wanted a flashback to your code when you ran an experiment?
 Snapshot your code for this experiment using git tags:
-```python
+
+``` {.python}
 exp = Experiment(name='dense_model', create_git_tag=True)
 ```
 
----
+------------------------------------------------------------------------
+
 ## Methods
 
 ### tag
@@ -100,18 +115,24 @@ exp.log('test_jpg': img, 'val_err': 0.2)
 # saves image to ../exp/version/media/test_0.jpg
 # csv has file path to that image in that cell
 ```
-To save an image, add `jpg`, `png` or `jpeg` to the key corresponding with the image array. The image must be formatted the same as skimage's [imsave](http://scikit-image.org/docs/dev/api/skimage.io.html#skimage.io.imsave) function
 
+To save an image, add `jpg`, `png` or `jpeg` to the key corresponding
+with the image array. The image must be formatted the same as skimage's
+[imsave](http://scikit-image.org/docs/dev/api/skimage.io.html#skimage.io.imsave)
+function
 
 ### argparse
 
 ``` {.python}
 exp.argparse(hparams)
 ```
-Transfers hyperparam information from Argparser or HyperOptArgumentParser
+
+Transfers hyperparam information from Argparser or
+HyperOptArgumentParser
 
 **Example**
-```python
+
+``` {.python}
 from test_tube import HyperOptArgumentParser
 
 # parse args
@@ -124,13 +145,16 @@ exp.argparse(hparams)
 ```
 
 ### save
-```python
+
+``` {.python}
 exp.save()
 ```
+
 Saves the exp to disk (including images)
 
 **Example**
-```python
+
+``` {.python}
 exp = Experiment(name='dense_model', autosave=False)
 
 # run long training...
@@ -138,4 +162,3 @@ exp = Experiment(name='dense_model', autosave=False)
 # first time any logs are saved
 exp.save()
 ```
-
