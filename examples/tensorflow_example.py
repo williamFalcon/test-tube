@@ -28,7 +28,7 @@ def train(hparams):
     # Run the tf op
     for train_step in range(0, 100):
         output = sess.run(out, feed_dict={x: hparams.x_val, y: hparams.y_val})
-        exp.add_metric_row({'fake_err': output})
+        exp.log({'fake_err': output})
 
     # save exp when we're done
     exp.save()

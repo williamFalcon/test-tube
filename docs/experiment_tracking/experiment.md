@@ -14,7 +14,7 @@ exp.tag({'learning_rate': 0.002, 'nb_layers': 2})
 for step in training_steps:
     tng_err = model.eval(tng_x, tng_y)
 
-    exp.add_metric_row('tng_err': tng_err)
+    exp.log('tng_err': tng_err)
 
 # training complete!
 # all your logs and data are ready to be visualized at testtube.williamfalcon.com
@@ -69,31 +69,33 @@ Adds an arbitrary dictionary of tags to the experiment
 exp.tag({'dataset_name': 'imagenet_1', 'learning_rate': 0.0002})
 ```
 
+### log
 
-### add_metric_row
-```python
-exp.add_metric_row({k:v})
+``` {.python}
+exp.log({k:v})
 ```
+
 Adds a row of data to the experiments
 
-
 **Example**
-```python
-exp.add_metric_row({'val_loss': 0.22, 'epoch_nb': 1, 'batch_nb': 12})
+
+``` {.python}
+exp.log({'val_loss': 0.22, 'epoch_nb': 1, 'batch_nb': 12})
 
 # you can also add other rows that have separate information
-exp.add_metric_row({'tng_loss': 0.01})
+exp.log({'tng_loss': 0.01})
 
 # or even a numpy array image
 image = np.imread('image.png')
-exp.add_metric_row({'fake_png': image})
+exp.log({'fake_png': image})
 ```
 
 **Saving images Example**
-```python
+
+``` {.python}
 # name must have either jpg, png or jpeg in it
 img = np.imread('a.jpg')
-exp.add_metric_row('test_jpg': img, 'val_err': 0.2)
+exp.log('test_jpg': img, 'val_err': 0.2)
 
 # saves image to ../exp/version/media/test_0.jpg
 # csv has file path to that image in that cell

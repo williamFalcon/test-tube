@@ -68,7 +68,7 @@ exp.tag({'learning_rate': 0.002, 'nb_layers': 2})
 
 for step in range(1, 10):
     tng_err = 1.0 / step
-    exp.add_metric_row({'tng_err': tng_err})
+    exp.log({'tng_err': tng_err})
 ```
 
 ### Visualize experiments
@@ -148,7 +148,7 @@ parser = HyperOptArgumentParser(description='Process some integers.', strategy='
 ```python
 # name must have either jpg, png or jpeg in it
 img = np.imread('a.jpg')
-exp.add_metric_row('test_jpg': img, 'val_err': 0.2)
+exp.log('test_jpg': img, 'val_err': 0.2)
 
 # saves image to ../exp/version/media/test_0.jpg
 # csv has file path to that image in that cell
