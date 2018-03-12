@@ -207,8 +207,8 @@ hparams = parser.parse_args()
 hparams.optimize_parallel_cpu(function_to_optimize, nb_trials=20, nb_workers=2)
 ```
 
-Parallelize the trials across `nb_workers` cpus. Argument passed into the
-`function_to_optimize` is the `trial_params` argument.
+Parallelize the trials across `nb_workers` cpus. Argument passed into
+the `function_to_optimize` is the `trial_params` argument.
 
 **Example**
 

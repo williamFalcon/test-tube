@@ -81,7 +81,7 @@ df = pd.read_csv('../some/dir/test_tube_data/dense_model/version_0/metrics.csv')
 df.tng_err.plot()
 ```
 
-### Optimize hyperparameters across gpus
+### Optimize hyperparameters across GPUs
 
 ``` {.python}
 from test_tube import HyperOptArgumentParser
