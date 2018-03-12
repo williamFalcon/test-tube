@@ -177,7 +177,7 @@ class HyperOptArgumentParser(ArgumentParser):
 
         # build q of gpu ids so we can use them in each process
         # this is thread safe so each process can pull out a gpu id, run its task and put it back when done
-        if self.pool == None:
+        if self.pool is None:
             gpu_q = Queue()
             for gpu_id in gpu_ids:
                 gpu_q.put(gpu_id)
@@ -215,7 +215,7 @@ class HyperOptArgumentParser(ArgumentParser):
 
         # build q of gpu ids so we can use them in each process
         # this is thread safe so each process can pull out a gpu id, run its task and put it back when done
-        if self.pool == None:
+        if self.pool is None:
             gpu_q = Queue()
             for gpu_id in gpu_ids:
                 gpu_q.put(gpu_id)
@@ -254,7 +254,7 @@ class HyperOptArgumentParser(ArgumentParser):
         self.trials = [(self.__namespace_from_trial(x), train_function) for x in self.trials]
 
         # init a pool with the nb of worker threads we want
-        if self.pool == None:
+        if self.pool is None:
             self.pool = Pool(processes=nb_workers)
 
         # apply parallelization
@@ -274,7 +274,6 @@ class HyperOptArgumentParser(ArgumentParser):
         )
 
         # nb of runs through all parallel systems
-        nb_fork_batches = int(math.ceil(len(self.trials) / nb_parallel))
         fork_batches = [
             self.trials[i:i + nb_parallel] for i in range(0, len(self.trials), nb_parallel)
         ]
