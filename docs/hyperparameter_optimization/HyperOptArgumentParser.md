@@ -83,9 +83,10 @@ for trial in hparams.trials(2):
     # but hparams.neurons is still 50
 ```
 
-### add_json_config_argument
-```python
-parser.add_json_config_argument('--config', default='example.json')
+### `json_config`
+
+``` {.python}
+parser.json_config('--config', default='example.json')
 ```
 Replaces default values in the parser with those read from the json file
 
@@ -99,7 +100,7 @@ Replaces default values in the parser with those read from the json file
 
 ```python
 parser.add_argument('--learning_rate', default=0.002, type=float, help='the learning rate')
-parser.add_json_config_argument('--config', default='example.json')
+parser.json_config('--config', default='example.json')
 hparams = parser.parse_args()
 
 # hparams.learning_rate = 200

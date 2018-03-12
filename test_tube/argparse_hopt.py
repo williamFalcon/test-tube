@@ -94,7 +94,7 @@ class HyperOptArgumentParser(ArgumentParser):
                                          nb_samples=nb_samples,
                                          tunable=tunable)
 
-    def add_json_config_argument(self, *args, **kwargs):
+    def json_config(self, *args, **kwargs):
         self.add_argument(*args, **kwargs)
         self.json_config_arg_name = re.sub('-', '', args[-1])
 

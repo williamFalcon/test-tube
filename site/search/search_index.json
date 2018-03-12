@@ -131,9 +131,9 @@
             "title": "opt_range"
         },
         {
-            "location": "/hyperparameter_optimization/HyperOptArgumentParser/#add_json_config_argument",
-            "text": "parser.add_json_config_argument('--config', default='example.json')  Replaces default values in the parser with those read from the json file  Example  example.json  {\n    \"learning_rate\": 200\n}  parser.add_argument('--learning_rate', default=0.002, type=float, help='the learning rate')\nparser.add_json_config_argument('--config', default='example.json')\nhparams = parser.parse_args()\n\n# hparams.learning_rate = 200",
-            "title": "add_json_config_argument"
+            "location": "/hyperparameter_optimization/HyperOptArgumentParser/#json_config",
+            "text": "parser.json_config('--config', default='example.json')  Replaces default values in the parser with those read from the json file  Example  example.json  {\n    \"learning_rate\": 200\n}  parser.add_argument('--learning_rate', default=0.002, type=float, help='the learning rate')\nparser.json_config('--config', default='example.json')\nhparams = parser.parse_args()\n\n# hparams.learning_rate = 200",
+            "title": "json_config"
         },
         {
             "location": "/hyperparameter_optimization/HyperOptArgumentParser/#trials",
