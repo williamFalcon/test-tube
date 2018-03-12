@@ -1,7 +1,9 @@
-import tensorflow as tf
 import os
 from time import time
+
+import tensorflow as tf
 from test_tube import Experiment, HyperOptArgumentParser
+
 
 """
 This script demonstrates how to do a hyperparameter search over 2 parameters in tensorflow
@@ -15,7 +17,11 @@ This means for 10 trials and 4 GPUs, we'll run 4 in parallel twice and the last 
 # main training function (very simple)
 def train(hparams):
     # init exp and track all the parameters from the HyperOptArgumentParser
-    exp = Experiment(name='dense_model', save_dir='/some/path', autosave=False)
+    exp = Experiment(
+        name='dense_model',
+        save_dir='/some/path',
+        autosave=False,
+    )
     exp.argparse(hparams)
 
     # define tensorflow graph

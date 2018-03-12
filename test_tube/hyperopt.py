@@ -112,7 +112,7 @@ class HyperParamOptimizer(object):
 
             # log if requested
             if self.experiment is not None:
-                self.experiment.add_metric_row(result)
+                self.experiment.log(result)
 
             self.current_iteration += 1
 

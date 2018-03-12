@@ -1,13 +1,13 @@
-import os
 import json
+import os
 from datetime import datetime
-from scipy.misc import imsave
-import pandas as pd
+
 import numpy as np
+import pandas as pd
+from scipy.misc import imsave
 
 # constants
 _ROOT = os.path.abspath(os.path.dirname(__file__))
-
 
 # -----------------------------
 # Experiment object
@@ -15,8 +15,16 @@ _ROOT = os.path.abspath(os.path.dirname(__file__))
 
 
 class Experiment(object):
-
-    def __init__(self, name='default', debug=False, version=None, save_dir=None, autosave=True, description=None, create_git_tag=False):
+    def __init__(
+        self,
+        name='default',
+        debug=False,
+        version=None,
+        save_dir=None,
+        autosave=True,
+        description=None,
+        create_git_tag=False,
+    ):
         """
         A new Experiment object defaults to 'default' unless a specific name is provided
         If a known name is already provided, then the file version is changed
@@ -98,7 +106,7 @@ class Experiment(object):
         """
         meta = hypo.get_current_trial_meta()
         for tag in meta:
-            self.add_meta_tags(tag)
+            self.tag(tag)
 
     # --------------------------------
     # FILE IO UTILS
@@ -111,7 +119,6 @@ class Experiment(object):
         exp_cache_file = self.get_data_path(self.name, self.version)
         if not os.path.isdir(exp_cache_file):
             os.makedirs(exp_cache_file)
-
 
     def __create_exp_file(self, version):
         """
@@ -130,7 +137,7 @@ class Experiment(object):
 
     def __get_last_experiment_version(self):
         try:
-            exp_cache_file = '/'.join(self.get_data_path(self.name, self.version).split('/')[:-1])
+            exp_cache_file = os.sep.join(self.get_data_path(self.name, self.version).split(os.sep)[:-1])
             last_version = -1
             for f in os.listdir(exp_cache_file):
                 if 'version_' in f:
@@ -145,13 +152,12 @@ class Experiment(object):
         exp_cache_file = self.get_data_path(self.name, self.version)
         return '{}/meta.experiment'.format(exp_cache_file)
 
-
-    def add_meta_tags(self, tag_dict):
+    def tag(self, tag_dict):
         """
         Adds a tag to the experiment.
-        Tags are metadata for the exp
+        Tags are metadata for the exp.
 
-        >> e.add_meta_tags({"model": "Convnet A"})
+        >> e.tag({"model": "Convnet A"})
 
         :param key:
         :param val:
@@ -167,11 +173,11 @@ class Experiment(object):
         if self.autosave == True:
             self.save()
 
-    def add_metric_row(self, metrics_dict):
+    def log(self, metrics_dict):
         """
         Adds a json dict of metrics.
 
-        >> e.add_metrics({"loss": 23, "coeff_a": 0.2})
+        >> e.log({"loss": 23, "coeff_a": 0.2})
 
         :param metrics_dict:
         :return:
@@ -319,4 +325,3 @@ class Experiment(object):
 
     def __hash__(self):
         return 'Exp: {}, v: {}'.format(self.name, self.version)
-

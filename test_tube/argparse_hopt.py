@@ -1,16 +1,18 @@
-from argparse import ArgumentParser
 import argparse
-import numpy as np
-import re
-from copy import deepcopy
-from .hyper_opt_utils import strategies
 import json
 import math
 import os
-from time import sleep
-from multiprocessing import Pool, Queue
 import random
+import re
 import traceback
+from argparse import ArgumentParser
+from copy import deepcopy
+from multiprocessing import Pool, Queue
+from time import sleep
+
+import numpy as np
+
+from .hyper_opt_utils import strategies
 
 
 def optimize_parallel_gpu_private(args):
@@ -82,17 +84,17 @@ class HyperOptArgumentParser(ArgumentParser):
     def opt_list(self, *args, options=None, tunable=False, **kwargs):
         self.add_argument(*args, **kwargs)
         arg_name = args[-1]
-        self.opt_args[arg_name] = OptArg(obj_id=arg_name,
-                                         opt_values=options,
-                                         tunable=tunable)
+        self.opt_args[arg_name] = OptArg(obj_id=arg_name, opt_values=options, tunable=tunable)
 
     def opt_range(self, *args, start=None, end=None, nb_samples=10, tunable=False, **kwargs):
         self.add_argument(*args, **kwargs)
         arg_name = args[-1]
-        self.opt_args[arg_name] = OptArg(obj_id=arg_name,
-                                         opt_values=[start, end],
-                                         nb_samples=nb_samples,
-                                         tunable=tunable)
+        self.opt_args[arg_name] = OptArg(
+            obj_id=arg_name,
+            opt_values=[start, end],
+            nb_samples=nb_samples,
+            tunable=tunable,
+        )
 
     def json_config(self, *args, **kwargs):
         self.add_argument(*args, **kwargs)
@@ -129,9 +131,12 @@ class HyperOptArgumentParser(ArgumentParser):
             return json_args
 
     def opt_trials(self, num):
-        self.trials = strategies.generate_trials(strategy=self.strategy,
-                                                 flat_params=self.__flatten_params(self.opt_args),
-                                                 nb_trials=num)
+        self.trials = strategies.generate_trials(
+            strategy=self.strategy,
+            flat_params=self.__flatten_params(self.opt_args),
+            nb_trials=num,
+        )
+
         for trial in self.trials:
             ns = self.__namespace_from_trial(trial)
             yield ns
@@ -140,12 +145,19 @@ class HyperOptArgumentParser(ArgumentParser):
         trials = strategies.generate_trials(
             strategy=self.strategy,
             flat_params=self.__flatten_params(self.opt_args),
-            nb_trials=nb_trials)
+            nb_trials=nb_trials,
+        )
 
         trials = [self.__namespace_from_trial(x) for x in trials]
         return trials
 
-    def optimize_parallel_gpu(self, train_function, nb_trials, gpu_ids, nb_workers=4):
+    def optimize_parallel_gpu(
+        self,
+        train_function,
+        nb_trials,
+        gpu_ids,
+        nb_workers=4,
+    ):
         """
         Runs optimization across gpus with cuda drivers
         :param train_function:
@@ -154,9 +166,11 @@ class HyperOptArgumentParser(ArgumentParser):
         :param nb_workers:
         :return:
         """
-        self.trials = strategies.generate_trials(strategy=self.strategy,
-                                                 flat_params=self.__flatten_params(self.opt_args),
-                                                 nb_trials=nb_trials)
+        self.trials = strategies.generate_trials(
+            strategy=self.strategy,
+            flat_params=self.__flatten_params(self.opt_args),
+            nb_trials=nb_trials,
+        )
 
         self.trials = [(self.__namespace_from_trial(x), train_function) for x in self.trials]
 
@@ -179,7 +193,14 @@ class HyperOptArgumentParser(ArgumentParser):
         results = self.pool.map(optimize_parallel_gpu_private, self.trials)
         return results
 
-    def optimize_trials_parallel_gpu(self, train_function, nb_trials, trials, gpu_ids, nb_workers=4):
+    def optimize_trials_parallel_gpu(
+        self,
+        train_function,
+        nb_trials,
+        trials,
+        gpu_ids,
+        nb_workers=4,
+    ):
         """
         Runs optimization across gpus with cuda drivers
         :param train_function:
@@ -210,7 +231,12 @@ class HyperOptArgumentParser(ArgumentParser):
         results = self.pool.map(optimize_parallel_gpu_private, self.trials)
         return results
 
-    def optimize_parallel_cpu(self, train_function, nb_trials, nb_workers=4):
+    def optimize_parallel_cpu(
+        self,
+        train_function,
+        nb_trials,
+        nb_workers=4,
+    ):
         """
         Runs optimization across n cpus
         :param train_function:
@@ -218,9 +244,11 @@ class HyperOptArgumentParser(ArgumentParser):
         :param nb_workers:
         :return:
         """
-        self.trials = strategies.generate_trials(strategy=self.strategy,
-                                                 flat_params=self.__flatten_params(self.opt_args),
-                                                 nb_trials=nb_trials)
+        self.trials = strategies.generate_trials(
+            strategy=self.strategy,
+            flat_params=self.__flatten_params(self.opt_args),
+            nb_trials=nb_trials
+        )
 
         self.trials = [(self.__namespace_from_trial(x), train_function) for x in self.trials]
 
@@ -232,14 +260,23 @@ class HyperOptArgumentParser(ArgumentParser):
         results = self.pool.map(optimize_parallel_cpu_private, self.trials)
         return results
 
-    def optimize_parallel(self, train_function, nb_trials, nb_parallel=4):
-        self.trials = strategies.generate_trials(strategy=self.strategy,
-                                                 flat_params=self.__flatten_params(self.opt_args),
-                                                 nb_trials=nb_trials)
+    def optimize_parallel(
+        self,
+        train_function,
+        nb_trials,
+        nb_parallel=4,
+    ):
+        self.trials = strategies.generate_trials(
+            strategy=self.strategy,
+            flat_params=self.__flatten_params(self.opt_args),
+            nb_trials=nb_trials
+        )
 
         # nb of runs through all parallel systems
         nb_fork_batches = int(math.ceil(len(self.trials) / nb_parallel))
-        fork_batches = [self.trials[i: i + nb_parallel] for i in range(0, len(self.trials), nb_parallel)]
+        fork_batches = [
+            self.trials[i:i + nb_parallel] for i in range(0, len(self.trials), nb_parallel)
+        ]
 
         for fork_batch in fork_batches:
             children = []
@@ -267,7 +304,6 @@ class HyperOptArgumentParser(ArgumentParser):
             for i, child in enumerate(children):
                 os.waitpid(child, 0)
 
-
     def __namespace_from_trial(self, trial):
         trial_dict = {d['name']: d['val'] for d in trial}
         for k, v in self.parsed_args.items():
@@ -275,7 +311,6 @@ class HyperOptArgumentParser(ArgumentParser):
                 trial_dict[k] = v
 
         return TTNamespace(**trial_dict)
-
 
     def __flatten_params(self, params):
         """
@@ -297,14 +332,13 @@ class HyperOptArgumentParser(ArgumentParser):
 
 class TTNamespace(argparse.Namespace):
     def __str__(self):
-        result = '-'*100 + '\nHyperparameters:\n'
+        result = '-' * 100 + '\nHyperparameters:\n'
         for k, v in self.__dict__.items():
             result += '{0:20}: {1}\n'.format(k, v)
         return result
 
 
 class OptArg(object):
-
     def __init__(self, obj_id, opt_values, nb_samples=None, tunable=False):
         self.opt_values = opt_values
         self.obj_id = obj_id
@@ -313,7 +347,6 @@ class OptArg(object):
 
         # convert range to list of values
         if nb_samples:
-            self.opt_values = np.linspace(opt_values[0], opt_values[1], num=nb_samples, endpoint=True)
-
-
-
+            self.opt_values = np.linspace(
+                opt_values[0], opt_values[1], num=nb_samples, endpoint=True
+            )
