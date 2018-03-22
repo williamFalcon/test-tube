@@ -122,12 +122,17 @@
             <div class="section">
               
                 <h1 id="test-tube-easily-log-and-tune-deep-learning-experiments">Test Tube: Easily log and tune Deep Learning experiments</h1>
-<p>Test Tube allows you to easily log metadata and track your machine learning experiments.</p>
+<p>Test Tube allows you to easily log metadata and track your machine
+learning experiments.</p>
 <p>Use Test Tube if you need to:</p>
 <ul>
-<li>Track many <a href="./experiment_tracking/experiment/">Experiments</a> across models.</li>
-<li><a href="http://testtube.williamfalcon.com">Visualize</a> and compare different experiments without uploading anywhere.</li>
-<li><a href="./hyperparameter_optimization/HyperOptArgumentParser/">Optimize your hyperparameters</a> using grid_search or random_search.</li>
+<li>Track many <a href="./experiment_tracking/experiment/">Experiments</a> across
+    models.</li>
+<li><a href="http://testtube.williamfalcon.com">Visualize</a> and compare different
+    experiments without uploading anywhere.</li>
+<li><a href="./hyperparameter_optimization/HyperOptArgumentParser/">Optimize your
+    hyperparameters</a>
+    using grid search or random search.</li>
 <li>Automatically track ALL parameters for a particular training run.</li>
 </ul>
 <p>Test Tube is compatible with: Python 2 and 3</p>
@@ -140,12 +145,12 @@ exp = Experiment(name='dense_model',
                  debug=False,
                  save_dir='/Desktop/test_tube')
 
-exp.add_meta_tags({'learning_rate': 0.002, 'nb_layers': 2})
+exp.tag({'learning_rate': 0.002, 'nb_layers': 2})
 
 for step in training_steps:
     tng_err = model.eval(tng_x, tng_y)
 
-    exp.add_metric_row('tng_err': tng_err)
+    exp.log('tng_err': tng_err)
 
 # training complete!
 # all your logs and data are ready to be visualized at testtube.williamfalcon.com
@@ -160,10 +165,10 @@ parser = HyperOptArgumentParser(strategy='random_search')
 parser.add_argument('--learning_rate', default=0.002, type=float, help='the learning rate')
 
 # let's enable optimizing over the number of layers in the network
-parser.add_opt_argument_list('--nb_layers', default=2, type=int, tunable=True, options=[2, 4, 8])
+parser.opt_list('--nb_layers', default=2, type=int, tunable=True, options=[2, 4, 8])
 
 # and tune the number of units in each layer
-parser.add_opt_argument_range('--neurons', default=50, type=int, tunable=True, start=100, end=800, nb_samples=10)
+parser.opt_range('--neurons', default=50, type=int, tunable=True, low=100, high=800, nb_samples=10)
 
 # compile (because it's argparse underneath)
 hparams = parser.parse_args()
@@ -233,6 +238,6 @@ df.tng_err.plot()
 </html>
 
 <!--
-MkDocs version : 0.17.2
-Build Date UTC : 2018-03-10 17:23:06
+MkDocs version : 0.17.3
+Build Date UTC : 2018-03-22 13:55:44
 -->
