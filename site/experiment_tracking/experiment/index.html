@@ -128,14 +128,15 @@
             <div class="section">
               
                 <h1 id="experiment-class-api">Experiment class API</h1>
-<p>An Experiment holds metadata and the results of the training run, you can instantiate an <code>Experiment</code> via:</p>
+<p>An Experiment holds metadata and the results of the training run, you
+can instantiate an <code>Experiment</code> via:</p>
 <pre><code class="python">from test_tube import Experiment
 
 exp = Experiment(name='dense_model',
                  debug=False,
                  save_dir='/Desktop/test_tube')
 
-exp.add_meta_tags({'learning_rate': 0.002, 'nb_layers': 2})
+exp.tag({'learning_rate': 0.002, 'nb_layers': 2})
 
 for step in training_steps:
     tng_err = model.eval(tng_x, tng_y)
@@ -149,12 +150,15 @@ for step in training_steps:
 <hr />
 <h2 id="init-options">init options</h2>
 <h3 id="version">version</h3>
-<p>The same Experiment can have multiple versions. Test tube generates these automatically each time you run your model. To set your own version use:</p>
+<p>The same Experiment can have multiple versions. Test tube generates
+these automatically each time you run your model. To set your own
+version use:</p>
 <pre><code class="python">exp = Experiment(name='dense_model',version=1)
 </code></pre>
 
 <h3 id="debug">debug</h3>
-<p>If you're debugging and don't want to create a log file turn debug to True</p>
+<p>If you're debugging and don't want to create a log file turn debug to
+True</p>
 <pre><code class="python">exp = Experiment(name='dense_model',debug=True)
 </code></pre>
 
@@ -168,19 +172,21 @@ for step in training_steps:
 exp.save()
 </code></pre>
 
-<h3 id="create_git_tag">create_git_tag</h3>
+<h3 id="create_git_tag"><code>create_git_tag</code></h3>
 <p>Ever wanted a flashback to your code when you ran an experiment?
 Snapshot your code for this experiment using git tags:</p>
 <pre><code class="python">exp = Experiment(name='dense_model', create_git_tag=True)
 </code></pre>
 
-<h3 id="add_meta_tags">add_meta_tags</h3>
-<pre><code class="python">exp.add_meta_tags({k: v})
+<hr />
+<h2 id="methods">Methods</h2>
+<h3 id="tag">tag</h3>
+<pre><code class="python">exp.tag({k: v})
 </code></pre>
 
 <p>Adds an arbitrary dictionary of tags to the experiment</p>
 <p><strong>Example</strong></p>
-<pre><code class="python">exp.add_meta_tags({'dataset_name': 'imagenet_1', 'learning_rate': 0.0002})
+<pre><code class="python">exp.tag({'dataset_name': 'imagenet_1', 'learning_rate': 0.0002})
 </code></pre>
 
 <h3 id="log">log</h3>
@@ -208,12 +214,16 @@ exp.log('test_jpg': img, 'val_err': 0.2)
 # csv has file path to that image in that cell
 </code></pre>
 
-<p>To save an image, add <code>jpg</code>, <code>png</code> or <code>jpeg</code> to the key corresponding with the image array. The image must be formatted the same as skimage's <a href="http://scikit-image.org/docs/dev/api/skimage.io.html#skimage.io.imsave">imsave</a> function</p>
+<p>To save an image, add <code>jpg</code>, <code>png</code> or <code>jpeg</code> to the key corresponding
+with the image array. The image must be formatted the same as skimage's
+<a href="http://scikit-image.org/docs/dev/api/skimage.io.html#skimage.io.imsave">imsave</a>
+function</p>
 <h3 id="argparse">argparse</h3>
 <pre><code class="python">exp.argparse(hparams)
 </code></pre>
 
-<p>Transfers hyperparam information from Argparser or HyperOptArgumentParser</p>
+<p>Transfers hyperparam information from Argparser or
+HyperOptArgumentParser</p>
 <p><strong>Example</strong></p>
 <pre><code class="python">from test_tube import HyperOptArgumentParser
 

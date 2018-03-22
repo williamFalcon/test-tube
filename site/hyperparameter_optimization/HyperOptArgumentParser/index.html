@@ -128,7 +128,10 @@
             <div class="section">
               
                 <h1 id="hyperoptargumentparser-class-api">HyperOptArgumentParser class API</h1>
-<p>The HyperOptArgumentParser is a subclass of python's <a href="https://docs.python.org/3/library/argparse.html">argparse</a>, with added finctionality to change parameters on the fly as determined by a sampling strategy.</p>
+<p>The HyperOptArgumentParser is a subclass of python's
+<a href="https://docs.python.org/3/library/argparse.html">argparse</a>, with added
+finctionality to change parameters on the fly as determined by a
+sampling strategy.</p>
 <p>You can instantiate an <code>HyperOptArgumentParser</code> via:</p>
 <pre><code class="python">from test_tube import HyperOptArgumentParser
 
@@ -152,19 +155,27 @@ for hparam_trial in hparams.trials(20):
 
 <hr />
 <h2 id="init-options">init options</h2>
-<h3 id="strategy">strategy</h3>
-<p>Use either <a href="http://www.jmlr.org/papers/volume13/bergstra12a/bergstra12a.pdf">random search</a> or <a href="http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html">grid search</a> for tuning:</p>
+<h3 id="strategy"><code>strategy</code></h3>
+<p>Use either <a href="http://www.jmlr.org/papers/volume13/bergstra12a/bergstra12a.pdf">random
+search</a>
+or <a href="http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html">grid
+search</a>
+for tuning:</p>
 <pre><code class="python">parser = HyperOptArgumentParser(strategy='grid_search')
 </code></pre>
 
 <hr />
 <h2 id="methods">Methods</h2>
-<p>All the functionality from argparse works but we've added the following functionality:</p>
-<h3 id="opt_list">opt_list</h3>
+<p>All the functionality from argparse works but we've added the following
+functionality:</p>
+<h3 id="opt_list"><code>opt_list</code></h3>
 <pre><code class="python">parser.opt_list('--nb_layers', default=2, type=int, tunable=True, options=[2, 4, 8])
 </code></pre>
 
-<p>Enables searching over a list of values for this parameter. The tunable values ONLY replace the argparse values when running a hyperparameter optimization search. This is on purpose so your code doesn't have to change when you want to tune it.</p>
+<p>Enables searching over a list of values for this parameter. The tunable
+values ONLY replace the argparse values when running a hyperparameter
+optimization search. This is on purpose so your code doesn't have to
+change when you want to tune it.</p>
 <p><strong>Example</strong></p>
 <pre><code class="python">parser.opt_list('--nb_layers', default=2, type=int, tunable=True, options=[2, 4, 8])
 hparams = parser.parse_args()
@@ -173,14 +184,19 @@ hparams = parser.parse_args()
 for trial in hparams.trials(2):
     # trial.nb_layers is now a value in [2, 4, 8]
     # but hparams.nb_layers is still 2
-
 </code></pre>
 
-<h3 id="opt_range">opt_range</h3>
-<pre><code class="python">parser.opt_range('--neurons', default=50, type=int, tunable=True, low=100, high=800, nb_samples=8)
+<h3 id="opt_range"><code>opt_range</code></h3>
+<pre><code class="python">parser.opt_range('--neurons', default=50, type=int, tunable=True, low=100, high=800, nb_samples=8, log_base=None)
 </code></pre>
 
-<p>Enables searching over a range of values chosen linearly using the nb_samples given. The tunable values ONLY replace the argparse values when running a hyperparameter optimization search. This is on purpose so your code doesn't have to change when you want to tune it.</p>
+<p>Enables searching over a range of values chosen randomly using the
+<code>nb_samples</code> given. The tunable values <em>only</em> replace the argparse
+values when running a hyperparameter optimization search. This is on
+purpose so your code doesn't have to change when you want to tune it.</p>
+<p>If <code>log_base</code> is set to a positive number, it will randomly search over
+a log scale, where the log base is <code>log_base</code>. This is better for search
+over several orders of magnitude efficiently.</p>
 <p><strong>Example</strong></p>
 <pre><code class="python">parser.opt_range('--neurons', default=50, type=int, tunable=True, low=100, high=800, nb_samples=8)
 hparams = parser.parse_args()
@@ -191,13 +207,13 @@ for trial in hparams.trials(2):
     # but hparams.neurons is still 50
 </code></pre>
 
-<h3 id="json_config">json_config</h3>
+<h3 id="json_config"><code>json_config</code></h3>
 <pre><code class="python">parser.json_config('--config', default='example.json')
 </code></pre>
 
 <p>Replaces default values in the parser with those read from the json file</p>
-<p><strong>Example</strong>
-<em>example.json</em></p>
+<p><strong>Example</strong></p>
+<p><em>example.json</em></p>
 <pre><code class="json">{
     &quot;learning_rate&quot;: 200
 }
@@ -214,21 +230,23 @@ hparams = parser.parse_args()
 <pre><code class="python">trial_generator = hparams.trials(2)
 </code></pre>
 
-<p>Computes the trials needed for these experiments and serves them via a generator</p>
+<p>Computes the trials needed for these experiments and serves them via a
+generator</p>
 <p><strong>Example</strong></p>
 <pre><code class="python">hparams = parser.parse_args()
 for trial_hparams in hparams.trials(2):
     # trial_hparams now has values sampled from the training routine
 </code></pre>
 
-<h3 id="optimize_parallel">optimize_parallel</h3>
+<h3 id="optimize_parallel"><code>optimize_parallel</code></h3>
 <p><code>DEPRECATED... see optimize_parallel_gpu / _cpu</code></p>
 <pre><code class="python">hparams = parser.parse_args()
 hparams.optimize_parallel(function_to_optimize, nb_trials=20, nb_parallel=2)
 </code></pre>
 
-<p>Parallelize the trials across nb_parallel processes.
-Arguments passed into the <code>function_to_optimize</code> are the <code>trial_params</code> and index of process it's in.</p>
+<p>Parallelize the trials across <code>nb_parallel</code> processes. Arguments passed
+into the <code>function_to_optimize</code> are the <code>trial_params</code> and index of
+process it's in.</p>
 <p><strong>Example</strong></p>
 <pre><code class="python"># parallelize tuning on 2 gpus
 # this will place each trial in n into a given gpu
@@ -244,13 +262,14 @@ hparams.optimize_parallel(opt_function, nb_trials=20, nb_parallel=2)
 # in this case by running 10 sets of 2 trials in parallel
 </code></pre>
 
-<h3 id="optimize_parallel_gpu">optimize_parallel_gpu</h3>
+<h3 id="optimize_parallel_gpu"><code>optimize_parallel_gpu</code></h3>
 <pre><code class="python">hparams = parser.parse_args()
 hparams.optimize_parallel_gpu(function_to_optimize, gpu_ids=['1', '0, 2'], nb_trials=20, nb_workers=2)
 </code></pre>
 
-<p>Parallelize the trials across nb_workers processes. Auto assign the correct gpus.
-Argument passed into the <code>function_to_optimize</code> is the <code>trial_params</code> argument.</p>
+<p>Parallelize the trials across <code>nb_workers</code> processes. Auto assign the
+correct gpus. Argument passed into the <code>function_to_optimize</code> is the
+<code>trial_params</code> argument.</p>
 <p><strong>Example</strong></p>
 <pre><code class="python"># parallelize tuning on 2 gpus
 # this will place each trial in n into a given gpu
@@ -264,13 +283,13 @@ hparams.optimize_parallel_gpu(train_main, gpu_ids=['1', '0, 2'], nb_trials=20, n
 # in this case by running 10 sets of 2 trials in parallel
 </code></pre>
 
-<h3 id="optimize_parallel_cpu">optimize_parallel_cpu</h3>
+<h3 id="optimize_parallel_cpu"><code>optimize_parallel_cpu</code></h3>
 <pre><code class="python">hparams = parser.parse_args()
 hparams.optimize_parallel_cpu(function_to_optimize, nb_trials=20, nb_workers=2)
 </code></pre>
 
-<p>Parallelize the trials across nb_workers cpus.
-Argument passed into the <code>function_to_optimize</code> is the <code>trial_params</code> argument.</p>
+<p>Parallelize the trials across <code>nb_workers</code> cpus. Argument passed into
+the <code>function_to_optimize</code> is the <code>trial_params</code> argument.</p>
 <p><strong>Example</strong></p>
 <pre><code class="python"># parallelize tuning on 2 cpus
 # this will place each trial in n into a given gpu
