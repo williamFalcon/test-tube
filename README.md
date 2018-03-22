@@ -13,7 +13,8 @@
   <a href="https://badge.fury.io/py/test_tube"><img src="https://badge.fury.io/py/test_tube.svg"></a>
   <a href="https://williamfalcon.github.io/test-tube/"><img src="https://readthedocs.org/projects/test-tube/badge/?version=latest"></a>
   <a href="https://github.com/williamFalcon/test-tube/blob/master/LICENSE.txt"><img src="https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000"></a>
-</p>
+</p>   
+
 ## Docs
 
 **[View the docs here](https://williamfalcon.github.io/test-tube/)**
@@ -42,11 +43,21 @@ Use Test Tube if you need to:
     files.
 -   Automatically track ALL parameters for a particular training run.
 -   Automatically snapshot your code for an experiment using git tags.
--   Save progress images inline with training metrics.
+-   Save progress images inline with training metrics.   
+-   Not deal with allocating to the correct CPU or GPUs.   
 
-Compatible with: - Python 2, 3 - Tensorflow - Keras - Pytorch - Caffe,
-Caffe2 - Chainer - MXNet - Theano - Scikit-learn - Any python based ML
-or DL library - Runs seamlessly on CPU and GPU.
+Compatible with:   
+- Python 2, 3 
+- Tensorflow  
+- Keras   
+- Pytorch  
+- Caffe, Caffe2   
+- Chainer  
+- MXNet  
+- Theano  
+- Scikit-learn   
+- Any python based ML or DL library    
+
 
 ### Why Test Tube
 
