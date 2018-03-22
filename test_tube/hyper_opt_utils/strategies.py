@@ -1,6 +1,6 @@
-import random
-import json
 import itertools
+import json
+import random
 
 
 def generate_trials(strategy, flat_params, nb_trials=None):
@@ -22,7 +22,7 @@ def generate_trials(strategy, flat_params, nb_trials=None):
 def generate_grid_search_trials(flat_params, nb_trials):
     trials = list(itertools.product(*flat_params))
     if nb_trials:
-        trials = trials[0: nb_trials]
+        trials = trials[0:nb_trials]
     return trials
 
 

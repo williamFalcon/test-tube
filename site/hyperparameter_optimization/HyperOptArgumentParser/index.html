@@ -137,10 +137,10 @@ parser = HyperOptArgumentParser(strategy='random_search')
 parser.add_argument('--learning_rate', default=0.002, type=float, help='the learning rate')
 
 # let's enable optimizing over the number of layers in the network
-parser.add_opt_argument_list('--nb_layers', default=2, type=int, tunable=True, options=[2, 4, 8])
+parser.opt_list('--nb_layers', default=2, type=int, tunable=True, options=[2, 4, 8])
 
 # and tune the number of units in each layer
-parser.add_opt_argument_range('--neurons', default=50, type=int, tunable=True, start=100, end=800, nb_samples=10)
+parser.opt_range('--neurons', default=50, type=int, tunable=True, low=100, high=800, nb_samples=10)
 
 # compile (because it's argparse underneath)
 hparams = parser.parse_args()
@@ -160,13 +160,13 @@ for hparam_trial in hparams.trials(20):
 <hr />
 <h2 id="methods">Methods</h2>
 <p>All the functionality from argparse works but we've added the following functionality:</p>
-<h3 id="add_opt_argument_list">add_opt_argument_list</h3>
-<pre><code class="python">parser.add_opt_argument_list('--nb_layers', default=2, type=int, tunable=True, options=[2, 4, 8])
+<h3 id="opt_list">opt_list</h3>
+<pre><code class="python">parser.opt_list('--nb_layers', default=2, type=int, tunable=True, options=[2, 4, 8])
 </code></pre>
 
 <p>Enables searching over a list of values for this parameter. The tunable values ONLY replace the argparse values when running a hyperparameter optimization search. This is on purpose so your code doesn't have to change when you want to tune it.</p>
 <p><strong>Example</strong></p>
-<pre><code class="python">parser.add_opt_argument_list('--nb_layers', default=2, type=int, tunable=True, options=[2, 4, 8])
+<pre><code class="python">parser.opt_list('--nb_layers', default=2, type=int, tunable=True, options=[2, 4, 8])
 hparams = parser.parse_args()
 # hparams.nb_layers = 2
 
@@ -176,13 +176,13 @@ for trial in hparams.trials(2):
 
 </code></pre>
 
-<h3 id="add_opt_argument_range">add_opt_argument_range</h3>
-<pre><code class="python">parser.add_opt_argument_range('--neurons', default=50, type=int, tunable=True, start=100, end=800, nb_samples=8)
+<h3 id="opt_range">opt_range</h3>
+<pre><code class="python">parser.opt_range('--neurons', default=50, type=int, tunable=True, low=100, high=800, nb_samples=8)
 </code></pre>
 
 <p>Enables searching over a range of values chosen linearly using the nb_samples given. The tunable values ONLY replace the argparse values when running a hyperparameter optimization search. This is on purpose so your code doesn't have to change when you want to tune it.</p>
 <p><strong>Example</strong></p>
-<pre><code class="python">parser.add_opt_argument_range('--neurons', default=50, type=int, tunable=True, start=100, end=800, nb_samples=8)
+<pre><code class="python">parser.opt_range('--neurons', default=50, type=int, tunable=True, low=100, high=800, nb_samples=8)
 hparams = parser.parse_args()
 # hparams.neurons = 50
 
@@ -191,8 +191,8 @@ for trial in hparams.trials(2):
     # but hparams.neurons is still 50
 </code></pre>
 
-<h3 id="add_json_config_argument">add_json_config_argument</h3>
-<pre><code class="python">parser.add_json_config_argument('--config', default='example.json')
+<h3 id="json_config">json_config</h3>
+<pre><code class="python">parser.json_config('--config', default='example.json')
 </code></pre>
 
 <p>Replaces default values in the parser with those read from the json file</p>
@@ -204,7 +204,7 @@ for trial in hparams.trials(2):
 </code></pre>
 
 <pre><code class="python">parser.add_argument('--learning_rate', default=0.002, type=float, help='the learning rate')
-parser.add_json_config_argument('--config', default='example.json')
+parser.json_config('--config', default='example.json')
 hparams = parser.parse_args()
 
 # hparams.learning_rate = 200
@@ -244,9 +244,9 @@ hparams.optimize_parallel(opt_function, nb_trials=20, nb_parallel=2)
 # in this case by running 10 sets of 2 trials in parallel
 </code></pre>
 
-<h3 id="optimize_parallel_gpu_cuda">optimize_parallel_gpu_cuda</h3>
+<h3 id="optimize_parallel_gpu">optimize_parallel_gpu</h3>
 <pre><code class="python">hparams = parser.parse_args()
-hparams.optimize_parallel_gpu_cuda(function_to_optimize, gpu_ids=['1', '0, 2'], nb_trials=20, nb_workers=2)
+hparams.optimize_parallel_gpu(function_to_optimize, gpu_ids=['1', '0, 2'], nb_trials=20, nb_workers=2)
 </code></pre>
 
 <p>Parallelize the trials across nb_workers processes. Auto assign the correct gpus.
@@ -258,7 +258,7 @@ def train_main(trial_params):
     # train your model, etc here...
 
 hparams = parser.parse_args()
-hparams.optimize_parallel_gpu_cuda(train_main, gpu_ids=['1', '0, 2'], nb_trials=20, nb_workers=2)
+hparams.optimize_parallel_gpu(train_main, gpu_ids=['1', '0, 2'], nb_trials=20, nb_workers=2)
 
 # at the end of the optimize_parallel function, all 20 trials will be completed
 # in this case by running 10 sets of 2 trials in parallel
