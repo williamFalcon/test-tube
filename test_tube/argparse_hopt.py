@@ -81,21 +81,23 @@ class HyperOptArgumentParser(ArgumentParser):
     def add_argument(self, *args, **kwargs):
         super(HyperOptArgumentParser, self).add_argument(*args, **kwargs)
 
-    def opt_list(self, *args, options=None, tunable=False, **kwargs):
+    def opt_list(self, *args, **kwargs):
+        options = kwargs.pop("options", None)
+        tunable = kwargs.pop("tunable", False)
         self.add_argument(*args, **kwargs)
         arg_name = args[-1]
         self.opt_args[arg_name] = OptArg(obj_id=arg_name, opt_values=options, tunable=tunable)
 
     def opt_range(
-        self,
-        *args,
-        low=None,
-        high=None,
-        nb_samples=10,
-        tunable=False,
-        log_base=None,
-        **kwargs,
+            self,
+            *args,
+            **kwargs
     ):
+        low = kwargs.pop("low", None)
+        high = kwargs.pop("high", None)
+        nb_samples = kwargs.pop("n_samples", 10)
+        tunable = kwargs.pop("tunable", False)
+        log_base = kwargs.pop("log_base", None)
 
         self.add_argument(*args, **kwargs)
         arg_name = args[-1]
@@ -163,11 +165,11 @@ class HyperOptArgumentParser(ArgumentParser):
         return trials
 
     def optimize_parallel_gpu(
-        self,
-        train_function,
-        nb_trials,
-        gpu_ids,
-        nb_workers=4,
+            self,
+            train_function,
+            nb_trials,
+            gpu_ids,
+            nb_workers=4,
     ):
         """
         Runs optimization across gpus with cuda drivers
@@ -198,19 +200,19 @@ class HyperOptArgumentParser(ArgumentParser):
                 g_gpu_id_q = local_gpu_q
 
             # init a pool with the nb of worker threads we want
-            self.pool = Pool(processes=nb_workers, initializer=init, initargs=(gpu_q, ))
+            self.pool = Pool(processes=nb_workers, initializer=init, initargs=(gpu_q,))
 
         # apply parallelization
         results = self.pool.map(optimize_parallel_gpu_private, self.trials)
         return results
 
     def optimize_trials_parallel_gpu(
-        self,
-        train_function,
-        nb_trials,
-        trials,
-        gpu_ids,
-        nb_workers=4,
+            self,
+            train_function,
+            nb_trials,
+            trials,
+            gpu_ids,
+            nb_workers=4,
     ):
         """
         Runs optimization across gpus with cuda drivers
@@ -236,17 +238,17 @@ class HyperOptArgumentParser(ArgumentParser):
                 g_gpu_id_q = local_gpu_q
 
             # init a pool with the nb of worker threads we want
-            self.pool = Pool(processes=nb_workers, initializer=init, initargs=(gpu_q, ))
+            self.pool = Pool(processes=nb_workers, initializer=init, initargs=(gpu_q,))
 
         # apply parallelization
         results = self.pool.map(optimize_parallel_gpu_private, self.trials)
         return results
 
     def optimize_parallel_cpu(
-        self,
-        train_function,
-        nb_trials,
-        nb_workers=4,
+            self,
+            train_function,
+            nb_trials,
+            nb_workers=4,
     ):
         """
         Runs optimization across n cpus
@@ -272,10 +274,10 @@ class HyperOptArgumentParser(ArgumentParser):
         return results
 
     def optimize_parallel(
-        self,
-        train_function,
-        nb_trials,
-        nb_parallel=4,
+            self,
+            train_function,
+            nb_trials,
+            nb_parallel=4,
     ):
         self.trials = strategies.generate_trials(
             strategy=self.strategy,
@@ -350,12 +352,12 @@ class TTNamespace(argparse.Namespace):
 
 class OptArg(object):
     def __init__(
-        self,
-        obj_id,
-        opt_values,
-        nb_samples=None,
-        tunable=False,
-        log_base=None,
+            self,
+            obj_id,
+            opt_values,
+            nb_samples=None,
+            tunable=False,
+            log_base=None,
     ):
         self.opt_values = opt_values
         self.obj_id = obj_id
@@ -374,4 +376,4 @@ class OptArg(object):
 
                 log_low, log_high = math.log(low, log_base), math.log(high, log_base)
 
-                self.opt_values = log_base**np.random.uniform(log_low, log_high)
+                self.opt_values = log_base ** np.random.uniform(log_low, log_high)
