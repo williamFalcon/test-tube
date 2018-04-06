@@ -221,4 +221,7 @@ To cite the framework use:
       publisher = {GitHub},
       journal = {GitHub repository},
       howpublished = {\url{https://github.com/williamfalcon/test-tube}}
-    }
+    }    
+    
+ ## License    
+ In addition to the terms outlined in the license, this software is U.S. Patent Pending.    
