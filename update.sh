@@ -7,7 +7,7 @@ git tag $version -m "test_tube v$version"
 git push --tags origin master
 
 # push to pypi
-rm -rf /dist/*
+rm -rf ./dist/*
 python setup.py sdist
 twine upload dist/*
 
