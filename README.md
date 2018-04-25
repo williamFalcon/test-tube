@@ -59,6 +59,12 @@ Compatible with:
 - Scikit-learn   
 - Any python based ML or DL library    
 
+### IMMEDIATE CONTRIBUTION OPPORTUNITIES!    
+1. Write tests for log.py   
+2. Write tests for argparse_hopt.py   
+3. Implement hyperband   
+4. Implement SMAC   
+5. Integrate tensorboardx   
 
 ### Why Test Tube
 
