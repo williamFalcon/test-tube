@@ -2,8 +2,7 @@ import pytest
 
 
 def test_hello():
-    print("hello travis")
-
+    assert 4==4
 
 if __name__ == '__main__':
     pytest.main([__file__])
