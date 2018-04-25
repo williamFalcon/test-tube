@@ -11,6 +11,7 @@
 </p>
 <p align="center">
   <a href="https://badge.fury.io/py/test_tube"><img src="https://badge.fury.io/py/test_tube.svg"></a>
+  <a href="https://travis-ci.org/williamFalcon/test-tube"><img src="https://travis-ci.org/williamFalcon/test-tube.svg?branch=master"></a>
   <a href="https://williamfalcon.github.io/test-tube/"><img src="https://readthedocs.org/projects/test-tube/badge/?version=latest"></a>
   <a href="https://github.com/williamFalcon/test-tube/blob/master/LICENSE.txt"><img src="https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000"></a>
 </p>   
