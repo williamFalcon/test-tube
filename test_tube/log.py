@@ -4,7 +4,7 @@ from datetime import datetime
 
 import numpy as np
 import pandas as pd
-from scipy.misc import imsave
+from imageio import imwrite
 
 # constants
 _ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -261,7 +261,7 @@ class Experiment(object):
 
                     # save image to disk
                     if type(metric[k]) is not str:
-                        imsave(save_path, metric[k])
+                        imwrite(save_path, metric[k])
 
                     # replace the image in the metric with the file path
                     metric[k] = save_path
