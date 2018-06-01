@@ -95,7 +95,7 @@ class HyperOptArgumentParser(ArgumentParser):
     ):
         low = kwargs.pop("low", None)
         high = kwargs.pop("high", None)
-        nb_samples = kwargs.pop("n_samples", 10)
+        nb_samples = kwargs.pop("nb_samples", 10)
         tunable = kwargs.pop("tunable", False)
         log_base = kwargs.pop("log_base", None)
 
