@@ -369,11 +369,12 @@ class OptArg(object):
 
             if log_base is None:
                 # random search on uniform scale
-                opt_values = np.random.uniform(low, high, nb_samples)
+                self.opt_values = np.random.uniform(low, high, nb_samples)
             else:
                 # random search on log scale with specified base
                 assert high >= low > 0, "`opt_values` must be positive to do log-scale search."
 
                 log_low, log_high = math.log(low, log_base), math.log(high, log_base)
 
-                self.opt_values = log_base ** np.random.uniform(log_low, log_high)
+                self.opt_values = log_base ** np.random.uniform(log_low, log_high, nb_samples)
+
