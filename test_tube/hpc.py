@@ -4,6 +4,8 @@ from .argparse_hopt import HyperOptArgumentParser
 
 
 class AbstractCluster(object):
+    TRIGGER_CMD = 'from_cluster_hopt'
+
     def __init__(
             self,
             hyperparam_optimizer: HyperOptArgumentParser,
@@ -32,6 +34,11 @@ class AbstractCluster(object):
         self.notify_on_fail = False
         self.job_name = None
         self.python_cmd = python_cmd
+
+        # detect when this was called because a slurm object started a hopt
+        self.is_from_slurm_object = AbstractCluster.TRIGGER_CMD in vars(self.hyperparam_optimizer)
+        print('a')
+
 
     def load_modules(self, modules):
         self.modules = modules
@@ -135,7 +142,7 @@ class SlurmCluster(AbstractCluster):
             params.append(cmd)
 
         # this arg lets the hyperparameter optimizer do its thing
-        params.append('--from_cluster_hopt')
+        params.append('--{}'.format(AbstractCluster.TRIGGER_CMD))
 
         full_cmd = ' '.join(params)
         return full_cmd
