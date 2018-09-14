@@ -1,6 +1,7 @@
 import os
 import sys
 from .argparse_hopt import HyperOptArgumentParser
+from subprocess import call
 
 
 class AbstractCluster(object):
@@ -92,7 +93,8 @@ class SlurmCluster(AbstractCluster):
             slurm_script_path = self.__save_slurm_cmd(slurm_cmd)
 
             # run script
-            print('use .sh to run')
+            result = call('.{}'.format(slurm_script_path), shell=True)
+            print(result)
 
     def __run_experiment(self):
         pass
