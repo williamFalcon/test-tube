@@ -37,7 +37,6 @@ class AbstractCluster(object):
 
         # detect when this was called because a slurm object started a hopt
         self.is_from_slurm_object = AbstractCluster.TRIGGER_CMD in vars(self.hyperparam_optimizer)
-        print('a')
 
 
     def load_modules(self, modules):
@@ -74,6 +73,11 @@ class SlurmCluster(AbstractCluster):
         """
         self.job_name = job_name
 
+        # whenever this script is called by slurm, it's an actual experiment, so start it
+        if self.is_from_slurm_object:
+            self.__run_experiment()
+            return
+
         # generate hopt trials
         trials = self.hyperparam_optimizer.generate_trials(nb_trials)
 
@@ -88,6 +92,9 @@ class SlurmCluster(AbstractCluster):
 
             # run script
             print('use .sh to run')
+
+    def __run_experiment(self):
+        paa
 
     def __save_slurm_cmd(self, slurm_cmd):
         slurm_cmd_script_path = os.path.join(self.log_path, 'slurm_cmd.sh')
