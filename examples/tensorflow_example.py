@@ -54,6 +54,7 @@ cluster.notify_job_status(email='waf251@nyu.edu', on_done=True, on_fail=True)
 cluster.load_modules(['python-3'])
 cluster.per_experiment_nb_gpus = 4
 cluster.per_experiment_nb_nodes = 3
+cluster.gpu_type = '1080ti'
 
 # optimize on 4 gpus at the same time
 # each gpu will get 1 experiment with a set of hyperparams

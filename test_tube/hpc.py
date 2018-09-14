@@ -34,6 +34,7 @@ class AbstractCluster(object):
         self.notify_on_fail = False
         self.job_name = None
         self.python_cmd = python_cmd
+        self.gpu_type: str = None
 
         # detect when this was called because a slurm object started a hopt
         self.is_from_slurm_object = AbstractCluster.TRIGGER_CMD in vars(self.hyperparam_optimizer)
@@ -94,7 +95,7 @@ class SlurmCluster(AbstractCluster):
             print('use .sh to run')
 
     def __run_experiment(self):
-        paa
+        pass
 
     def __save_slurm_cmd(self, slurm_cmd):
         slurm_cmd_script_path = os.path.join(self.log_path, 'slurm_cmd.sh')
@@ -205,6 +206,13 @@ class SlurmCluster(AbstractCluster):
             '#SBATCH --gres gpu:{}'.format(self.per_experiment_nb_gpus),
             '#################\n'
         ]
+        if self.gpu_type is not None:
+            command = [
+                '# gpus per cluster',
+                '#SBATCH --gres gpu:{}:{}'.format(self.gpu_type, self.per_experiment_nb_gpus),
+                '#################\n'
+            ]
+
         sub_commands.extend(command)
 
         # pick gpu partition
