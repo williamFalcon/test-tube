@@ -79,6 +79,7 @@ class SlurmCluster(AbstractCluster):
 
         # whenever this script is called by slurm, it's an actual experiment, so start it
         if self.is_from_slurm_object:
+            # TODO: verfiy this is caught and the script can execute
             self.__run_experiment()
             return
 
@@ -98,10 +99,12 @@ class SlurmCluster(AbstractCluster):
             slurm_script_path = self.__save_slurm_cmd(slurm_cmd, timestamp)
 
             # run script
+            # TODO: run script
             # result = call('.{}'.format(slurm_script_path), shell=True)
             print('a')
 
     def __run_experiment(self):
+
         pass
 
     def __save_slurm_cmd(self, slurm_cmd, timestamp):
@@ -133,14 +136,14 @@ class SlurmCluster(AbstractCluster):
 
         # when err logging is enabled, build add the err logging folder
         if self.enable_log_err:
-            err_path = os.path.join(slurm_out_path, 'err_logs')
+            err_path = os.path.join(slurm_out_path, 'slurm_err_logs')
             if not os.path.exists(err_path):
                 os.makedirs(err_path)
             self.err_log_path = err_path
 
         # when out logging is enabled, build add the out logging folder
         if self.enable_log_out:
-            out_path = os.path.join(slurm_out_path, 'out_logs')
+            out_path = os.path.join(slurm_out_path, 'slurm_out_logs')
             if not os.path.exists(out_path):
                 os.makedirs(out_path)
             self.out_log_path = out_path
