@@ -2,6 +2,7 @@ import os
 import sys
 from .argparse_hopt import HyperOptArgumentParser
 from subprocess import call
+import datetime
 
 
 class AbstractCluster(object):
@@ -21,6 +22,7 @@ class AbstractCluster(object):
         self.enable_log_err = enable_log_err
         self.enable_log_out = enable_log_out
         self.test_tube_exp_name = test_tube_exp_name
+        self.slurm_files_log_path = None
         self.err_log_path = None
         self.out_log_path = None
         self.modules = []
@@ -87,20 +89,23 @@ class SlurmCluster(AbstractCluster):
         self.__layout_logging_dir()
 
         # for each trial, generate a slurm command
-        for trial_params in trials:
+        for i, trial_params in enumerate(trials):
+            timestamp = datetime.datetime.now().strftime("%Y-%m-%d__%H-%M-%S")
+            timestamp = 'trial_{}_{}'.format(i, timestamp)
+
             # generate command
             slurm_cmd = self.__build_slurm_command(trial_params)
-            slurm_script_path = self.__save_slurm_cmd(slurm_cmd)
+            slurm_script_path = self.__save_slurm_cmd(slurm_cmd, timestamp)
 
             # run script
-            result = call('.{}'.format(slurm_script_path), shell=True)
-            print(result)
+            # result = call('.{}'.format(slurm_script_path), shell=True)
+            print('a')
 
     def __run_experiment(self):
         pass
 
-    def __save_slurm_cmd(self, slurm_cmd):
-        slurm_cmd_script_path = os.path.join(self.log_path, 'slurm_cmd.sh')
+    def __save_slurm_cmd(self, slurm_cmd, timestamp):
+        slurm_cmd_script_path = os.path.join(self.slurm_files_log_path, '{}_slurm_cmd.sh'.format(timestamp))
         with open(file=slurm_cmd_script_path, mode='w') as file:
             file.write(slurm_cmd)
         return slurm_cmd_script_path
@@ -116,27 +121,34 @@ class SlurmCluster(AbstractCluster):
         if not os.path.exists(self.log_path):
             os.makedirs(self.log_path)
 
-        # if we have a test tube name, make the folder and set as the logging destination
+        # format the logging folder path
         if self.test_tube_exp_name is not None:
             slurm_out_path = os.path.join(self.log_path, self.test_tube_exp_name)
-            if not os.path.exists(slurm_out_path):
-                os.makedirs(slurm_out_path)
+        else:
+            slurm_out_path = os.path.join(self.log_path, self.job_name)
 
-            # when err logging is enabled, build add the err logging folder
-            if self.enable_log_err:
-                err_path = os.path.join(slurm_out_path, 'err_logs')
-                if not os.path.exists(err_path):
-                    os.makedirs(err_path)
-                self.err_log_path = err_path
+        # if we have a test tube name, make the folder and set as the logging destination
+        if not os.path.exists(slurm_out_path):
+            os.makedirs(slurm_out_path)
 
-            # when out logging is enabled, build add the out logging folder
-            if self.enable_log_out:
-                out_path = os.path.join(slurm_out_path, 'out_logs')
-                if not os.path.exists(out_path):
-                    os.makedirs(out_path)
-                self.out_log_path = out_path
+        # when err logging is enabled, build add the err logging folder
+        if self.enable_log_err:
+            err_path = os.path.join(slurm_out_path, 'err_logs')
+            if not os.path.exists(err_path):
+                os.makedirs(err_path)
+            self.err_log_path = err_path
 
-        # TODO: add slurm commands path
+        # when out logging is enabled, build add the out logging folder
+        if self.enable_log_out:
+            out_path = os.path.join(slurm_out_path, 'out_logs')
+            if not os.path.exists(out_path):
+                os.makedirs(out_path)
+            self.out_log_path = out_path
+
+        # place where slurm files log to
+        self.slurm_files_log_path = os.path.join(slurm_out_path, 'slurm_scripts')
+        if not os.path.exists(self.slurm_files_log_path):
+            os.makedirs(self.slurm_files_log_path)
 
     def __get_hopt_params(self, trial):
         """
