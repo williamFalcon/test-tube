@@ -80,7 +80,7 @@ class SlurmCluster(AbstractCluster):
         # whenever this script is called by slurm, it's an actual experiment, so start it
         if self.is_from_slurm_object:
             # TODO: verfiy this is caught and the script can execute
-            self.__run_experiment()
+            results = self.__run_experiment(train_function)
             return
 
         # generate hopt trials
@@ -98,14 +98,14 @@ class SlurmCluster(AbstractCluster):
             slurm_cmd = self.__build_slurm_command(trial_params)
             slurm_script_path = self.__save_slurm_cmd(slurm_cmd, timestamp)
 
-            # run script
+            # run script to launch job
             # TODO: run script
             # result = call('.{}'.format(slurm_script_path), shell=True)
             print('a')
 
-    def __run_experiment(self):
-
-        pass
+    def __run_experiment(self, train_function):
+        results = train_function(self.hyperparam_optimizer)
+        return results
 
     def __save_slurm_cmd(self, slurm_cmd, timestamp):
         slurm_cmd_script_path = os.path.join(self.slurm_files_log_path, '{}_slurm_cmd.sh'.format(timestamp))
