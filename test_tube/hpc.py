@@ -1,9 +1,19 @@
 import os
 import sys
+from .argparse_hopt import HyperOptArgumentParser
 
 
 class AbstractCluster(object):
-    def __init__(self, log_path, python_cmd='python3', enable_log_err=True, enable_log_out=True, test_tube_exp_name=None):
+    def __init__(
+            self,
+            hyperparam_optimizer: HyperOptArgumentParser,
+            log_path: str,
+            python_cmd: str ='python3',
+            enable_log_err: bool =True,
+            enable_log_out: bool =True,
+            test_tube_exp_name: str =None
+    ):
+        self.hyperparam_optimizer = hyperparam_optimizer
         self.log_path = log_path
         self.enable_log_err = enable_log_err
         self.enable_log_out = enable_log_out
@@ -13,9 +23,9 @@ class AbstractCluster(object):
         self.modules = []
         self.script_name = sys.argv[0]
         self.job_time = '15:00'
-        self.nb_gpus_per_node = 1
+        self.per_experiment_nb_gpus = 1
         self.hns_gpu = False
-        self.nb_nodes = 1
+        self.per_experiment_nb_nodes = 1
         self.memory_mb_per_node = 4000
         self.email = None
         self.notify_on_end = False
@@ -31,7 +41,7 @@ class AbstractCluster(object):
         self.notify_on_end = on_done
         self.notify_on_fail = on_fail
 
-    def schedule(self, trials, job_name):
+    def optimize_parallel_cluster(self, train_function, nb_trials, job_name):
         raise NotImplementedError
 
     def optimize_parallel_slurm(self, job_name, output_file, error_file, job_time, nb_gpus, nb_nodes, memory, notifications_email, gpu_types):
@@ -42,15 +52,35 @@ class SlurmCluster(AbstractCluster):
     def __init__(self, *args, **kwargs):
         super(SlurmCluster, self).__init__(*args, **kwargs)
 
-    def schedule(self, trials, job_name):
+    def optimize_parallel_cluster(
+            self,
+            train_function,
+            nb_trials: int,
+            job_name: str
+    ):
+        """
+        Runs optimization on the attached cluster
+        :param train_function:
+        :param nb_trials:
+        :param job_name:
+        :return:
+        """
         self.job_name = job_name
+
+        # generate hopt trials
+        trials = self.hyperparam_optimizer.generate_trials(nb_trials)
+
+        # layout logging structure
         self.__layout_logging_dir()
 
-        # generate command
-        slurm_cmd = self.__build_slurm_command()
-        slurm_script_path = self.__save_slurm_cmd(slurm_cmd)
+        # for each trial, generate a slurm command
+        for trial_params in trials:
+            # generate command
+            slurm_cmd = self.__build_slurm_command(trial_params)
+            slurm_script_path = self.__save_slurm_cmd(slurm_cmd)
 
-        # run script
+            # run script
+            print('use .sh to run')
 
     def __save_slurm_cmd(self, slurm_cmd):
         slurm_cmd_script_path = os.path.join(self.log_path, 'slurm_cmd.sh')
@@ -89,7 +119,28 @@ class SlurmCluster(AbstractCluster):
                     os.makedirs(out_path)
                 self.out_log_path = out_path
 
-    def __build_slurm_command(self):
+        # TODO: add slurm commands path
+
+    def __get_hopt_params(self, trial):
+        """
+        Turns hopt trial into script params
+        :param trial:
+        :return:
+        """
+
+        params = []
+        for k in trial.__dict__:
+            v = trial.__dict__[k]
+            cmd = '--{} {}'.format(k, v)
+            params.append(cmd)
+
+        # this arg lets the hyperparameter optimizer do its thing
+        params.append('--from_cluster_hopt')
+
+        full_cmd = ' '.join(params)
+        return full_cmd
+
+    def __build_slurm_command(self, trial):
         sub_commands = []
 
         command =[
@@ -137,7 +188,7 @@ class SlurmCluster(AbstractCluster):
         # add nb of gpus
         command = [
             '# gpus per cluster',
-            '#SBATCH --gres gpu:{}'.format(self.nb_gpus_per_node),
+            '#SBATCH --gres gpu:{}'.format(self.per_experiment_nb_gpus),
             '#################\n'
         ]
         sub_commands.extend(command)
@@ -159,7 +210,7 @@ class SlurmCluster(AbstractCluster):
         # pick nb nodes
         command = [
             '# number of requested nodes',
-            '#SBATCH --nodes={}'.format(self.nb_nodes),
+            '#SBATCH --nodes={}'.format(self.per_experiment_nb_nodes),
             '#################\n'
         ]
         sub_commands.extend(command)
@@ -200,7 +251,8 @@ class SlurmCluster(AbstractCluster):
         sub_commands = [x.lstrip() for x in sub_commands]
 
         # add run command
-        cmd = 'srun {} .{}'.format(self.python_cmd, self.script_name)
+        trial_args = self.__get_hopt_params(trial)
+        cmd = 'srun {} .{} {}'.format(self.python_cmd, self.script_name, trial_args)
         sub_commands.append(cmd)
 
         # build full command with empty lines in between

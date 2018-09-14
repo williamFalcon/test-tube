@@ -48,7 +48,7 @@ parser.opt_list('--y_val', default=12, options=[1, 2, 3, 4], tunable=True)
 parser.opt_list('--x_val', default=12, options=[20, 12, 30, 45], tunable=True)
 hyperparams = parser.parse_args()
 
-cluster = SlurmCluster(log_path=hyperparams.log_path, test_tube_exp_name=hyperparams.test_tube_exp_name)
+cluster = SlurmCluster(hyperparam_optimizer=hyperparams, log_path=hyperparams.log_path, test_tube_exp_name=hyperparams.test_tube_exp_name)
 cluster.notify_job_status(email='waf251@nyu.edu', on_done=True, on_fail=True)
 cluster.load_modules(['python-3'])
 cluster.nb_gpus = 4
@@ -56,5 +56,5 @@ cluster.nb_nodes = 3
 
 # optimize on 4 gpus at the same time
 # each gpu will get 1 experiment with a set of hyperparams
-hyperparams.optimize_parallel_cluster(train, nb_trials=4, job_name='test_job', cluster=cluster)
+cluster.optimize_parallel_cluster(train, nb_trials=4, job_name='test_job')
 hyperparams.optimize_parallel_gpu(train, gpu_ids=['1', '0', '3', '2'], nb_trials=4, nb_workers=4)
