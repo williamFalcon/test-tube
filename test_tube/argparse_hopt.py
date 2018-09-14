@@ -9,7 +9,7 @@ from argparse import ArgumentParser
 from copy import deepcopy
 from multiprocessing import Pool, Queue
 from time import sleep
-
+from .hpc import AbstractCluster
 import numpy as np
 
 from .hyper_opt_utils import strategies
@@ -163,6 +163,30 @@ class HyperOptArgumentParser(ArgumentParser):
 
         trials = [self.__namespace_from_trial(x) for x in trials]
         return trials
+
+    def optimize_parallel_cluster(
+            self,
+            train_function: function,
+            nb_trials: int,
+            cluster_obj: AbstractCluster
+    ):
+        """
+        Runs optimization on the attached cluster
+        :param train_function:
+        :param nb_trials:
+        :param cluster_obj:
+        :return:
+        """
+        self.trials = strategies.generate_trials(
+            strategy=self.strategy,
+            flat_params=self.__flatten_params(self.opt_args),
+            nb_trials=nb_trials,
+        )
+
+        self.trials = [(self.__namespace_from_trial(x), train_function) for x in self.trials]
+
+        # send to cluster for parallelization
+        cluster_obj.schedule(self.trials)
 
     def optimize_parallel_gpu(
             self,
