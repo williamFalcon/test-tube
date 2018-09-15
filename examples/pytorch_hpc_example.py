@@ -35,7 +35,7 @@ def train(hparams):
 parser = HyperOptArgumentParser(strategy='random_search')
 parser.add_argument('--test_tube_exp_name', default='my_test')
 parser.add_argument('--log_path', default='/Users/waf/Desktop/test')
-parser.opt_list('--y_val', default=12, options=[1, 2, 3, 4], tunable=True)
+parser.opt_list('--y_val', default=12, options=[1, 2, 3, 4, 5, 6], tunable=True)
 parser.opt_list('--x_val', default=12, options=[20, 12, 30, 45], tunable=True)
 hyperparams = parser.parse_args()
 
@@ -43,10 +43,11 @@ hyperparams = parser.parse_args()
 cluster = SlurmCluster(hyperparam_optimizer=hyperparams, log_path=hyperparams.log_path, test_tube_exp_name=hyperparams.test_tube_exp_name)
 
 # email results if your hpc supports it
-cluster.notify_job_status(email='myemail@somewhere.edu', on_done=True, on_fail=True)
+cluster.notify_job_status(email='waf251@nyu.edu', on_done=True, on_fail=True)
 
 # any modules for code to run in env
 cluster.load_modules(['python-3'])
+cluster.add_command('source activate organics')
 
 # set the environment variables
 cluster.per_experiment_nb_gpus = 4
@@ -54,4 +55,4 @@ cluster.per_experiment_nb_nodes = 3
 cluster.gpu_type = '1080ti'
 
 # optimize on 4 gpus at the same time
-cluster.optimize_parallel_cluster(train, nb_trials=4, job_name='test_job')
+cluster.optimize_parallel_cluster(train, nb_trials=24, job_name='test_job')

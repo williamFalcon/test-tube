@@ -38,6 +38,7 @@ class AbstractCluster(object):
         self.job_name = None
         self.python_cmd = python_cmd
         self.gpu_type: str = None
+        self.commands = []
 
         # detect when this was called because a slurm object started a hopt.
         # if true, remove the flag so tt logs don't show it
@@ -45,6 +46,8 @@ class AbstractCluster(object):
         if self.is_from_slurm_object:
             self.hyperparam_optimizer.__delattr__(HyperOptArgumentParser.TRIGGER_CMD)
 
+    def add_command(self, cmd):
+        self.commands.append(cmd)
 
     def load_modules(self, modules):
         self.modules = modules
@@ -297,6 +300,11 @@ class SlurmCluster(AbstractCluster):
 
         # remove spaces before the hash
         sub_commands = [x.lstrip() for x in sub_commands]
+
+        # add additional commands
+        for cmd in self.commands:
+            sub_commands.append(cmd)
+            sub_commands.append('\n')
 
         # add run command
         trial_args = self.__get_hopt_params(trial)
