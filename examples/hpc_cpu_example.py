@@ -3,8 +3,7 @@ from test_tube import Experiment, HyperOptArgumentParser, SlurmCluster
 """
 Example script to show how to run a hyperparameter search on a cluster managed by SLURM
 
-A single trial gets allocated on a single GPU until all trials have completed.   
-This means for 10 trials and 4 GPUs, we'll run 4 in parallel twice and the last 2 trials in parallel.   
+Every distinct set of hyperparams runs on the configured hardware described in the SlurmCluster set up
 """
 
 
@@ -62,9 +61,9 @@ cluster.add_command('source activate myCondaEnv')
 # ############
 # cluster.add_slurm_cmd(cmd='cpus-per-task', value='1', comment='nb cpus per task')
 
-# set the environment variables
-cluster.per_experiment_nb_cpus = 2
-cluster.per_experiment_nb_nodes = 1
+# set job compute details (this will apply PER set of hyperparameters)
+cluster.per_experiment_nb_cpus = 20
+cluster.per_experiment_nb_nodes = 10
 
-# optimize on 2 gpus per set of hyperparameters
+# each job (24 in total here) will use 200 cpus for each set of hyperparams
 cluster.optimize_parallel_cluster_cpu(train, nb_trials=24, job_name='first_tt_job')
