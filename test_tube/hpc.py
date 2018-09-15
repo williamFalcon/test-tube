@@ -82,6 +82,7 @@ class SlurmCluster(AbstractCluster):
 
         # whenever this script is called by slurm, it's an actual experiment, so start it
         if self.is_from_slurm_object:
+            # TODO: add try catch for running
             results = self.__run_experiment(train_function)
             return
 
