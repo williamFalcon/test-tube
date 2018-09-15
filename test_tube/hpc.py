@@ -68,7 +68,7 @@ class SlurmCluster(AbstractCluster):
     def __init__(self, *args, **kwargs):
         super(SlurmCluster, self).__init__(*args, **kwargs)
 
-    def optimize_parallel_cluster(
+    def optimize_parallel_cluster_gpu(
             self,
             train_function,
             nb_trials: int,

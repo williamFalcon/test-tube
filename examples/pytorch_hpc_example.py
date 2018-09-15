@@ -58,4 +58,4 @@ cluster.per_experiment_nb_nodes = 2
 cluster.gpu_type = '1080ti'
 
 # optimize on 4 gpus at the same time
-cluster.optimize_parallel_cluster(train, nb_trials=24, job_name='first_tt_job')
+cluster.optimize_parallel_cluster_gpu(train, nb_trials=24, job_name='first_tt_job')
