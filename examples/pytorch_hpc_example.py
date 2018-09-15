@@ -3,8 +3,7 @@ from test_tube import Experiment, HyperOptArgumentParser, SlurmCluster
 
 
 """
-This script demonstrates how to do a hyperparameter search over 2 parameters in tensorflow
-on 4 simultaneous GPUs. Each trial will also save its own experiment logs.   
+Example script to show how to run a hyperparameter search on a cluster managed by SLURM
 
 A single trial gets allocated on a single GPU until all trials have completed.   
 This means for 10 trials and 4 GPUs, we'll run 4 in parallel twice and the last 2 trials in parallel.   
