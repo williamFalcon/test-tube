@@ -29,9 +29,9 @@ class AbstractCluster(object):
         self.script_name = os.path.realpath(sys.argv[0])
         self.job_time = '15:00'
         self.per_experiment_nb_gpus = 1
-        self.hns_gpu = False
+        self.per_experiment_nb_cpus = 1
         self.per_experiment_nb_nodes = 1
-        self.memory_mb_per_node = 4000
+        self.memory_mb_per_node = 2000
         self.email = None
         self.notify_on_end = False
         self.notify_on_fail = False
@@ -76,7 +76,24 @@ class SlurmCluster(AbstractCluster):
             self,
             train_function,
             nb_trials: int,
-            job_name: str
+            job_name: str,
+    ):
+        self.__optimize_parallel_cluster_internal(train_function, nb_trials, job_name, on_gpu=True)
+
+    def optimize_parallel_cluster_cpu(
+            self,
+            train_function,
+            nb_trials: int,
+            job_name: str,
+    ):
+        self.__optimize_parallel_cluster_internal(train_function, nb_trials, job_name, on_gpu=False)
+
+    def __optimize_parallel_cluster_internal(
+            self,
+            train_function,
+            nb_trials: int,
+            job_name: str,
+            on_gpu: bool
     ):
         """
         Runs optimization on the attached cluster
@@ -105,7 +122,7 @@ class SlurmCluster(AbstractCluster):
 
             # generate command
             slurm_cmd_script_path = os.path.join(self.slurm_files_log_path, '{}_slurm_cmd.sh'.format(timestamp))
-            slurm_cmd = self.__build_slurm_command(trial_params, slurm_cmd_script_path, timestamp)
+            slurm_cmd = self.__build_slurm_command(trial_params, slurm_cmd_script_path, timestamp, on_gpu)
             self.__save_slurm_cmd(slurm_cmd, slurm_cmd_script_path)
 
             # run script to launch job
@@ -191,7 +208,7 @@ class SlurmCluster(AbstractCluster):
         full_cmd = ' '.join(params)
         return full_cmd
 
-    def __build_slurm_command(self, trial, slurm_cmd_script_path, timestamp):
+    def __build_slurm_command(self, trial, slurm_cmd_script_path, timestamp, on_gpu):
         sub_commands = []
 
         command =[
@@ -239,7 +256,7 @@ class SlurmCluster(AbstractCluster):
         sub_commands.extend(command)
 
         # add nb of gpus
-        if self.per_experiment_nb_gpus > 0:
+        if self.per_experiment_nb_gpus > 0 and on_gpu:
             command = [
                 '# gpus per cluster',
                 '#SBATCH --gres gpu:{}'.format(self.per_experiment_nb_gpus),
@@ -251,6 +268,15 @@ class SlurmCluster(AbstractCluster):
                     '#SBATCH --gres gpu:{}:{}'.format(self.gpu_type, self.per_experiment_nb_gpus),
                     '#################\n'
                 ]
+            sub_commands.extend(command)
+
+        # add nb of cpus if not looking at a gpu job
+        if not on_gpu:
+            command = [
+                '# cpus per job',
+                '#SBATCH --cpus-per-task={}'.format(self.per_experiment_nb_cpus),
+                '#################\n'
+            ]
             sub_commands.extend(command)
 
         # pick nb nodes

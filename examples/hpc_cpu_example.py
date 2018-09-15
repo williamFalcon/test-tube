@@ -1,6 +1,4 @@
-import torch
 from test_tube import Experiment, HyperOptArgumentParser, SlurmCluster
-
 
 """
 Example script to show how to run a hyperparameter search on a cluster managed by SLURM
@@ -21,10 +19,10 @@ def train(hparams):
     exp.argparse(hparams)
 
     # pretend to train
-    x = torch.rand((1, hparams.x_val))
+    x = hparams.x_val
     for train_step in range(0, 100):
-        y = torch.rand((hparams.x_val, 1))
-        out = x.mm(y)
+        y = hparams.y_val
+        out = x * y
         exp.log({'fake_err': out.item()})
 
     # save exp when we're done
@@ -55,12 +53,18 @@ cluster.load_modules([
     'python-3',
     'anaconda3'
 ])
+# add commands to the non slurm portion
 cluster.add_command('source activate myCondaEnv')
 
-# set the environment variables
-cluster.per_experiment_nb_gpus = 4
-cluster.per_experiment_nb_nodes = 2
-cluster.gpu_type = '1080ti'
+# can also add custom slurm commands which show up as:
+# #comment
+# #SBATCH --cmd=value
+# ############
+# cluster.add_slurm_cmd(cmd='cpus-per-task', value='1', comment='nb cpus per task')
 
-# optimize on 4 gpus at the same time
-cluster.optimize_parallel_cluster_gpu(train, nb_trials=24, job_name='first_tt_job')
+# set the environment variables
+cluster.per_experiment_nb_cpus = 2
+cluster.per_experiment_nb_nodes = 1
+
+# optimize on 2 gpus per set of hyperparameters
+cluster.optimize_parallel_cluster_cpu(train, nb_trials=24, job_name='first_tt_job')
