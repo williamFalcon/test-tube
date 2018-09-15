@@ -320,7 +320,7 @@ class SlurmCluster(AbstractCluster):
         # add run command
         trial_args = self.__get_hopt_params(trial)
         trial_args = '{} --{} {}'.format(trial_args, HyperOptArgumentParser.SLURM_CMD_PATH, slurm_cmd_script_path)
-        cmd = 'srun {} .{} {}'.format(self.python_cmd, self.script_name, trial_args)
+        cmd = 'srun {} {} {}'.format(self.python_cmd, self.script_name, trial_args)
         sub_commands.append(cmd)
 
         # build full command with empty lines in between
