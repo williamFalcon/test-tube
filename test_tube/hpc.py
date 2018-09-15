@@ -3,7 +3,7 @@ import sys
 from .argparse_hopt import HyperOptArgumentParser
 from subprocess import call
 import datetime
-
+import traceback
 
 class AbstractCluster(object):
 
@@ -82,9 +82,8 @@ class SlurmCluster(AbstractCluster):
 
         # whenever this script is called by slurm, it's an actual experiment, so start it
         if self.is_from_slurm_object:
-            # TODO: add try catch for running
             results = self.__run_experiment(train_function)
-            return
+            return results
 
         # generate hopt trials
         trials = self.hyperparam_optimizer.generate_trials(nb_trials)
@@ -100,22 +99,28 @@ class SlurmCluster(AbstractCluster):
             # generate command
             slurm_cmd_script_path = os.path.join(self.slurm_files_log_path, '{}_slurm_cmd.sh'.format(timestamp))
             slurm_cmd = self.__build_slurm_command(trial_params, slurm_cmd_script_path)
-            slurm_script_path = self.__save_slurm_cmd(slurm_cmd, slurm_cmd_script_path)
+            self.__save_slurm_cmd(slurm_cmd, slurm_cmd_script_path)
 
             # run script to launch job
-            # TODO: run script
-            # result = call('.{}'.format(slurm_script_path), shell=True)
-            print('a')
+            print('\nlaunching exp...')
+            result = call('sh {}'.format(slurm_cmd_script_path), shell=True)
+            print('launched exp ', slurm_cmd_script_path)
 
     def __run_experiment(self, train_function):
-        results = train_function(self.hyperparam_optimizer)
-        return results
+        try:
+            results = train_function(self.hyperparam_optimizer)
+            return results
+        except Exception as e:
+            print('Caught exception in worker thread', e)
+
+            # This prints the type, value, and stack trace of the
+            # current exception being handled.
+            traceback.print_exc()
+            return [self.hyperparam_optimizer, None]
 
     def __save_slurm_cmd(self, slurm_cmd, slurm_cmd_script_path):
-
         with open(file=slurm_cmd_script_path, mode='w') as file:
             file.write(slurm_cmd)
-        return slurm_cmd_script_path
 
 
     def __layout_logging_dir(self):
