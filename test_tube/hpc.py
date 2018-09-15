@@ -208,20 +208,20 @@ class SlurmCluster(AbstractCluster):
 
         # add out output
         if self.enable_log_out:
-            out_path = os.path.join(self.out_log_path, 'slurm_output.out')
+            out_path = os.path.join(self.out_log_path, '{}_slurm_output.out'.format(timestamp))
             command = [
                 '# a file for job output, you can check job progress',
-                '#SBATCH --output={}_{}'.format(timestamp, out_path),
+                '#SBATCH --output={}'.format(out_path),
                 '#################\n',
             ]
             sub_commands.extend(command)
 
         # add err output
         if self.enable_log_err:
-            err_path = os.path.join(self.err_log_path, 'slurm_output.err')
+            err_path = os.path.join(self.err_log_path, '{}_slurm_output.err'.format(timestamp))
             command = [
                 '# a file for errors',
-                '#SBATCH --error={}_{}'.format(timestamp, err_path),
+                '#SBATCH --error={}'.format(err_path),
                 '#################\n',
             ]
             sub_commands.extend(command)
