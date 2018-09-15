@@ -6,7 +6,7 @@ import datetime
 
 
 class AbstractCluster(object):
-    TRIGGER_CMD = 'from_cluster_hopt'
+
 
     def __init__(
             self,
@@ -18,7 +18,7 @@ class AbstractCluster(object):
             test_tube_exp_name: str =None
     ):
         self.hyperparam_optimizer = hyperparam_optimizer
-        self.log_path = log_path
+        self.log_path = os.path.join(log_path, 'test_tube_data')
         self.enable_log_err = enable_log_err
         self.enable_log_out = enable_log_out
         self.test_tube_exp_name = test_tube_exp_name
@@ -39,8 +39,11 @@ class AbstractCluster(object):
         self.python_cmd = python_cmd
         self.gpu_type: str = None
 
-        # detect when this was called because a slurm object started a hopt
-        self.is_from_slurm_object = AbstractCluster.TRIGGER_CMD in vars(self.hyperparam_optimizer)
+        # detect when this was called because a slurm object started a hopt.
+        # if true, remove the flag so tt logs don't show it
+        self.is_from_slurm_object = HyperOptArgumentParser.TRIGGER_CMD in vars(self.hyperparam_optimizer)
+        if self.is_from_slurm_object:
+            self.hyperparam_optimizer.__delattr__(HyperOptArgumentParser.TRIGGER_CMD)
 
 
     def load_modules(self, modules):
@@ -79,7 +82,6 @@ class SlurmCluster(AbstractCluster):
 
         # whenever this script is called by slurm, it's an actual experiment, so start it
         if self.is_from_slurm_object:
-            # TODO: verfiy this is caught and the script can execute
             results = self.__run_experiment(train_function)
             return
 
@@ -95,8 +97,9 @@ class SlurmCluster(AbstractCluster):
             timestamp = 'trial_{}_{}'.format(i, timestamp)
 
             # generate command
-            slurm_cmd = self.__build_slurm_command(trial_params)
-            slurm_script_path = self.__save_slurm_cmd(slurm_cmd, timestamp)
+            slurm_cmd_script_path = os.path.join(self.slurm_files_log_path, '{}_slurm_cmd.sh'.format(timestamp))
+            slurm_cmd = self.__build_slurm_command(trial_params, slurm_cmd_script_path)
+            slurm_script_path = self.__save_slurm_cmd(slurm_cmd, slurm_cmd_script_path)
 
             # run script to launch job
             # TODO: run script
@@ -107,8 +110,8 @@ class SlurmCluster(AbstractCluster):
         results = train_function(self.hyperparam_optimizer)
         return results
 
-    def __save_slurm_cmd(self, slurm_cmd, timestamp):
-        slurm_cmd_script_path = os.path.join(self.slurm_files_log_path, '{}_slurm_cmd.sh'.format(timestamp))
+    def __save_slurm_cmd(self, slurm_cmd, slurm_cmd_script_path):
+
         with open(file=slurm_cmd_script_path, mode='w') as file:
             file.write(slurm_cmd)
         return slurm_cmd_script_path
@@ -167,12 +170,12 @@ class SlurmCluster(AbstractCluster):
             params.append(cmd)
 
         # this arg lets the hyperparameter optimizer do its thing
-        params.append('--{}'.format(AbstractCluster.TRIGGER_CMD))
+        params.append('--{}'.format(HyperOptArgumentParser.TRIGGER_CMD))
 
         full_cmd = ' '.join(params)
         return full_cmd
 
-    def __build_slurm_command(self, trial):
+    def __build_slurm_command(self, trial, slurm_cmd_script_path):
         sub_commands = []
 
         command =[
@@ -291,6 +294,7 @@ class SlurmCluster(AbstractCluster):
 
         # add run command
         trial_args = self.__get_hopt_params(trial)
+        trial_args = '{} --{} {}'.format(trial_args, HyperOptArgumentParser.SLURM_CMD_PATH, slurm_cmd_script_path)
         cmd = 'srun {} .{} {}'.format(self.python_cmd, self.script_name, trial_args)
         sub_commands.append(cmd)
 
