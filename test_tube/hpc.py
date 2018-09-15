@@ -101,7 +101,7 @@ class SlurmCluster(AbstractCluster):
 
             # generate command
             slurm_cmd_script_path = os.path.join(self.slurm_files_log_path, '{}_slurm_cmd.sh'.format(timestamp))
-            slurm_cmd = self.__build_slurm_command(trial_params, slurm_cmd_script_path)
+            slurm_cmd = self.__build_slurm_command(trial_params, slurm_cmd_script_path, timestamp)
             self.__save_slurm_cmd(slurm_cmd, slurm_cmd_script_path)
 
             # run script to launch job
@@ -187,7 +187,7 @@ class SlurmCluster(AbstractCluster):
         full_cmd = ' '.join(params)
         return full_cmd
 
-    def __build_slurm_command(self, trial, slurm_cmd_script_path):
+    def __build_slurm_command(self, trial, slurm_cmd_script_path, timestamp):
         sub_commands = []
 
         command =[
@@ -211,7 +211,7 @@ class SlurmCluster(AbstractCluster):
             out_path = os.path.join(self.out_log_path, 'slurm_output.out')
             command = [
                 '# a file for job output, you can check job progress',
-                '#SBATCH --output={}'.format(out_path),
+                '#SBATCH --output={}_{}'.format(timestamp, out_path),
                 '#################\n',
             ]
             sub_commands.extend(command)
@@ -221,7 +221,7 @@ class SlurmCluster(AbstractCluster):
             err_path = os.path.join(self.err_log_path, 'slurm_output.err')
             command = [
                 '# a file for errors',
-                '#SBATCH --error={}'.format(err_path),
+                '#SBATCH --error={}_{}'.format(timestamp, err_path),
                 '#################\n',
             ]
             sub_commands.extend(command)
