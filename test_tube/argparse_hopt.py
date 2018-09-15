@@ -167,7 +167,7 @@ class HyperOptArgumentParser(ArgumentParser):
         # make list with only the unknown args
         unk_args = []
         for arg in argv:
-            arg_candidate = re.sub('-', '', arg)
+            arg_candidate = re.sub('--', '', arg)
             if arg_candidate not in all_values:
                 unk_args.append(arg)
 
