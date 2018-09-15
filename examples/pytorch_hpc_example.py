@@ -34,7 +34,7 @@ def train(hparams):
 # set up our argparser and make the y_val tunable
 parser = HyperOptArgumentParser(strategy='random_search')
 parser.add_argument('--test_tube_exp_name', default='my_test')
-parser.add_argument('--log_path', default='/Users/waf/Desktop/test')
+parser.add_argument('--log_path', default='/home/waf251/media/falcon_kcgscratch1/test')
 parser.opt_list('--y_val', default=12, options=[1, 2, 3, 4, 5, 6], tunable=True)
 parser.opt_list('--x_val', default=12, options=[20, 12, 30, 45], tunable=True)
 hyperparams = parser.parse_args()
@@ -51,7 +51,7 @@ cluster.add_command('source activate organics')
 
 # set the environment variables
 cluster.per_experiment_nb_gpus = 4
-cluster.per_experiment_nb_nodes = 3
+cluster.per_experiment_nb_nodes = 2
 cluster.gpu_type = '1080ti'
 
 # optimize on 4 gpus at the same time

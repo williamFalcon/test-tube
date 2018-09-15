@@ -207,7 +207,7 @@ class SlurmCluster(AbstractCluster):
         if self.enable_log_out:
             command = [
                 '# a file for job output, you can check job progress',
-                '#SBATCH --output=slurm_output.out',
+                '#SBATCH --output=slurm_output.err',
                 '#################\n',
             ]
             sub_commands.extend(command)
@@ -216,7 +216,7 @@ class SlurmCluster(AbstractCluster):
         if self.enable_log_err:
             command = [
                 '# a file for errors',
-                '#SBATCH --output=slurm_output.err',
+                '#SBATCH --output=slurm_output.out',
                 '#################\n',
             ]
             sub_commands.extend(command)
