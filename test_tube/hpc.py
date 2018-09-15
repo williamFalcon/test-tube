@@ -297,6 +297,14 @@ class SlurmCluster(AbstractCluster):
             ]
             sub_commands.extend(email_query)
 
+        # purge modules
+        sub_commands.append('\n')
+        command = [
+            '# first we ensure a clean running environment:',
+            'module purge'
+        ]
+        sub_commands.extend(command)
+
         # load modules
         sub_commands.append('\n')
         for module in self.modules:
