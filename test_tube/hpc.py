@@ -7,7 +7,7 @@ import traceback
 
 class AbstractCluster(object):
 
-
+    RUN_CMD = 'sbatch'
     def __init__(
             self,
             hyperparam_optimizer: HyperOptArgumentParser,
@@ -106,7 +106,7 @@ class SlurmCluster(AbstractCluster):
 
             # run script to launch job
             print('\nlaunching exp...')
-            result = call('sh {}'.format(slurm_cmd_script_path), shell=True)
+            result = call('{} {}'.format(AbstractCluster.RUN_CMD, slurm_cmd_script_path), shell=True)
             if result == 0:
                 print('launched exp ', slurm_cmd_script_path)
             else:
