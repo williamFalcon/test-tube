@@ -51,6 +51,7 @@ cluster.load_modules([
     'anaconda3'
 ])
 cluster.add_command('source activate myCondaEnv')
+cluster.add_slurm_cmd(cmd='cpus-per-task', value='1', comment='nb cpus per task')
 
 # set the environment variables
 cluster.per_experiment_nb_gpus = 4

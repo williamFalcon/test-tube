@@ -39,12 +39,16 @@ class AbstractCluster(object):
         self.python_cmd = python_cmd
         self.gpu_type: str = None
         self.commands = []
+        self.slurm_commands = []
 
         # detect when this was called because a slurm object started a hopt.
         # if true, remove the flag so tt logs don't show it
         self.is_from_slurm_object = HyperOptArgumentParser.TRIGGER_CMD in vars(self.hyperparam_optimizer)
         if self.is_from_slurm_object:
             self.hyperparam_optimizer.__delattr__(HyperOptArgumentParser.TRIGGER_CMD)
+
+    def add_slurm_cmd(self, cmd, value, comment):
+        self.slurm_commands.append((cmd, value, comment))
 
     def add_command(self, cmd):
         self.commands.append(cmd)
@@ -249,20 +253,6 @@ class SlurmCluster(AbstractCluster):
 
         sub_commands.extend(command)
 
-        # pick gpu partition
-        partition_cmd = [
-            '# gpu partition',
-            '#SBATCH --qos=batch',
-            '#################\n'
-        ]
-        if self.hns_gpu:
-            partition_cmd = [
-                '# gpu partition',
-                '#SBATCH -p hns_gpu',
-                '#################\n'
-            ]
-        sub_commands.extend(partition_cmd)
-
         # pick nb nodes
         command = [
             '# number of requested nodes',
@@ -296,6 +286,14 @@ class SlurmCluster(AbstractCluster):
                 '#SBATCH --mail-user={}'.format(self.email),
             ]
             sub_commands.extend(email_query)
+
+        # add custom sbatch commands
+        sub_commands.append('\n')
+        for (cmd, value, comment) in self.slurm_commands:
+            comment = '# {}'.format(comment)
+            cmd = '#SBATCH --{}={}'.format(cmd, value)
+            spaces = '#################\n'
+            sub_commands.extend([comment, cmd, spaces])
 
         # purge modules
         sub_commands.append('\n')
