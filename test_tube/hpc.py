@@ -26,7 +26,7 @@ class AbstractCluster(object):
         self.err_log_path = None
         self.out_log_path = None
         self.modules = []
-        self.script_name = sys.argv[0]
+        self.script_name = os.path.realpath(sys.argv[0])
         self.job_time = '15:00'
         self.per_experiment_nb_gpus = 1
         self.hns_gpu = False
