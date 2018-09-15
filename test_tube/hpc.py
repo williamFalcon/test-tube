@@ -107,7 +107,10 @@ class SlurmCluster(AbstractCluster):
             # run script to launch job
             print('\nlaunching exp...')
             result = call('sh {}'.format(slurm_cmd_script_path), shell=True)
-            print('launched exp ', slurm_cmd_script_path)
+            if result == 0:
+                print('launched exp ', slurm_cmd_script_path)
+            else:
+                print('launch failed...')
 
     def __run_experiment(self, train_function):
         try:
