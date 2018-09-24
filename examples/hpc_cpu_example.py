@@ -9,10 +9,16 @@ Every distinct set of hyperparams runs on the configured hardware described in t
 
 # main training function (very simple)
 def train(hparams):
+
+    exp_version_from_slurm_script = hparams.hpc_exp_number
+
     # init exp and track all the parameters from the HyperOptArgumentParser
+    # the experiment version is optional, but using the one from slurm means the exp will not collide with other
+    # versions if slurm runs multiple at once.
     exp = Experiment(
         name=hparams.test_tube_exp_name,
         save_dir=hparams.log_path,
+        version=exp_version_from_slurm_script,
         autosave=False,
     )
     exp.argparse(hparams)
