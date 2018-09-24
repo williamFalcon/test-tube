@@ -78,22 +78,25 @@ class SlurmCluster(AbstractCluster):
             train_function,
             nb_trials,
             job_name,
+            job_display_name
     ):
-        self.__optimize_parallel_cluster_internal(train_function, nb_trials, job_name, on_gpu=True)
+        self.__optimize_parallel_cluster_internal(train_function, nb_trials, job_name, job_display_name, on_gpu=True)
 
     def optimize_parallel_cluster_cpu(
             self,
             train_function,
             nb_trials,
             job_name,
+            job_display_name
     ):
-        self.__optimize_parallel_cluster_internal(train_function, nb_trials, job_name, on_gpu=False)
+        self.__optimize_parallel_cluster_internal(train_function, nb_trials, job_name, job_display_name, on_gpu=False)
 
     def __optimize_parallel_cluster_internal(
             self,
             train_function,
             nb_trials,
             job_name,
+            job_display_name,
             on_gpu
     ):
         """
@@ -104,6 +107,7 @@ class SlurmCluster(AbstractCluster):
         :return:
         """
         self.job_name = job_name
+        self.job_display_name = job_display_name
 
         # whenever this script is called by slurm, it's an actual experiment, so start it
         if self.is_from_slurm_object:
@@ -234,7 +238,7 @@ class SlurmCluster(AbstractCluster):
         sub_commands.extend(command)
 
         # add job name
-        job_with_version = '{}v{}'.format(self.job_name, exp_i)
+        job_with_version = '{}v{}'.format(self.job_display_name, exp_i)
         command = [
             '# set a job name',
             '#SBATCH --job-name={}'.format(job_with_version),
