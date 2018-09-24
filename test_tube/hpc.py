@@ -10,12 +10,12 @@ class AbstractCluster(object):
     RUN_CMD = 'sbatch'
     def __init__(
             self,
-            hyperparam_optimizer: HyperOptArgumentParser,
-            log_path: str,
-            python_cmd: str ='python3',
-            enable_log_err: bool =True,
-            enable_log_out: bool =True,
-            test_tube_exp_name: str =None
+            hyperparam_optimizer,
+            log_path,
+            python_cmd='python3',
+            enable_log_err=True,
+            enable_log_out=True,
+            test_tube_exp_name=None
     ):
         self.hyperparam_optimizer = hyperparam_optimizer
         self.log_path = os.path.join(log_path, 'test_tube_data')
@@ -37,7 +37,7 @@ class AbstractCluster(object):
         self.notify_on_fail = False
         self.job_name = None
         self.python_cmd = python_cmd
-        self.gpu_type: str = None
+        self.gpu_type = None
         self.commands = []
         self.slurm_commands = []
 
@@ -75,25 +75,25 @@ class SlurmCluster(AbstractCluster):
     def optimize_parallel_cluster_gpu(
             self,
             train_function,
-            nb_trials: int,
-            job_name: str,
+            nb_trials,
+            job_name,
     ):
         self.__optimize_parallel_cluster_internal(train_function, nb_trials, job_name, on_gpu=True)
 
     def optimize_parallel_cluster_cpu(
             self,
             train_function,
-            nb_trials: int,
-            job_name: str,
+            nb_trials,
+            job_name,
     ):
         self.__optimize_parallel_cluster_internal(train_function, nb_trials, job_name, on_gpu=False)
 
     def __optimize_parallel_cluster_internal(
             self,
             train_function,
-            nb_trials: int,
-            job_name: str,
-            on_gpu: bool
+            nb_trials,
+            job_name,
+            on_gpu
     ):
         """
         Runs optimization on the attached cluster
