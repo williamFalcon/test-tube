@@ -14,7 +14,6 @@ from .hyper_opt_utils import strategies
 from gettext import gettext as _
 
 
-
 def optimize_parallel_gpu_private(args):
     trial_params, train_function = args[0], args[1]
 
@@ -151,15 +150,19 @@ class HyperOptArgumentParser(ArgumentParser):
             arg = arg_candidate[2:]
 
             # pull out the value of the argument if given
-            if i+1 <= len(argv)-1:
-                if '--' not in argv[i+1]:
-                    value = argv[i+1]
+            if i + 1 <= len(argv) - 1:
+                if '--' not in argv[i + 1]:
+                    value = argv[i + 1]
 
                 if arg is not None:
                     parsed[arg] = value
 
         # add the whitelist cmds to the args
         all_values = set()
+        for k, v in args.__dict__.items():
+            all_values.add(k)
+            all_values.add(v)
+
         for arg, v in parsed.items():
             v_parsed = self.__parse_primitive_arg_val(v)
             all_values.add(v)
@@ -170,6 +173,9 @@ class HyperOptArgumentParser(ArgumentParser):
         unk_args = []
         for arg in argv:
             arg_candidate = re.sub('--', '', arg)
+            is_bool = arg_candidate == 'True' or arg_candidate == 'False'
+            if is_bool: continue
+
             if arg_candidate not in all_values:
                 unk_args.append(arg)
 
@@ -180,6 +186,7 @@ class HyperOptArgumentParser(ArgumentParser):
         # add hpc_exp_number if not passed in so we can never get None
         if HyperOptArgumentParser.SLURM_EXP_CMD not in args:
             args.__setattr__(HyperOptArgumentParser.SLURM_EXP_CMD, None)
+
         return args, unk_args
 
     def __parse_primitive_arg_val(self, val):

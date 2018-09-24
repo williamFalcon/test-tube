@@ -4,6 +4,7 @@ from .argparse_hopt import HyperOptArgumentParser
 from subprocess import call
 import datetime
 import traceback
+import re
 
 class AbstractCluster(object):
 
@@ -199,7 +200,16 @@ class SlurmCluster(AbstractCluster):
         params = []
         for k in trial.__dict__:
             v = trial.__dict__[k]
-            cmd = '--{} {}'.format(k, v)
+
+            # don't add None params
+            if v is None:
+                continue
+
+            # put everything in quotes except bools
+            if self.__should_escape(v):
+                cmd = '--{} \"{}\"'.format(k, v)
+            else:
+                cmd = '--{} {}'.format(k, v)
             params.append(cmd)
 
         # this arg lets the hyperparameter optimizer do its thing
@@ -207,6 +217,9 @@ class SlurmCluster(AbstractCluster):
 
         full_cmd = ' '.join(params)
         return full_cmd
+
+    def __should_escape(self, v):
+        return '[' in str(v) or ';' in str(v)
 
     def __build_slurm_command(self, trial, slurm_cmd_script_path, timestamp, exp_i, on_gpu):
         sub_commands = []
