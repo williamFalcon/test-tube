@@ -64,9 +64,11 @@ class HyperOptArgumentParser(ArgumentParser):
     # these are commands injected by test tube from cluster operations
     TRIGGER_CMD = 'test_tube_from_cluster_hopt'
     SLURM_CMD_PATH = 'test_tube_slurm_cmd_path'
+    SLURM_EXP_CMD = 'hpc_exp_number'
     CMD_MAP = {
         TRIGGER_CMD: bool,
-        SLURM_CMD_PATH: str
+        SLURM_CMD_PATH: str,
+        SLURM_EXP_CMD: int
     }
 
     def __init__(self, strategy='grid_search', **kwargs):

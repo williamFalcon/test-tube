@@ -122,7 +122,7 @@ class SlurmCluster(AbstractCluster):
 
             # generate command
             slurm_cmd_script_path = os.path.join(self.slurm_files_log_path, '{}_slurm_cmd.sh'.format(timestamp))
-            slurm_cmd = self.__build_slurm_command(trial_params, slurm_cmd_script_path, timestamp, on_gpu)
+            slurm_cmd = self.__build_slurm_command(trial_params, slurm_cmd_script_path, timestamp, i, on_gpu)
             self.__save_slurm_cmd(slurm_cmd, slurm_cmd_script_path)
 
             # run script to launch job
@@ -208,7 +208,7 @@ class SlurmCluster(AbstractCluster):
         full_cmd = ' '.join(params)
         return full_cmd
 
-    def __build_slurm_command(self, trial, slurm_cmd_script_path, timestamp, on_gpu):
+    def __build_slurm_command(self, trial, slurm_cmd_script_path, timestamp, exp_i, on_gpu):
         sub_commands = []
 
         command =[
@@ -337,7 +337,12 @@ class SlurmCluster(AbstractCluster):
 
         # add run command
         trial_args = self.__get_hopt_params(trial)
-        trial_args = '{} --{} {}'.format(trial_args, HyperOptArgumentParser.SLURM_CMD_PATH, slurm_cmd_script_path)
+        trial_args = '{} --{} {} --{} {}'.format(trial_args,
+                                                 HyperOptArgumentParser.SLURM_CMD_PATH,
+                                                 slurm_cmd_script_path,
+                                                 HyperOptArgumentParser.SLURM_EXP_CMD,
+                                                 exp_i)
+
         cmd = 'srun {} {} {}'.format(self.python_cmd, self.script_name, trial_args)
         sub_commands.append(cmd)
 
