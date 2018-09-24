@@ -177,6 +177,9 @@ class HyperOptArgumentParser(ArgumentParser):
         if len(unk_args) == 0:
             unk_args = None
 
+        # add hpc_exp_number if not passed in so we can never get None
+        if HyperOptArgumentParser.SLURM_EXP_CMD not in args:
+            args.__setattr__(HyperOptArgumentParser.SLURM_EXP_CMD, None)
         return args, unk_args
 
     def __parse_primitive_arg_val(self, val):
