@@ -161,10 +161,10 @@ class HyperOptArgumentParser(ArgumentParser):
         # add the whitelist cmds to the args
         all_values = set()
         for arg, v in parsed.items():
-            v = self.__parse_primitive_arg_val(v)
+            v_parsed = self.__parse_primitive_arg_val(v)
             all_values.add(v)
             all_values.add(arg)
-            args.__setattr__(arg, v)
+            args.__setattr__(arg, v_parsed)
 
         # make list with only the unknown args
         unk_args = []
