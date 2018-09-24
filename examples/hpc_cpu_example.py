@@ -73,4 +73,5 @@ cluster.per_experiment_nb_cpus = 20
 cluster.per_experiment_nb_nodes = 10
 
 # each job (24 in total here) will use 200 cpus for each set of hyperparams
-cluster.optimize_parallel_cluster_cpu(train, nb_trials=24, job_name='first_tt_job')
+# if job_display_name is set, it's what will display in the slurm queue
+cluster.optimize_parallel_cluster_cpu(train, nb_trials=24, job_name='first_tt_job', job_display_name='short_name')

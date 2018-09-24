@@ -78,8 +78,11 @@ class SlurmCluster(AbstractCluster):
             train_function,
             nb_trials,
             job_name,
-            job_display_name
+            job_display_name=None
     ):
+        if job_display_name is None:
+            job_display_name = job_name
+
         self.__optimize_parallel_cluster_internal(train_function, nb_trials, job_name, job_display_name, on_gpu=True)
 
     def optimize_parallel_cluster_cpu(
@@ -87,8 +90,11 @@ class SlurmCluster(AbstractCluster):
             train_function,
             nb_trials,
             job_name,
-            job_display_name
+            job_display_name=None
     ):
+        if job_display_name is None:
+            job_display_name = job_name
+
         self.__optimize_parallel_cluster_internal(train_function, nb_trials, job_name, job_display_name, on_gpu=False)
 
     def __optimize_parallel_cluster_internal(
