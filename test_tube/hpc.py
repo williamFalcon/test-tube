@@ -219,7 +219,8 @@ class SlurmCluster(AbstractCluster):
         return full_cmd
 
     def __should_escape(self, v):
-        return '[' in str(v) or ';' in str(v)
+        v = str(v)
+        return '[' in v or ';' in v or ' ' in v
 
     def __build_slurm_command(self, trial, slurm_cmd_script_path, timestamp, exp_i, on_gpu):
         sub_commands = []
@@ -362,20 +363,3 @@ class SlurmCluster(AbstractCluster):
         # build full command with empty lines in between
         full_command = '\n'.join(sub_commands)
         return full_command
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
