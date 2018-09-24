@@ -234,7 +234,7 @@ class SlurmCluster(AbstractCluster):
         sub_commands.extend(command)
 
         # add job name
-        job_with_version = '{}_v{}'.format(self.job_name, exp_i)
+        job_with_version = '{}v{}'.format(self.job_name, exp_i)
         command = [
             '# set a job name',
             '#SBATCH --job-name={}'.format(job_with_version),
