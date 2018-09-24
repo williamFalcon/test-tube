@@ -10,6 +10,7 @@ Every distinct set of hyperparams runs on the configured hardware described in t
 # main training function (very simple)
 def train(hparams):
 
+    # this won't crash ever. If no exp number is there, it'll be None
     exp_version_from_slurm_script = hparams.hpc_exp_number
 
     # init exp and track all the parameters from the HyperOptArgumentParser
