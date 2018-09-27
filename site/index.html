@@ -7,24 +7,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Documentation for Test Tube, the Python Deep Learning and Machine Learning experiment tracking and tuning framework.">
   
-  <link rel="shortcut icon" href="./img/favicon.ico">
+  <link rel="shortcut icon" href="img/favicon.ico">
   <title>Test Tube: Easily log and tune Deep Learning experiments - Test tube Documentation</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
-  <link rel="stylesheet" href="./css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="./css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="./css/highlight.css">
+  <link rel="stylesheet" href="css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
   
   <script>
     // Current page data
     var mkdocs_page_name = "Test Tube: Easily log and tune Deep Learning experiments";
     var mkdocs_page_input_path = "index.md";
-    var mkdocs_page_url = "/";
+    var mkdocs_page_url = null;
   </script>
   
-  <script src="./js/jquery-2.1.1.min.js"></script>
-  <script src="./js/modernizr-2.8.3.min.js"></script>
-  <script type="text/javascript" src="./js/highlight.pack.js"></script> 
+  <script src="js/jquery-2.1.1.min.js" defer></script>
+  <script src="js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
   
 </head>
 
@@ -38,7 +39,7 @@
         <a href="." class="icon icon-home"> Test tube Documentation</a>
         <div role="search">
   <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
   </form>
 </div>
       </div>
@@ -70,7 +71,7 @@
     <ul class="subnav">
                 <li class="">
                     
-    <a class="" href="experiment_tracking/experiment/">Experiment</a>
+    <a class="" href="experiment_tracking/experiment/">Experiment class API</a>
                 </li>
     </ul>
 	    </li>
@@ -81,7 +82,7 @@
     <ul class="subnav">
                 <li class="">
                     
-    <a class="" href="hyperparameter_optimization/HyperOptArgumentParser/">HyperOptArgumentParser</a>
+    <a class="" href="hyperparameter_optimization/HyperOptArgumentParser/">HyperOptArgumentParser class API</a>
                 </li>
     </ul>
 	    </li>
@@ -126,11 +127,11 @@
 learning experiments.</p>
 <p>Use Test Tube if you need to:</p>
 <ul>
-<li>Track many <a href="./experiment_tracking/experiment/">Experiments</a> across
+<li>Track many <a href="experiment_tracking/experiment/">Experiments</a> across
     models.</li>
 <li><a href="http://testtube.williamfalcon.com">Visualize</a> and compare different
     experiments without uploading anywhere.</li>
-<li><a href="./hyperparameter_optimization/HyperOptArgumentParser/">Optimize your
+<li><a href="hyperparameter_optimization/HyperOptArgumentParser/">Optimize your
     hyperparameters</a>
     using grid search or random search.</li>
 <li>Automatically track ALL parameters for a particular training run.</li>
@@ -138,7 +139,7 @@ learning experiments.</p>
 <p>Test Tube is compatible with: Python 2 and 3</p>
 <h2 id="getting-started">Getting started</h2>
 <hr />
-<h3 id="create-an-experiment">Create an <a href="./experiment_tracking/experiment/">Experiment</a></h3>
+<h3 id="create-an-experiment">Create an <a href="experiment_tracking/experiment/">Experiment</a></h3>
 <pre><code class="python">from test_tube import Experiment
 
 exp = Experiment(name='dense_model',
@@ -157,7 +158,7 @@ for step in training_steps:
 </code></pre>
 
 <hr />
-<h3 id="optimize-your-hyperparameters">Optimize your <a href="./hyperparameter_optimization/HyperOptArgumentParser/">hyperparameters</a></h3>
+<h3 id="optimize-your-hyperparameters">Optimize your <a href="hyperparameter_optimization/HyperOptArgumentParser/">hyperparameters</a></h3>
 <pre><code class="python">from test_tube import HyperOptArgumentParser
 
 # subclass of argparse
@@ -195,7 +196,7 @@ df.tng_err.plot()
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="experiment_tracking/experiment/" class="btn btn-neutral float-right" title="Experiment">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="experiment_tracking/experiment/" class="btn btn-neutral float-right" title="Experiment class API">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
     </div>
@@ -230,14 +231,13 @@ df.tng_err.plot()
     </span>
 </div>
     <script>var base_url = '.';</script>
-    <script src="./js/theme.js"></script>
-      <script src="./search/require.js"></script>
-      <script src="./search/search.js"></script>
+    <script src="js/theme.js" defer></script>
+      <script src="search/main.js" defer></script>
 
 </body>
 </html>
 
 <!--
-MkDocs version : 0.17.3
-Build Date UTC : 2018-06-01 09:10:25
+MkDocs version : 1.0.4
+Build Date UTC : 2018-09-27 16:42:31
 -->
