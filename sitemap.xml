@@ -1,32 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
-    
     <url>
-     <loc>/</loc>
-     <lastmod>2018-06-01</lastmod>
+     <loc>None</loc>
+     <lastmod>2018-09-27</lastmod>
      <changefreq>daily</changefreq>
     </url>
-    
-
-    
-        
     <url>
-     <loc>/experiment_tracking/experiment/</loc>
-     <lastmod>2018-06-01</lastmod>
+     <loc>None</loc>
+     <lastmod>2018-09-27</lastmod>
      <changefreq>daily</changefreq>
     </url>
-        
-    
-
-    
-        
     <url>
-     <loc>/hyperparameter_optimization/HyperOptArgumentParser/</loc>
-     <lastmod>2018-06-01</lastmod>
+     <loc>None</loc>
+     <lastmod>2018-09-27</lastmod>
      <changefreq>daily</changefreq>
     </url>
-        
-    
-
 </urlset>
