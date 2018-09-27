@@ -126,14 +126,18 @@ class SlurmCluster(AbstractCluster):
         # layout logging structure
         self.__layout_logging_dir()
 
+        # get the max test tube exp version so far if it's there
+        next_test_tube_version = self.__get_max_test_tube_version(self.log_path)
+
         # for each trial, generate a slurm command
         for i, trial_params in enumerate(trials):
+            exp_i = i + next_test_tube_version
             timestamp = datetime.datetime.now().strftime("%Y-%m-%d__%H-%M-%S")
-            timestamp = 'trial_{}_{}'.format(i, timestamp)
+            timestamp = 'trial_{}_{}'.format(exp_i, timestamp)
 
             # generate command
             slurm_cmd_script_path = os.path.join(self.slurm_files_log_path, '{}_slurm_cmd.sh'.format(timestamp))
-            slurm_cmd = self.__build_slurm_command(trial_params, slurm_cmd_script_path, timestamp, i, on_gpu)
+            slurm_cmd = self.__build_slurm_command(trial_params, slurm_cmd_script_path, timestamp, exp_i, on_gpu)
             self.__save_slurm_cmd(slurm_cmd, slurm_cmd_script_path)
 
             # run script to launch job
@@ -157,9 +161,19 @@ class SlurmCluster(AbstractCluster):
             return [self.hyperparam_optimizer, None]
 
     def __save_slurm_cmd(self, slurm_cmd, slurm_cmd_script_path):
-        with open(file=slurm_cmd_script_path, mode='w') as file:
+        with open(slurm_cmd_script_path, mode='w') as file:
             file.write(slurm_cmd)
 
+    def __get_max_test_tube_version(self, path):
+        files = os.listdir(path)
+        version_files = [f for f in files if 'version_' in f]
+        if len(version_files) > 0:
+            # regex out everything except file version for ve
+            versions = [int(re.sub('version_', '', f_name)) for f_name in version_files]
+            max_version = max(versions)
+            return max_version + 1
+        else:
+            return 0
 
     def __layout_logging_dir(self):
         """
@@ -167,15 +181,13 @@ class SlurmCluster(AbstractCluster):
         :return:
         """
 
-        # make main folder for slurm output
-        if not os.path.exists(self.log_path):
-            os.makedirs(self.log_path)
-
         # format the logging folder path
         if self.test_tube_exp_name is not None:
             slurm_out_path = os.path.join(self.log_path, self.test_tube_exp_name)
         else:
             slurm_out_path = os.path.join(self.log_path, self.job_name)
+
+        self.log_path = slurm_out_path
 
         # if we have a test tube name, make the folder and set as the logging destination
         if not os.path.exists(slurm_out_path):

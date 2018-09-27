@@ -5,7 +5,7 @@ __pycache__/
 data/
 test_tube_data/
 *.experiment
-example.py
+test.py
 example.json
 
 # C extensions
