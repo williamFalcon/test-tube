@@ -9,10 +9,9 @@ from argparse import ArgumentParser
 from copy import deepcopy
 from multiprocessing import Pool, Queue
 from time import sleep
-
 import numpy as np
-
 from .hyper_opt_utils import strategies
+from gettext import gettext as _
 
 
 def optimize_parallel_gpu_private(args):
@@ -60,6 +59,16 @@ class HyperOptArgumentParser(ArgumentParser):
     Subclass of argparse ArgumentParser which adds optional calls to sample from lists or ranges
     Also enables running optimizations across parallel processes
     """
+
+    # these are commands injected by test tube from cluster operations
+    TRIGGER_CMD = 'test_tube_from_cluster_hopt'
+    SLURM_CMD_PATH = 'test_tube_slurm_cmd_path'
+    SLURM_EXP_CMD = 'hpc_exp_number'
+    CMD_MAP = {
+        TRIGGER_CMD: bool,
+        SLURM_CMD_PATH: str,
+        SLURM_EXP_CMD: int
+    }
 
     def __init__(self, strategy='grid_search', **kwargs):
         """
@@ -113,9 +122,87 @@ class HyperOptArgumentParser(ArgumentParser):
         self.add_argument(*args, **kwargs)
         self.json_config_arg_name = re.sub('-', '', args[-1])
 
+    def __parse_args(self, args=None, namespace=None):
+        # allow bypassing certain missing params which other parts of test tube may introduce
+        args, argv = self.parse_known_args(args, namespace)
+        args, argv = self.__whitelist_cluster_commands(args, argv)
+        if argv:
+            msg = _('unrecognized arguments: %s')
+            self.error(msg % ' '.join(argv))
+        return args
+
+    def __whitelist_cluster_commands(self, args, argv):
+        parsed = {}
+
+        # build a dict where key = arg, value = value of the arg or None if just a flag
+        for i, arg_candidate in enumerate(argv):
+            arg = None
+            value = None
+
+            # only look at --keys
+            if '--' not in arg_candidate:
+                continue
+
+            # skip items not on the white list
+            if arg_candidate[2:] not in HyperOptArgumentParser.CMD_MAP:
+                continue
+
+            arg = arg_candidate[2:]
+
+            # pull out the value of the argument if given
+            if i + 1 <= len(argv) - 1:
+                if '--' not in argv[i + 1]:
+                    value = argv[i + 1]
+
+                if arg is not None:
+                    parsed[arg] = value
+
+        # add the whitelist cmds to the args
+        all_values = set()
+        for k, v in args.__dict__.items():
+            all_values.add(k)
+            all_values.add(v)
+
+        for arg, v in parsed.items():
+            v_parsed = self.__parse_primitive_arg_val(v)
+            all_values.add(v)
+            all_values.add(arg)
+            args.__setattr__(arg, v_parsed)
+
+        # make list with only the unknown args
+        unk_args = []
+        for arg in argv:
+            arg_candidate = re.sub('--', '', arg)
+            is_bool = arg_candidate == 'True' or arg_candidate == 'False'
+            if is_bool: continue
+
+            if arg_candidate not in all_values:
+                unk_args.append(arg)
+
+        # when no bad args are left, return none to be consistent with super api
+        if len(unk_args) == 0:
+            unk_args = None
+
+        # add hpc_exp_number if not passed in so we can never get None
+        if HyperOptArgumentParser.SLURM_EXP_CMD not in args:
+            args.__setattr__(HyperOptArgumentParser.SLURM_EXP_CMD, None)
+
+        return args, unk_args
+
+    def __parse_primitive_arg_val(self, val):
+        if val is None:
+            return True
+        try:
+            return int(val)
+        except ValueError:
+            try:
+                return float(val)
+            except ValueError:
+                return val
+
     def parse_args(self, args=None, namespace=None):
         # call superclass arg first
-        results = super(HyperOptArgumentParser, self).parse_args(args=args, namespace=namespace)
+        results = self.__parse_args(args, namespace)
 
         # extract vals
         old_args = vars(results)

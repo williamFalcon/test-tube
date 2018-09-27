@@ -1,6 +1,3 @@
-import os
-from time import time
-
 import tensorflow as tf
 from test_tube import Experiment, HyperOptArgumentParser
 
@@ -18,8 +15,8 @@ This means for 10 trials and 4 GPUs, we'll run 4 in parallel twice and the last 
 def train(hparams):
     # init exp and track all the parameters from the HyperOptArgumentParser
     exp = Experiment(
-        name='dense_model',
-        save_dir='/some/path',
+        name=hparams.test_tube_exp_name,
+        save_dir=hparams.log_path,
         autosave=False,
     )
     exp.argparse(hparams)
@@ -42,10 +39,12 @@ def train(hparams):
 
 # set up our argparser and make the y_val tunable
 parser = HyperOptArgumentParser(strategy='random_search')
-parser.add_argument('--path', default='some/path')
+parser.add_argument('--test_tube_exp_name', default='my_test')
+parser.add_argument('--log_path', default='/Users/waf/Desktop/test')
 parser.opt_list('--y_val', default=12, options=[1, 2, 3, 4], tunable=True)
 parser.opt_list('--x_val', default=12, options=[20, 12, 30, 45], tunable=True)
 hyperparams = parser.parse_args()
+
 
 # optimize on 4 gpus at the same time
 # each gpu will get 1 experiment with a set of hyperparams
