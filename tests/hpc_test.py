@@ -6,7 +6,7 @@ from test_tube.argparse_hopt import HyperOptArgumentParser
 def test_slurm_time_to_seconds():
     parser = HyperOptArgumentParser()
     parsed = parser.parse_args()
-    cluster = SlurmCluster('/home/travis', parsed)
+    cluster = SlurmCluster(log_path='/home/travis', hyperparam_optimizer=parsed)
 
     assert cluster.slurm_time_to_seconds('15:00') == 900
     assert cluster.slurm_time_to_seconds('1-12:20:12') == 130812
