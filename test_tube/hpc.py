@@ -6,7 +6,7 @@ import datetime
 import traceback
 import re
 import multiprocessing
-import time
+from multiprocessing.managers import BaseManager
 
 
 class AbstractCluster(object):
@@ -14,15 +14,18 @@ class AbstractCluster(object):
     RUN_CMD = 'sbatch'
     def __init__(
             self,
-            hyperparam_optimizer,
-            log_path,
+            hyperparam_optimizer=None,
+            log_path=None,
             python_cmd='python3',
             enable_log_err=True,
             enable_log_out=True,
             test_tube_exp_name=None
     ):
         self.hyperparam_optimizer = hyperparam_optimizer
-        self.log_path = os.path.join(log_path, 'test_tube_data')
+        self.log_path = log_path
+        if log_path is not None:
+            self.log_path = os.path.join(log_path, 'test_tube_data')
+
         self.enable_log_err = enable_log_err
         self.enable_log_out = enable_log_out
         self.test_tube_exp_name = test_tube_exp_name
@@ -45,11 +48,28 @@ class AbstractCluster(object):
         self.commands = []
         self.slurm_commands = []
 
+        # these are set via getters and setters so we can use a BaseManager which can be shared across processes
+        self.checkpoint_save_function = None
+        self.checkpoint_load_function = None
+
         # detect when this was called because a slurm object started a hopt.
         # if true, remove the flag so tt logs don't show it
-        self.is_from_slurm_object = HyperOptArgumentParser.TRIGGER_CMD in vars(self.hyperparam_optimizer)
-        if self.is_from_slurm_object:
-            self.hyperparam_optimizer.__delattr__(HyperOptArgumentParser.TRIGGER_CMD)
+        if hyperparam_optimizer is not None:
+            self.is_from_slurm_object = HyperOptArgumentParser.TRIGGER_CMD in vars(self.hyperparam_optimizer)
+            if self.is_from_slurm_object:
+                self.hyperparam_optimizer.__delattr__(HyperOptArgumentParser.TRIGGER_CMD)
+
+    def set_checkpoint_save_function(self, fx):
+        self.checkpoint_save_function = fx
+
+    def get_checkpoint_save_function(self):
+        return self.checkpoint_save_function
+
+    def set_checkpoint_load_function(self, fx):
+        self.checkpoint_load_function = fx
+
+    def get_checkpoint_load_function(self):
+        return self.checkpoint_load_function
 
     def add_slurm_cmd(self, cmd, value, comment):
         self.slurm_commands.append((cmd, value, comment))
@@ -177,21 +197,41 @@ class SlurmCluster(AbstractCluster):
 
     def __run_experiment(self, train_function):
         try:
-            # Start experiment as a process so we can interrupt it right before the walltime
 
-            p = multiprocessing.Process(target=train_function, name="hpc_hopt_fx", args=(self.hyperparam_optimizer))
+            # register an instance of the Slurm class so when the user sets the save and load function they can
+            # be shared across processes
+            BaseManager.register('SlurmCluster', SlurmCluster)
+            manager = BaseManager()
+            manager.start()
+            cluster_instance = manager.SlurmCluster()
+
+            # Start experiment as a process so we can interrupt it right before the walltime
+            p = multiprocessing.Process(target=train_function, name="hpc_hopt_fx", args=(self.hyperparam_optimizer, cluster_instance))
             p.start()
 
             # Wait (walltime - 5 mins) to stop the program and prompt checkpointing the model
             stop_in_n_seconds = self.slurm_time_to_seconds(self.job_time)
             stop_in_n_seconds -= (5 * 60)
-            time.sleep(stop_in_n_seconds)
+            stop_in_n_seconds = max(stop_in_n_seconds, 30)  # make sure we don't go below the 5 mins
 
-            # Terminate foo
-            p.terminate()
+            # stop program so we can call save function
+            p.join(stop_in_n_seconds)
+            if p.is_alive():
 
-            # Cleanup
-            p.join()
+                # if save function was passed, call it
+                if cluster_instance.get_checkpoint_save_function() is not None:
+                    save_fx = cluster_instance.get_checkpoint_save_function()
+                    save_fx()
+
+                    # if we're here, the job didn't finish and we were given a save function
+                    # if we were given a load function, then schedule the program again and pass in the load function
+                    if cluster_instance.get_checkpoint_load_function() is not None:
+                        # TODO: launch new job that calls the start function again
+                        pass
+
+                p.terminate()
+                p.join()
+                print('a')
 
             results = train_function(self.hyperparam_optimizer)
             return results
