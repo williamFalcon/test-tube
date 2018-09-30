@@ -2,9 +2,10 @@ language: python
 python:
   - "3.6"
 # command to install dependencies
-cache: pip 
+cache: pip
 install:
   - pip install -r requirements.txt
+  - pip install -e .
 
 # command to run tests
 script:
