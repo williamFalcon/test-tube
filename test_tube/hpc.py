@@ -5,6 +5,9 @@ from subprocess import call
 import datetime
 import traceback
 import re
+import multiprocessing
+import time
+
 
 class AbstractCluster(object):
 
@@ -148,8 +151,48 @@ class SlurmCluster(AbstractCluster):
             else:
                 print('launch failed...')
 
+    def slurm_time_to_seconds(self, job_time):
+        seconds = 0
+        time_component = job_time
+        if '-' in job_time:
+            days, time_component = job_time.split('-')
+            seconds += int(days) * 24 * 60 * 60
+
+        time_components = time_component.split(':')
+        if len(time_components) == 3:
+            hours, minutes, secs = time_components
+            time_seconds = int(secs) + (int(minutes) * 60) + (int(hours) * 60 * 60)
+            seconds += time_seconds
+
+        elif len(time_components) == 2:
+            minutes, secs = time_components
+            time_seconds = int(secs) + (int(minutes) * 60)
+            seconds += time_seconds
+
+        elif len(time_components) == 1:
+            secs = time_components[0]
+            seconds += int(secs)
+
+        return seconds
+
     def __run_experiment(self, train_function):
         try:
+            # Start experiment as a process so we can interrupt it right before the walltime
+
+            p = multiprocessing.Process(target=train_function, name="hpc_hopt_fx", args=(self.hyperparam_optimizer))
+            p.start()
+
+            # Wait (walltime - 5 mins) to stop the program and prompt checkpointing the model
+            stop_in_n_seconds = self.slurm_time_to_seconds(self.job_time)
+            stop_in_n_seconds -= (5 * 60)
+            time.sleep(stop_in_n_seconds)
+
+            # Terminate foo
+            p.terminate()
+
+            # Cleanup
+            p.join()
+
             results = train_function(self.hyperparam_optimizer)
             return results
         except Exception as e:
