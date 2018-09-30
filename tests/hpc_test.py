@@ -3,7 +3,7 @@ from test_tube.hpc import SlurmCluster
 
 
 def test_slurm_time_to_seconds():
-    cluster = SlurmCluster(None, None)
+    cluster = SlurmCluster('/home/travis', None)
 
     assert cluster.slurm_time_to_seconds('15:00') == 900
     assert cluster.slurm_time_to_seconds('1-12:20:12') == 130812
