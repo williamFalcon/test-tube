@@ -37,6 +37,9 @@ Use Test Tube if you need to:
 -   [Parallelize hyperparameter
     optimization](https://williamfalcon.github.io/test-tube/hyperparameter_optimization/HyperOptArgumentParser/)
     (across multiple gpus or cpus).
+-   [Parallelize hyperparameter
+    optimization](https://williamfalcon.github.io/test-tube/hyperparameter_optimization/HyperOptArgumentParser/)
+    across HPC cluster using SLURM. Auto-starts continuation jobs when walltime approaches.   
 -   Track multiple
     [Experiments](https://williamfalcon.github.io/test-tube/experiment_tracking/experiment/)
     across models.
