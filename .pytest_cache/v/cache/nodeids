@@ -1,4 +1,0 @@
-[
-  "tests/argparse_hopt_test.py::test_hello",
-  "tests/log_test.py::test_hello"
-]
