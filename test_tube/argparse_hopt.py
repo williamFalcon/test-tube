@@ -205,6 +205,16 @@ class HyperOptArgumentParser(ArgumentParser):
             except ValueError:
                 return val
 
+    def arg_dict(self):
+        args = vars(self)
+        non_fx_args = {}
+        for k, v in args:
+            if type(v) is function:
+                non_fx_args[k] = v
+
+        return args
+
+
     def parse_args(self, args=None, namespace=None):
         # call superclass arg first
         results = self.__parse_args(args, namespace)
@@ -221,6 +231,7 @@ class HyperOptArgumentParser(ArgumentParser):
         self.parsed_args = deepcopy(old_args)
 
         # attach optimization fx
+        old_args['arg_dict'] = self.arg_dict
         old_args['trials'] = self.opt_trials
         old_args['optimize_parallel'] = self.optimize_parallel
         old_args['optimize_parallel_gpu'] = self.optimize_parallel_gpu
