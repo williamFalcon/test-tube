@@ -37,6 +37,7 @@ class AbstractCluster(object):
         self.modules = []
         self.script_name = os.path.realpath(sys.argv[0])
         self.job_time = '15:00'
+        self.minutes_to_checkpoint_before_walltime = 5
         self.per_experiment_nb_gpus = 1
         self.per_experiment_nb_cpus = 1
         self.per_experiment_nb_nodes = 1
@@ -233,9 +234,9 @@ class SlurmCluster(AbstractCluster):
             p = multiprocessing.Process(target=train_function, name="hpc_hopt_fx", args=(self.hyperparam_optimizer, cluster_instance, return_dict))
             p.start()
 
-            # Wait (walltime - 5 mins) to stop the program and prompt checkpointing the model
+            # Wait (walltime - n mins) to stop the program and prompt checkpointing the model
             stop_in_n_seconds = self.slurm_time_to_seconds(self.job_time)
-            stop_in_n_seconds -= (5 * 60)
+            stop_in_n_seconds -= (self.minutes_to_checkpoint_before_walltime * 60)
             stop_in_n_seconds = max(stop_in_n_seconds, 10)  # make sure we don't go below the 5 mins
 
             # stop program so we can call save function
