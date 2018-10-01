@@ -64,10 +64,12 @@ class HyperOptArgumentParser(ArgumentParser):
     TRIGGER_CMD = 'test_tube_from_cluster_hopt'
     SLURM_CMD_PATH = 'test_tube_slurm_cmd_path'
     SLURM_EXP_CMD = 'hpc_exp_number'
+    SLURM_LOAD_CMD = 'test_tube_do_checkpoint_load'
     CMD_MAP = {
         TRIGGER_CMD: bool,
         SLURM_CMD_PATH: str,
-        SLURM_EXP_CMD: int
+        SLURM_EXP_CMD: int,
+        SLURM_LOAD_CMD: bool
     }
 
     def __init__(self, strategy='grid_search', **kwargs):
@@ -154,6 +156,9 @@ class HyperOptArgumentParser(ArgumentParser):
                 if '--' not in argv[i + 1]:
                     value = argv[i + 1]
 
+                if arg is not None:
+                    parsed[arg] = value
+            else:
                 if arg is not None:
                     parsed[arg] = value
 

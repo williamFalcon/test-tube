@@ -5,21 +5,29 @@ from subprocess import call
 import datetime
 import traceback
 import re
+import multiprocessing
+from multiprocessing.managers import BaseManager
+from shutil import copyfile
+
 
 class AbstractCluster(object):
 
     RUN_CMD = 'sbatch'
     def __init__(
             self,
-            hyperparam_optimizer,
-            log_path,
+            hyperparam_optimizer=None,
+            log_path=None,
             python_cmd='python3',
             enable_log_err=True,
             enable_log_out=True,
-            test_tube_exp_name=None
+            test_tube_exp_name=None,
+            call_load_checkpoint=False
     ):
         self.hyperparam_optimizer = hyperparam_optimizer
-        self.log_path = os.path.join(log_path, 'test_tube_data')
+        self.log_path = log_path
+        if log_path is not None:
+            self.log_path = os.path.join(log_path, 'test_tube_data')
+
         self.enable_log_err = enable_log_err
         self.enable_log_out = enable_log_out
         self.test_tube_exp_name = test_tube_exp_name
@@ -29,6 +37,7 @@ class AbstractCluster(object):
         self.modules = []
         self.script_name = os.path.realpath(sys.argv[0])
         self.job_time = '15:00'
+        self.minutes_to_checkpoint_before_walltime = 5
         self.per_experiment_nb_gpus = 1
         self.per_experiment_nb_cpus = 1
         self.per_experiment_nb_nodes = 1
@@ -39,14 +48,42 @@ class AbstractCluster(object):
         self.job_name = None
         self.python_cmd = python_cmd
         self.gpu_type = None
+        self.on_gpu = False
+        self.call_load_checkpoint = call_load_checkpoint
         self.commands = []
         self.slurm_commands = []
 
+        # these are set via getters and setters so we can use a BaseManager which can be shared across processes
+        self.checkpoint_save_function = None
+        self.checkpoint_load_function = None
+
         # detect when this was called because a slurm object started a hopt.
         # if true, remove the flag so tt logs don't show it
-        self.is_from_slurm_object = HyperOptArgumentParser.TRIGGER_CMD in vars(self.hyperparam_optimizer)
-        if self.is_from_slurm_object:
-            self.hyperparam_optimizer.__delattr__(HyperOptArgumentParser.TRIGGER_CMD)
+        if hyperparam_optimizer is not None:
+            self.is_from_slurm_object = HyperOptArgumentParser.TRIGGER_CMD in vars(self.hyperparam_optimizer)
+            if self.is_from_slurm_object:
+                self.hyperparam_optimizer.__delattr__(HyperOptArgumentParser.TRIGGER_CMD)
+
+            self.call_load_checkpoint = HyperOptArgumentParser.SLURM_LOAD_CMD in vars(self.hyperparam_optimizer)
+            if self.call_load_checkpoint:
+                self.hyperparam_optimizer.__delattr__(HyperOptArgumentParser.SLURM_LOAD_CMD)
+
+
+    def set_checkpoint_save_function(self, fx):
+        self.checkpoint_save_function = fx
+
+    def get_checkpoint_save_function(self):
+        return self.checkpoint_save_function
+
+    def set_checkpoint_load_function(self, fx):
+        # if we were passed in the load flag, then we call the load function as soon as it's added
+        if self.call_load_checkpoint:
+            fx()
+
+        self.checkpoint_load_function = fx
+
+    def get_checkpoint_load_function(self):
+        return self.checkpoint_load_function
 
     def add_slurm_cmd(self, cmd, value, comment):
         self.slurm_commands.append((cmd, value, comment))
@@ -114,6 +151,10 @@ class SlurmCluster(AbstractCluster):
         """
         self.job_name = job_name
         self.job_display_name = job_display_name
+        self.on_gpu = on_gpu
+
+        # layout logging structure
+        self.__layout_logging_dir()
 
         # whenever this script is called by slurm, it's an actual experiment, so start it
         if self.is_from_slurm_object:
@@ -123,35 +164,109 @@ class SlurmCluster(AbstractCluster):
         # generate hopt trials
         trials = self.hyperparam_optimizer.generate_trials(nb_trials)
 
-        # layout logging structure
-        self.__layout_logging_dir()
-
         # get the max test tube exp version so far if it's there
         next_test_tube_version = self.__get_max_test_tube_version(self.log_path)
 
         # for each trial, generate a slurm command
         for i, trial_params in enumerate(trials):
             exp_i = i + next_test_tube_version
-            timestamp = datetime.datetime.now().strftime("%Y-%m-%d__%H-%M-%S")
-            timestamp = 'trial_{}_{}'.format(exp_i, timestamp)
+            self.schedule_experiment(trial_params, exp_i)
 
-            # generate command
-            slurm_cmd_script_path = os.path.join(self.slurm_files_log_path, '{}_slurm_cmd.sh'.format(timestamp))
-            slurm_cmd = self.__build_slurm_command(trial_params, slurm_cmd_script_path, timestamp, exp_i, on_gpu)
-            self.__save_slurm_cmd(slurm_cmd, slurm_cmd_script_path)
+    def schedule_experiment(self, trial_params, exp_i):
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d__%H-%M-%S")
+        timestamp = 'trial_{}_{}'.format(exp_i, timestamp)
 
-            # run script to launch job
-            print('\nlaunching exp...')
-            result = call('{} {}'.format(AbstractCluster.RUN_CMD, slurm_cmd_script_path), shell=True)
-            if result == 0:
-                print('launched exp ', slurm_cmd_script_path)
-            else:
-                print('launch failed...')
+        # generate command
+        slurm_cmd_script_path = os.path.join(self.slurm_files_log_path, '{}_slurm_cmd.sh'.format(timestamp))
+        slurm_cmd = self.__build_slurm_command(trial_params, slurm_cmd_script_path, timestamp, exp_i, self.on_gpu)
+        self.__save_slurm_cmd(slurm_cmd, slurm_cmd_script_path)
+
+        # run script to launch job
+        print('\nlaunching exp...')
+        result = call('{} {}'.format(AbstractCluster.RUN_CMD, slurm_cmd_script_path), shell=True)
+        if result == 0:
+            print('launched exp ', slurm_cmd_script_path)
+        else:
+            print('launch failed...')
+
+    def slurm_time_to_seconds(self, job_time):
+        seconds = 0
+        time_component = job_time
+        if '-' in job_time:
+            days, time_component = job_time.split('-')
+            seconds += int(days) * 24 * 60 * 60
+
+        time_components = time_component.split(':')
+        if len(time_components) == 3:
+            hours, minutes, secs = time_components
+            time_seconds = int(secs) + (int(minutes) * 60) + (int(hours) * 60 * 60)
+            seconds += time_seconds
+
+        elif len(time_components) == 2:
+            minutes, secs = time_components
+            time_seconds = int(secs) + (int(minutes) * 60)
+            seconds += time_seconds
+
+        elif len(time_components) == 1:
+            secs = time_components[0]
+            seconds += int(secs)
+
+        return seconds
 
     def __run_experiment(self, train_function):
         try:
-            results = train_function(self.hyperparam_optimizer)
-            return results
+            # managers allow memory sharing across processes
+
+            # register an instance of the Slurm class so when the user sets the save and load function they can
+            # be shared across processes
+            BaseManager.register('SlurmCluster', SlurmCluster)
+            manager = BaseManager()
+            manager.start()
+
+            # a regular manager for return values
+            value_manager = multiprocessing.Manager()
+            return_dict = value_manager.dict()
+
+            # we init the cluster with the call_load_checkpoint flag to trigger the load call if it was indeed passed
+            cluster_instance = manager.SlurmCluster(call_load_checkpoint=self.call_load_checkpoint)
+
+            # Start experiment as a process so we can interrupt it right before the walltime
+            p = multiprocessing.Process(target=train_function, name="hpc_hopt_fx", args=(self.hyperparam_optimizer, cluster_instance, return_dict))
+            p.start()
+
+            # Wait (walltime - n mins) to stop the program and prompt checkpointing the model
+            stop_in_n_seconds = self.slurm_time_to_seconds(self.job_time)
+            stop_in_n_seconds -= (self.minutes_to_checkpoint_before_walltime * 60)
+            stop_in_n_seconds = max(stop_in_n_seconds, 10)  # make sure we don't go below the 5 mins
+
+            # stop program so we can call save function
+            # call join 5 minutes before the walltime so we can trigger the save function and schedule the new job
+            p.join(stop_in_n_seconds)
+            if p.is_alive():
+
+                # if save function was passed, call it
+                if cluster_instance.get_checkpoint_save_function() is not None:
+                    save_fx = cluster_instance.get_checkpoint_save_function()
+                    save_fx()
+
+                    # if we're here, the job didn't finish and we were given a save function
+                    # if we were given a load function, then schedule the program again and pass in the load function
+                    if cluster_instance.get_checkpoint_load_function() is not None:
+
+                        # copy the original slurm command into a new file, rename with current time, add load_flag
+                        # and call
+                        original_slurm_cmd_script_path = self.hyperparam_optimizer.test_tube_slurm_cmd_path
+                        exp_i = self.hyperparam_optimizer.hpc_exp_number
+                        self.__call_old_slurm_cmd(original_slurm_cmd_script_path, exp_i)
+
+                        pass
+
+                p.terminate()
+                p.join()
+
+            # here the job is complete. Return whatever value the user wanted us to return
+            return return_dict
+
         except Exception as e:
             print('Caught exception in worker thread', e)
 
@@ -159,6 +274,48 @@ class SlurmCluster(AbstractCluster):
             # current exception being handled.
             traceback.print_exc()
             return [self.hyperparam_optimizer, None]
+
+    def __call_old_slurm_cmd(self, original_slurm_cmd_script_path, exp_i, copy_current=True):
+        """
+        Copies old slurm script into a new one and adds a load flag in case it wasn't there.
+        Then schedules the script again, but this time with the load flag which will signal the program
+        to load the model so it can continue training.
+
+        :param original_slurm_cmd_script_path:
+        :param exp_i:
+        :param copy_current:
+        :return:
+        """
+
+        # generate command
+        script_path = original_slurm_cmd_script_path.split('slurm_scripts')[0] + 'slurm_scripts'
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d__%H-%M-%S")
+        timestamp = 'trial_{}_{}'.format(exp_i, timestamp)
+        new_slurm_cmd_script_path = os.path.join(script_path, '{}_slurm_cmd.sh'.format(timestamp))
+
+        # copy with new time
+        copyfile(original_slurm_cmd_script_path, new_slurm_cmd_script_path)
+
+        # add continue flag if not there
+        old_file = open(original_slurm_cmd_script_path)
+        lines = old_file.read().split('\n')
+        last_line = lines[-1]
+        lines = [line + '\n' for line in lines]
+        lines[-1] = last_line
+        old_file.close()
+        if not HyperOptArgumentParser.SLURM_LOAD_CMD in lines[-1]:
+            last_line = lines[-1]
+            last_line = '{} --{}\n'.format(last_line, HyperOptArgumentParser.SLURM_LOAD_CMD)
+            lines[-1] = last_line
+            open(new_slurm_cmd_script_path, 'w').writelines(lines)
+
+        # run script to launch job
+        print('\nlaunching exp...')
+        result = call('{} {}'.format(AbstractCluster.RUN_CMD, new_slurm_cmd_script_path), shell=True)
+        if result == 0:
+            print('launched exp ', new_slurm_cmd_script_path)
+        else:
+            print('launch failed...')
 
     def __save_slurm_cmd(self, slurm_cmd, slurm_cmd_script_path):
         with open(slurm_cmd_script_path, mode='w') as file:
