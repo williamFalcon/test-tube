@@ -7,6 +7,7 @@ test_tube_data/
 *.experiment
 test.py
 example.json
+.pytest_cache/
 
 # C extensions
 *.so
