@@ -205,11 +205,6 @@ class HyperOptArgumentParser(ArgumentParser):
             except ValueError:
                 return val
 
-    def arg_dict(self):
-        args = vars(self)
-        return args['parsed_args']
-
-
     def parse_args(self, args=None, namespace=None):
         # call superclass arg first
         results = self.__parse_args(args, namespace)
@@ -226,7 +221,6 @@ class HyperOptArgumentParser(ArgumentParser):
         self.parsed_args = deepcopy(old_args)
 
         # attach optimization fx
-        old_args['arg_dict'] = self.arg_dict
         old_args['trials'] = self.opt_trials
         old_args['optimize_parallel'] = self.optimize_parallel
         old_args['optimize_parallel_gpu'] = self.optimize_parallel_gpu
@@ -234,7 +228,7 @@ class HyperOptArgumentParser(ArgumentParser):
         old_args['generate_trials'] = self.generate_trials
         old_args['optimize_trials_parallel_gpu'] = self.optimize_trials_parallel_gpu
 
-        return argparse.Namespace(**old_args)
+        return TTNamespace(**old_args)
 
     def __read_json_config(self, file_path):
         with open(file_path) as json_data:
@@ -441,11 +435,29 @@ class HyperOptArgumentParser(ArgumentParser):
 
 
 class TTNamespace(argparse.Namespace):
+
     def __str__(self):
         result = '-' * 100 + '\nHyperparameters:\n'
         for k, v in self.__dict__.items():
             result += '{0:20}: {1}\n'.format(k, v)
         return result
+
+    def __getstate__(self):
+        # capture what is normally pickled
+        state = self.__dict__.copy()
+
+        # remove all functions from the namespace
+        clean_state = {}
+        for k, v in state.items():
+            if not hasattr(v, '__call__'):
+                clean_state[k] = v
+
+        # what we return here will be stored in the pickle
+        return clean_state
+
+    def __setstate__(self, newstate):
+        # re-instate our __dict__ state from the pickled state
+        self.__dict__.update(newstate)
 
 
 class OptArg(object):
