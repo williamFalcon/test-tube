@@ -8,6 +8,7 @@ import re
 import multiprocessing
 from multiprocessing.managers import BaseManager
 from shutil import copyfile
+import threading
 
 
 class AbstractCluster(object):
@@ -212,59 +213,40 @@ class SlurmCluster(AbstractCluster):
 
         return seconds
 
+    def call_save(self):
+        print('calling save')
+
+        # if save function was passed, call it
+        if self.get_checkpoint_save_function() is not None:
+            save_fx, kwargs = self.get_checkpoint_save_function()
+            save_fx(**kwargs)
+
+            # if we're here, the job didn't finish and we were given a save function
+            # if we were given a load function, then schedule the program again and pass in the load function
+            if self.get_checkpoint_load_function() is not None:
+
+                # copy the original slurm command into a new file, rename with current time, add load_flag
+                # and call
+                original_slurm_cmd_script_path = self.hyperparam_optimizer.test_tube_slurm_cmd_path
+                exp_i = self.hyperparam_optimizer.hpc_exp_number
+                self.__call_old_slurm_cmd(original_slurm_cmd_script_path, exp_i)
+
+        # stop program
+        sys.exit(0)
+
     def __run_experiment(self, train_function):
+
         try:
-            # managers allow memory sharing across processes
-
-            # register an instance of the Slurm class so when the user sets the save and load function they can
-            # be shared across processes
-            BaseManager.register('SlurmCluster', SlurmCluster)
-            manager = BaseManager()
-            manager.start()
-
-            # a regular manager for return values
-            value_manager = multiprocessing.Manager()
-            return_dict = value_manager.dict()
-
-            # we init the cluster with the call_load_checkpoint flag to trigger the load call if it was indeed passed
-            cluster_instance = manager.SlurmCluster(call_load_checkpoint=self.call_load_checkpoint)
-
-            # Start experiment as a process so we can interrupt it right before the walltime
-            p = multiprocessing.Process(target=train_function, name="hpc_hopt_fx", args=(self.hyperparam_optimizer, cluster_instance, return_dict))
-            p.start()
-
             # Wait (walltime - n mins) to stop the program and prompt checkpointing the model
             stop_in_n_seconds = self.slurm_time_to_seconds(self.job_time)
             stop_in_n_seconds -= (self.minutes_to_checkpoint_before_walltime * 60)
             stop_in_n_seconds = max(stop_in_n_seconds, 10)  # make sure we don't go below the 5 mins
 
-            # stop program so we can call save function
-            # call join 5 minutes before the walltime so we can trigger the save function and schedule the new job
-            p.join(stop_in_n_seconds)
-            if p.is_alive():
+            # schedule timer to interrupt training
+            threading.Timer(stop_in_n_seconds, self.call_save).start()
 
-                # if save function was passed, call it
-                if cluster_instance.get_checkpoint_save_function() is not None:
-                    save_fx, kwargs = cluster_instance.get_checkpoint_save_function()
-                    save_fx(**kwargs)
-
-                    # if we're here, the job didn't finish and we were given a save function
-                    # if we were given a load function, then schedule the program again and pass in the load function
-                    if cluster_instance.get_checkpoint_load_function() is not None:
-
-                        # copy the original slurm command into a new file, rename with current time, add load_flag
-                        # and call
-                        original_slurm_cmd_script_path = self.hyperparam_optimizer.test_tube_slurm_cmd_path
-                        exp_i = self.hyperparam_optimizer.hpc_exp_number
-                        self.__call_old_slurm_cmd(original_slurm_cmd_script_path, exp_i)
-
-                        pass
-
-                p.terminate()
-                p.join()
-
-            # here the job is complete. Return whatever value the user wanted us to return
-            return return_dict
+            # run training
+            train_function(self.hyperparam_optimizer, self, {})
 
         except Exception as e:
             print('Caught exception in worker thread', e)
