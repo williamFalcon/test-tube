@@ -207,12 +207,7 @@ class HyperOptArgumentParser(ArgumentParser):
 
     def arg_dict(self):
         args = vars(self)
-        non_fx_args = {}
-        for k, v in args:
-            if type(v) is function:
-                non_fx_args[k] = v
-
-        return args
+        return args['parsed_args']
 
 
     def parse_args(self, args=None, namespace=None):
