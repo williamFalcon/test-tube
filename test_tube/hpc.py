@@ -5,8 +5,6 @@ from subprocess import call
 import datetime
 import traceback
 import re
-import multiprocessing
-from multiprocessing.managers import BaseManager
 from shutil import copyfile
 import threading
 
