@@ -68,19 +68,18 @@ class AbstractCluster(object):
             if self.call_load_checkpoint:
                 self.hyperparam_optimizer.__delattr__(HyperOptArgumentParser.SLURM_LOAD_CMD)
 
-
-    def set_checkpoint_save_function(self, fx):
-        self.checkpoint_save_function = fx
+    def set_checkpoint_save_function(self, fx, kwargs):
+        self.checkpoint_save_function = [fx, kwargs]
 
     def get_checkpoint_save_function(self):
         return self.checkpoint_save_function
 
-    def set_checkpoint_load_function(self, fx):
+    def set_checkpoint_load_function(self, fx, kwargs):
         # if we were passed in the load flag, then we call the load function as soon as it's added
         if self.call_load_checkpoint:
-            fx()
+            fx(**kwargs)
 
-        self.checkpoint_load_function = fx
+        self.checkpoint_load_function = [fx, kwargs]
 
     def get_checkpoint_load_function(self):
         return self.checkpoint_load_function
@@ -246,8 +245,8 @@ class SlurmCluster(AbstractCluster):
 
                 # if save function was passed, call it
                 if cluster_instance.get_checkpoint_save_function() is not None:
-                    save_fx = cluster_instance.get_checkpoint_save_function()
-                    save_fx()
+                    save_fx, kwargs = cluster_instance.get_checkpoint_save_function()
+                    save_fx(**kwargs)
 
                     # if we're here, the job didn't finish and we were given a save function
                     # if we were given a load function, then schedule the program again and pass in the load function
