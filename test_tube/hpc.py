@@ -230,7 +230,7 @@ class SlurmCluster(AbstractCluster):
                 self.__call_old_slurm_cmd(original_slurm_cmd_script_path, exp_i)
 
         # stop program
-        sys.exit(0)
+        os._exit(0)
 
     def __run_experiment(self, train_function):
 
