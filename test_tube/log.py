@@ -280,7 +280,11 @@ class Experiment(object):
         # load .tags file
         meta_tags_path = self.get_data_path(self.name, self.version) + '/meta_tags.csv'
         df = pd.read_csv(meta_tags_path)
-        self.tags = df.to_dict(orient='records')
+        self.tags_list = df.to_dict(orient='records')
+        self.tags = {}
+        for d in self.tags_list:
+            k, v = d['key'], d['value']
+            self.tags[k] = v
 
         # load metrics
         metrics_file_path = self.get_data_path(self.name, self.version) + '/metrics.csv'
