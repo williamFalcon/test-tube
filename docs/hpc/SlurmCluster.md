@@ -84,8 +84,7 @@ If true, saves slurm output logs to the path at *log_path*. This file contains a
 
 When this is given, it structures the files in a nice format to fit with the folder structure of the [Experiment](https://williamfalcon.github.io/test-tube/experiment_tracking/experiment/) object's output.
 
-## Methods    
-Properties   
+## Properties   
 
 - `job_time` String. Walltime requested. Examples:    
 ```{.python}    
