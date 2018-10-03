@@ -1,4 +1,6 @@
-# HyperOptArgumentParser class API
+# HyperOptArgumentParser class API   
+
+[[Github Code](https://github.com/williamFalcon/test-tube/blob/master/test_tube/argparse_hopt.py)]    
 
 The HyperOptArgumentParser is a subclass of python's
 [argparse](https://docs.python.org/3/library/argparse.html), with added
