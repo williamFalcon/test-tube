@@ -86,7 +86,7 @@ When this is given, it structures the files in a nice format to fit with the fol
 
 ## Properties   
 
-- `job_time` String. Walltime requested. Examples:    
+`job_time` String. Walltime requested. Examples:    
 ```{.python}    
 # 1 hour and 10 minutes    
 cluster.job_time = '1:10:00'
@@ -104,7 +104,7 @@ cluster.job_time = '10:00'
 cluster.job_time = '10'   
 ```   
 
-- `minutes_to_checkpoint_before_walltime` Int. Minutes before walltime when a continuation job will be auto-submitted. 
+`minutes_to_checkpoint_before_walltime` Int. Minutes before walltime when a continuation job will be auto-submitted. 
 ```{.python}
 cluster.job_time = '10:00'   
 cluster.minutes_to_checkpoint_before_walltime = 2
@@ -112,23 +112,23 @@ cluster.minutes_to_checkpoint_before_walltime = 2
 # New job will be submited to continue training after 8 minutes of the job running.      
 ```     
 
-- `per_experiment_nb_gpus` Int. Number of GPUs each job will get.   
+`per_experiment_nb_gpus` Int. Number of GPUs each job will get.   
 ```{.python}
 # EACH job will get 2 GPUs (ie: if a model runs over two GPUs at the same time).   
 cluster.per_experiment_nb_gpus = 2  
 ```     
 
-- `per_experiment_nb_cpus` Int. Number of CPUs each job will get.   
+`per_experiment_nb_cpus` Int. Number of CPUs each job will get.   
 ```{.python}
 cluster.per_experiment_nb_cpus = 1 
 ```     
 
-- `per_experiment_nb_nodes` Int. Number of nodes each job will get.    
+`per_experiment_nb_nodes` Int. Number of nodes each job will get.    
 ```{.python}
 cluster.per_experiment_nb_nodes = 1 
 ```     
 
-- `gpu_type` String. Gpu type requested. Example:   
+`gpu_type` String. Gpu type requested. Example:   
 ```{.python}
 cluster.gpu_type = '1080ti'   
 ```     
