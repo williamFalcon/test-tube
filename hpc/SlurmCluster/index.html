@@ -142,6 +142,7 @@
             <div class="section">
               
                 <h1 id="slurmcluster-class-api">SlurmCluster class API</h1>
+<p>[<a href="https://github.com/williamFalcon/test-tube/blob/master/test_tube/hpc.py">Github Code</a>]    </p>
 <p>The SlurmCluster class enables hyperparameter search parallelization on a cluster managed via <a href="https://slurm.schedmd.com/">Slurm workload manager</a>.</p>
 <p>At a high level, the SlurmCluster creates a submit script for each permutation of hyperparameters requested. If the job hits the walltime but has not completed, the SlurmManager will checkpoint the model and submit a new job to continue training using the saved weights.</p>
 <ul>
