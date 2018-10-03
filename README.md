@@ -79,7 +79,7 @@ you've tried that didn't work.
 
 ### Parallelize GPU training on a HPC cluster    
 
-``` {.python}
+``` {.python}   
 from test_tube.hpc import SlurmCluster
 
 # hyperparameters is a test-tube hyper params object
@@ -234,9 +234,9 @@ exp.log('test_jpg': img, 'val_err': 0.2)
 
 ## Demos
 
--   [Experiments and hyperparameter optimization for tensorflow across 4
-    GPUs
-    simultaneously](https://github.com/williamFalcon/test-tube/blob/master/examples/tensorflow_example.py)
+-   [Hyperparameter optimization for PyTorch across 20 cluster GPUs](https://github.com/williamFalcon/test-tube/blob/master/examples/pytorch_hpc_example.py)   
+-   [Hyperparameter optimization across 20 cluster CPUs](https://github.com/williamFalcon/test-tube/blob/master/examples/hpc_cpu_example.py)   
+-   [Experiments and hyperparameter optimization for tensorflow across 4 GPUs simultaneously](https://github.com/williamFalcon/test-tube/blob/master/examples/tensorflow_example.py)
 
 ## How to contribute
 
