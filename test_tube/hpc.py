@@ -19,8 +19,7 @@ class AbstractCluster(object):
             python_cmd='python3',
             enable_log_err=True,
             enable_log_out=True,
-            test_tube_exp_name=None,
-            call_load_checkpoint=False
+            test_tube_exp_name=None
     ):
         self.hyperparam_optimizer = hyperparam_optimizer
         self.log_path = log_path
@@ -48,7 +47,7 @@ class AbstractCluster(object):
         self.python_cmd = python_cmd
         self.gpu_type = None
         self.on_gpu = False
-        self.call_load_checkpoint = call_load_checkpoint
+        self.call_load_checkpoint = False
         self.commands = []
         self.slurm_commands = []
 
