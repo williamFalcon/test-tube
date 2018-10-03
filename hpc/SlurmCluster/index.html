@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="shortcut icon" href="../../img/favicon.ico">
+  <title>SlurmCluster class API - Test tube Documentation</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "SlurmCluster class API";
+    var mkdocs_page_input_path = "hpc/SlurmCluster.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="../.." class="icon icon-home"> Test tube Documentation</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../..">Test Tube: Easily log and tune Deep Learning experiments</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">Experiment tracking</span>
+    <ul class="subnav">
+                <li class="">
+                    
+    <a class="" href="../../experiment_tracking/experiment/">Experiment class API</a>
+                </li>
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">Hpc</span>
+    <ul class="subnav">
+                <li class=" current">
+                    
+    <a class="current" href="./">SlurmCluster class API</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l3"><a href="#slurmcluster-class-api">SlurmCluster class API</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l4" href="#init-options">init options</a></li>
+        
+            <li><a class="toctree-l4" href="#methods">Methods</a></li>
+        
+            <li><a class="toctree-l4" href="#methods_1">Methods</a></li>
+        
+        </ul>
+    
+
+    </ul>
+                </li>
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">Hyperparameter optimization</span>
+    <ul class="subnav">
+                <li class="">
+                    
+    <a class="" href="../../hyperparameter_optimization/HyperOptArgumentParser/">HyperOptArgumentParser class API</a>
+                </li>
+    </ul>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../..">Test tube Documentation</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Hpc &raquo;</li>
+        
+      
+    
+    <li>SlurmCluster class API</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/williamFalcon/test_tube/edit/master/docs/hpc/SlurmCluster.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="slurmcluster-class-api">SlurmCluster class API</h1>
+<p>The SlurmCluster class enables hyperparameter search parallelization on a cluster managed via <a href="https://slurm.schedmd.com/">Slurm workload manager</a>.</p>
+<p>At a high level, the SlurmCluster creates a submit script for each permutation of hyperparameters requested. If the job hits the walltime but has not completed, the SlurmManager will checkpoint the model and submit a new job to continue training using the saved weights.</p>
+<p>You can instantiate a <code>SlurmCluster</code> via:   </p>
+<pre><code class="python">from test_tube.hpc import SlurmCluster
+
+# hyperparameters is a test-tube hyper params object
+# see https://williamfalcon.github.io/test-tube/hyperparameter_optimization/HyperOptArgumentParser/
+hyperparams = args.parse()
+
+# init cluster
+cluster = SlurmCluster(
+    hyperparam_optimizer=hyperparams,
+    log_path='/path/to/log/results/to',
+    python_cmd='python3'
+)
+
+# let the cluster know where to email for a change in job status (ie: complete, fail, etc...)
+cluster.notify_job_status(email='some@email.com', on_done=True, on_fail=True)
+
+# set the job options. In this instance, we'll run 20 different models
+# each with its own set of hyperparameters giving each one 1 GPU (ie: taking up 20 GPUs)
+cluster.per_experiment_nb_gpus = 1
+cluster.per_experiment_nb_nodes = 1
+
+# we'll request 10GB of memory per node
+cluster.memory_mb_per_node = 10000
+
+# set a walltime of 10 minues
+cluster.job_time = '10:00'
+
+# 1 minute before walltime is up, SlurmCluster will launch a continuation job and kill this job.
+# you must provide your own loading and saving function which the cluster object will call
+cluster.minutes_to_checkpoint_before_walltime = 1
+
+# run the models on the cluster
+cluster.optimize_parallel_cluster_gpu(train, nb_trials=20, job_name='first_tt_batch', job_display_name='my_batch')
+</code></pre>
+
+<hr />
+<h2 id="init-options">init options</h2>
+<h3 id="hyperparam_optimizer"><code>hyperparam_optimizer</code></h3>
+<p>A <a href="https://williamfalcon.github.io/test-tube/hyperparameter_optimization/HyperOptArgumentParser/">HyperOptArgumentParser</a> object 
+which contains all permutations of model hyperparameters to run.   </p>
+<h3 id="log_path"><code>log_path</code></h3>
+<p>Path to save the slurm scripts, error logs and out logs created. Usually this would be the experiments folder path where test tube saves <a href="https://williamfalcon.github.io/test-tube/experiment_tracking/experiment/">Experiment</a> information.</p>
+<h3 id="python_cmd"><code>python_cmd</code></h3>
+<p>This is the command that starts the python program. Normally it is:   </p>
+<pre><code class="python"># python 2
+python main.py   
+
+# python 3   
+python3 main.py
+</code></pre>
+
+<h3 id="enable_log_err"><code>enable_log_err</code></h3>
+<p>If true, saves slurm error logs to the path at <em>log_path</em>. If anything goes wrong in your job, you'll find the error here.   </p>
+<h3 id="enable_log_out"><code>enable_log_out</code></h3>
+<p>If true, saves slurm output logs to the path at <em>log_path</em>. This file contains all outputs that would show up on the console normally.   </p>
+<h3 id="test_tube_exp_name"><code>test_tube_exp_name</code></h3>
+<p>When this is given, it structures the files in a nice format to fit with the folder structure of the <a href="https://williamfalcon.github.io/test-tube/experiment_tracking/experiment/">Experiment</a> object's output.</p>
+<h2 id="methods">Methods</h2>
+<p>Properties   </p>
+<ul>
+<li><code>job_time</code> String. Walltime requested. Examples:    </li>
+</ul>
+<pre><code class="python"># 1 hour and 10 minutes    
+cluster.job_time = '1:10:00'
+
+# 1 day and 1 hour and 10 minutes    
+cluster.job_time = '1-1:10:00'
+
+# 1 day and 1 hour and 10 minutes    
+cluster.job_time = '25:10:00'   
+
+# 10 minutes    
+cluster.job_time = '10:00'   
+
+# 10 seconds    
+cluster.job_time = '10'   
+</code></pre>
+
+<ul>
+<li><code>minutes_to_checkpoint_before_walltime</code> Int. Minutes before walltime when a continuation job will be auto-submitted. </li>
+</ul>
+<pre><code class="python">cluster.job_time = '10:00'   
+cluster.minutes_to_checkpoint_before_walltime = 2
+
+# New job will be submited to continue training after 8 minutes of the job running.      
+</code></pre>
+
+<ul>
+<li><code>per_experiment_nb_gpus</code> Int. Number of GPUs each job will get.   </li>
+</ul>
+<pre><code class="python"># EACH job will get 2 GPUs (ie: if a model runs over two GPUs at the same time).   
+cluster.per_experiment_nb_gpus = 2  
+</code></pre>
+
+<ul>
+<li><code>per_experiment_nb_cpus</code> Int. Number of CPUs each job will get.   </li>
+</ul>
+<pre><code class="python">cluster.per_experiment_nb_cpus = 1 
+</code></pre>
+
+<ul>
+<li><code>per_experiment_nb_nodes</code> Int. Number of nodes each job will get.    </li>
+</ul>
+<pre><code class="python">cluster.per_experiment_nb_nodes = 1 
+</code></pre>
+
+<ul>
+<li><code>gpu_type</code> String. Gpu type requested. Example:   </li>
+</ul>
+<pre><code class="python">cluster.gpu_type = '1080ti'   
+</code></pre>
+
+<hr />
+<h2 id="methods_1">Methods</h2>
+<h3 id="set_checkpoint_save_function"><code>set_checkpoint_save_function</code></h3>
+<pre><code class="python">cluster.set_checkpoint_save_function(fx, kwargs)    
+</code></pre>
+
+<p>Called if the model isn't finished training <em>minutes_to_checkpoint_before_walltime</em> before the walltime. If walltime = '15:00' and minutes_to_checkpoint_before_walltime = '1:00' the SlurmCluster will call your save function after 14 minutes of training.   </p>
+<ul>
+<li><code>fx</code> A python function.  </li>
+<li><code>kwargs</code> Dictionary where keys are the literal argument names to the function. Dictionary values are the values of the arguments.     </li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="python">def my_save_function(arg_1, arg_k):  
+    # ... save my model here    
+
+cluster.set_checkpoint_save_function(my_save_function, kwargs={'arg_1': 'whatever', 'arg_k': 'you_want'})    
+
+</code></pre>
+
+<h3 id="set_checkpoint_load_function"><code>set_checkpoint_load_function</code></h3>
+<pre><code class="python">cluster.set_checkpoint_load_function(fx, kwargs)    
+</code></pre>
+
+<p>Called internally when a job is auto-submitted by the SlurmCluster to give your program a chance to load the model weights or whatever you need to continue training.<br />
+This will call your load function immediately whenever you call this method AND training is continuing. </p>
+<ul>
+<li><code>fx</code> A python function.  </li>
+<li><code>kwargs</code> Dictionary where keys are the literal argument names to the function. Dictionary values are the values of the arguments.   </li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="python">def my_load_function(arg_1, arg_k):  
+    # ... restore my model here    
+
+cluster.set_checkpoint_save_function(my_load_function, kwargs={'arg_1': 'whatever', 'arg_k': 'you_want'})    
+
+</code></pre>
+
+<h3 id="add_slurm_cmd"><code>add_slurm_cmd</code></h3>
+<pre><code class="python">cluster.add_slurm_cmd(cmd, value, comment)
+</code></pre>
+
+<p>Adds whatever Slurm command you need manually to the generated script. All possible commands are listed <a href="https://slurm.schedmd.com/pdfs/summary.pdf">here</a>.</p>
+<ul>
+<li><code>cmd</code> String with the bash command.   </li>
+<li><code>value</code> String value for the command. Numericals need to be in single quotes <code>'1'</code>  </li>
+<li><code>comment</code> String with the command comment.  </li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="python">cluster.add_slurm_cmd(cmd='cpus-per-task', value='1', comment='nb cpus per task')
+
+# the above command will add an entry like this to the slurm script   
+
+# #nb cpus per task
+# #SBATCH --cpus-per-task=1
+# ############
+
+</code></pre>
+
+<h3 id="add_command"><code>add_command</code></h3>
+<pre><code class="python">cluster.add_command(cmd)    
+</code></pre>
+
+<p>Adds arbitrary bash commands to the script. Use this to activate conda environments, install packages, whatever else you would think about calling on bash.    </p>
+<ul>
+<li><code>cmd</code> String with your bash command.   </li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="python"># load the anaconda package on the launch node   
+cluster.add_command('module load anaconda')   
+
+# activate the environment on the launch node   
+cluster.add_command('source activate myCondaEnv')   
+</code></pre>
+
+<h3 id="load_modules"><code>load_modules</code></h3>
+<pre><code class="python">cluster.load_modules(modules)  
+</code></pre>
+
+<p>Loads modules needed to run the job. Your Slurm documentation should have a list of available modules. You can also get those by running <code>module avail</code>. <br />
+- <code>modules</code> Array of module names.    </p>
+<p><strong>Example</strong></p>
+<pre><code class="python">cluster.load_modules([
+    'python-3',
+    'anaconda3'
+])   
+</code></pre>
+
+<h3 id="notify_job_status"><code>notify_job_status</code></h3>
+<pre><code class="python">cluster.notify_job_status(email, on_done, on_fail)  
+</code></pre>
+
+<p>Loads modules needed to run the job. Your Slurm documentation should have a list of available modules. You can also get those by running <code>module avail</code>.   </p>
+<ul>
+<li><code>email</code> String. Email address to get notifications.       </li>
+<li><code>on_done</code> Boolean. If true, you'll get an email when the job completes.      </li>
+<li><code>on_fail</code> Boolean. If true, you'll get an email if the job fails.    </li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="python">cluster.notify_job_status(email='some@email.com', on_done=True, on_fail=True)   
+</code></pre>
+
+<h3 id="optimize_parallel_cluster_gpu"><code>optimize_parallel_cluster_gpu</code></h3>
+<pre><code class="python">cluster.optimize_parallel_cluster_gpu(train_function, nb_trials, job_name, job_display_name=None)  
+</code></pre>
+
+<p>Launches the hyperparameter search across the cluster nodes.    <br />
+- <code>train_function</code> The entry point to start your training routine. <br />
+- <code>nb_trials</code> Number of trials to launch. This is the number of hyperparameter configurations to train over. <br />
+- <code>job_name</code> Folder name where the slurm scripts will save to. This should be the same as your <a href="https://williamfalcon.github.io/test-tube/experiment_tracking/experiment/">Experiment</a> name.    <br />
+- <code>job_display_name</code> Visible name when slurm lists running jobs (ie: through <code>squeue -u user_name</code>).  This should be really short (if using a test tube Experiment, it'll put the experiment version at the end).   </p>
+<p><strong>Example</strong></p>
+<pre><code class="python">def main(hparams, cluster, return_dict):   
+    # do your own generic training code here... 
+    # init model
+    model = model_build(hparams)    
+
+    # set the load and save fxs
+    cluster.set_checkpoint_save_function(fx, {})
+    cluster.set_checkpoint_load_function(fx, {})
+
+    # train ...
+
+
+cluster.optimize_parallel_cluster_gpu(main, nb_trials=20, job_name='my_job', job_display_name='mj')    
+</code></pre>
+
+<p>Now if you get the job information, you'll see this:    </p>
+<pre><code class="bash">(conda_env) [user@node dir]$ squeue -u my_name
+             JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
+            104040       all  mjv0   my_name  R      58:22      1 nodeName
+            104041       all  mjv1   my_name  R      58:22      1 nodeName
+            104042       all  mjv2   my_name  R      58:22      1 nodeName
+            104043       all  mjv3   my_name  R      58:22      1 nodeName
+</code></pre>
+
+<h3 id="optimize_parallel_cluster_cpu"><code>optimize_parallel_cluster_cpu</code></h3>
+<pre><code class="python">cluster.optimize_parallel_cluster_cpu(train_function, nb_trials, job_name, job_display_name=None)  
+</code></pre>
+
+<p>Launches the hyperparameter search across the cluster nodes using cpus.    <br />
+- <code>train_function</code> The entry point to start your training routine. <br />
+- <code>nb_trials</code> Number of trials to launch. This is the number of hyperparameter configurations to train over. <br />
+- <code>job_name</code> Folder name where the slurm scripts will save to. This should be the same as your <a href="https://williamfalcon.github.io/test-tube/experiment_tracking/experiment/">Experiment</a> name.    <br />
+- <code>job_display_name</code> Visible name when slurm lists running jobs (ie: through <code>squeue -u user_name</code>).  This should be really short (if using a test tube Experiment, it'll put the experiment version at the end).   </p>
+<p><strong>Example</strong></p>
+<pre><code class="python">def main(hparams, cluster, return_dict):   
+    # do your own generic training code here... 
+    # init model
+    model = model_build(hparams)    
+
+    # set the load and save fxs
+    cluster.set_checkpoint_save_function(fx, {})
+    cluster.set_checkpoint_load_function(fx, {})
+
+    # train ...
+
+
+cluster.optimize_parallel_cluster_cpu(main, nb_trials=20, job_name='my_job', job_display_name='mj')    
+</code></pre>
+
+<p>Now if you get the job information, you'll see this:    </p>
+<pre><code class="bash">(conda_env) [user@node dir]$ squeue -u my_name
+             JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
+            104040       all  mjv0   my_name  R      58:22      1 nodeName
+            104041       all  mjv1   my_name  R      58:22      1 nodeName
+            104042       all  mjv2   my_name  R      58:22      1 nodeName
+            104043       all  mjv3   my_name  R      58:22      1 nodeName
+</code></pre>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../../hyperparameter_optimization/HyperOptArgumentParser/" class="btn btn-neutral float-right" title="HyperOptArgumentParser class API">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../../experiment_tracking/experiment/" class="btn btn-neutral" title="Experiment class API"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/williamFalcon/test_tube/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../../experiment_tracking/experiment/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../../hyperparameter_optimization/HyperOptArgumentParser/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '../..';</script>
+    <script src="../../js/theme.js" defer></script>
+      <script src="../../search/main.js" defer></script>
+
+</body>
+</html>
