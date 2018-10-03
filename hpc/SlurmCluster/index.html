@@ -208,7 +208,8 @@ python3 main.py
 <h3 id="test_tube_exp_name"><code>test_tube_exp_name</code></h3>
 <p>When this is given, it structures the files in a nice format to fit with the folder structure of the <a href="https://williamfalcon.github.io/test-tube/experiment_tracking/experiment/">Experiment</a> object's output.</p>
 <h2 id="properties">Properties</h2>
-<p><code>job_time</code> String. Walltime requested. Examples:    </p>
+<p><code>job_time</code><br />
+String. Walltime requested. Examples:    </p>
 <pre><code class="python"># 1 hour and 10 minutes    
 cluster.job_time = '1:10:00'
 
@@ -225,27 +226,32 @@ cluster.job_time = '10:00'
 cluster.job_time = '10'   
 </code></pre>
 
-<p><code>minutes_to_checkpoint_before_walltime</code> Int. Minutes before walltime when a continuation job will be auto-submitted. </p>
+<p><code>minutes_to_checkpoint_before_walltime</code><br />
+Int. Minutes before walltime when a continuation job will be auto-submitted. </p>
 <pre><code class="python">cluster.job_time = '10:00'   
 cluster.minutes_to_checkpoint_before_walltime = 2
 
 # New job will be submited to continue training after 8 minutes of the job running.      
 </code></pre>
 
-<p><code>per_experiment_nb_gpus</code> Int. Number of GPUs each job will get.   </p>
+<p><code>per_experiment_nb_gpus</code><br />
+Int. Number of GPUs each job will get.   </p>
 <pre><code class="python"># EACH job will get 2 GPUs (ie: if a model runs over two GPUs at the same time).   
 cluster.per_experiment_nb_gpus = 2  
 </code></pre>
 
-<p><code>per_experiment_nb_cpus</code> Int. Number of CPUs each job will get.   </p>
+<p><code>per_experiment_nb_cpus</code><br />
+Int. Number of CPUs each job will get.   </p>
 <pre><code class="python">cluster.per_experiment_nb_cpus = 1 
 </code></pre>
 
-<p><code>per_experiment_nb_nodes</code> Int. Number of nodes each job will get.    </p>
+<p><code>per_experiment_nb_nodes</code><br />
+Int. Number of nodes each job will get.    </p>
 <pre><code class="python">cluster.per_experiment_nb_nodes = 1 
 </code></pre>
 
-<p><code>gpu_type</code> String. Gpu type requested. Example:   </p>
+<p><code>gpu_type</code> <br />
+String. Gpu type requested. Example:   </p>
 <pre><code class="python">cluster.gpu_type = '1080ti'   
 </code></pre>
 
