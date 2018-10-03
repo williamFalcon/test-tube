@@ -75,7 +75,36 @@ If you're a researcher, test-tube is highly encouraged as a way to post
 your paper's training logs to help add transparency and show others what
 you've tried that didn't work.
 
-## Examples
+## Examples   
+
+### Parallelize GPU training on a HPC cluster    
+
+``` {.python}
+from test_tube.hpc import SlurmCluster
+
+# hyperparameters is a test-tube hyper params object
+hyperparams = args.parse()
+
+# init cluster
+cluster = SlurmCluster(
+    hyperparam_optimizer=hyperparams,
+    log_path='/path/to/log/results/to',
+    python_cmd='python3'
+)
+
+# let the cluster know where to email for a change in job status (ie: complete, fail, etc...)
+cluster.notify_job_status(email='some@email.com', on_done=True, on_fail=True)
+
+# set the job options. In this instance, we'll run 20 different models
+# each with its own set of hyperparameters giving each one 1 GPU (ie: taking up 20 GPUs)
+cluster.per_experiment_nb_gpus = 1
+cluster.per_experiment_nb_nodes = 1
+
+# run the models on the cluster
+cluster.optimize_parallel_cluster_gpu(train, nb_trials=20, job_name='first_tt_batch', job_display_name='my_batch')   
+
+# we just ran 20 different hyperparameters on 20 GPUs in the HPC cluster!!    
+```    
 
 ### Log experiments
 
