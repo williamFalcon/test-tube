@@ -288,21 +288,25 @@ class Experiment(object):
 
         # load metrics
         metrics_file_path = self.get_data_path(self.name, self.version) + '/metrics.csv'
-        df = pd.read_csv(metrics_file_path)
-        self.metrics = df.to_dict(orient='records')
+        try:
+            df = pd.read_csv(metrics_file_path)
+            self.metrics = df.to_dict(orient='records')
 
-        # remove nans
-        for metric in self.metrics:
-            to_delete = []
-            for k, v in metric.items():
-                try:
-                    if np.isnan(v):
-                        to_delete.append(k)
-                except Exception as e:
-                    pass
+            # remove nans
+            for metric in self.metrics:
+                to_delete = []
+                for k, v in metric.items():
+                    try:
+                        if np.isnan(v):
+                            to_delete.append(k)
+                    except Exception as e:
+                        pass
 
-            for k in to_delete:
-                del metric[k]
+                for k in to_delete:
+                    del metric[k]
+        except Exception as e:
+            # metrics was empty...
+            self.metrics = []
 
     def get_data_path(self, exp_name, exp_version):
         """
