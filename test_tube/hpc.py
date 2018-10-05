@@ -7,7 +7,6 @@ import traceback
 import re
 from shutil import copyfile
 import threading
-import logging
 import time
 
 
@@ -258,9 +257,8 @@ class SlurmCluster(AbstractCluster):
             # current exception being handled.
             traceback.print_exc()
 
-            # thread = threading.Thread(target=exit)
-            # thread.daemon = True
-            # thread.start()
+            thread = threading.Thread(target=exit)
+            thread.start()
 
             raise SystemExit
 
