@@ -7,7 +7,7 @@ import traceback
 import re
 from shutil import copyfile
 import threading
-import time
+import subprocess
 
 
 class AbstractCluster(object):
@@ -253,11 +253,7 @@ class SlurmCluster(AbstractCluster):
             traceback.print_exc()
 
             # remove potential for save to be called
-            self.checkpoint_save_function = None
-
-            thread = threading.Timer(1, self.kill)
-            thread.daemon = True
-            thread.start()
+            call("exit 1")
 
     def kill(self):
         os._exit(1)
