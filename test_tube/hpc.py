@@ -257,6 +257,7 @@ class SlurmCluster(AbstractCluster):
             # current exception being handled.
             traceback.print_exc()
 
+            # if exit isn't called on the thread, slurm doesn't have a chance to log the exception
             thread = threading.Thread(target=exit)
             thread.start()
 
