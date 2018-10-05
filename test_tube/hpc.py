@@ -7,7 +7,7 @@ import traceback
 import re
 from shutil import copyfile
 import threading
-import logging
+import time
 
 
 class AbstractCluster(object):
@@ -252,10 +252,11 @@ class SlurmCluster(AbstractCluster):
             # current exception being handled.
             traceback.print_exc()
 
-        finally:
-            thread = threading.Timer(1, sys.exit, [1])
-            thread.daemon = True
-            thread.start()
+            for i in range(0, 10):
+                time.sleep(0.1)
+
+            os._exit(1)
+
 
     def __call_old_slurm_cmd(self, original_slurm_cmd_script_path, exp_i, copy_current=True):
         """
