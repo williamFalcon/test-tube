@@ -254,8 +254,7 @@ class SlurmCluster(AbstractCluster):
 
             # remove potential for save to be called
             self.checkpoint_save_function = None
-
-            threading.Timer(10, self.kill).start()
+            raise ValueError('Exiting slurm')
 
 
     def kill(self):
