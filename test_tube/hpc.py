@@ -253,12 +253,9 @@ class SlurmCluster(AbstractCluster):
             traceback.print_exc()
 
         finally:
-            thread = threading.Timer(1, self.kill)
+            thread = threading.Timer(1, os._exit, [1])
             thread.daemon = True
             thread.start()
-
-    def kill(self):
-        os._exit(1)
 
     def __call_old_slurm_cmd(self, original_slurm_cmd_script_path, exp_i, copy_current=True):
         """
