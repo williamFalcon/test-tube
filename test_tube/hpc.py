@@ -250,17 +250,17 @@ class SlurmCluster(AbstractCluster):
 
             # This prints the type, value, and stack trace of the
             # current exception being handled.
-            print(traceback.print_exc())
-            os._exit(1)
-            # # remove potential for save to be called
-            # self.checkpoint_save_function = None
-            #
-            # thread = threading.Timer(10, self.kill)
-            # thread.daemon = True
-            # thread.start()
+            traceback.print_exc()
 
-    # def kill(self):
-    #     os._exit(1)
+            # remove potential for save to be called
+            self.checkpoint_save_function = None
+
+            thread = threading.Timer(1, self.kill)
+            thread.daemon = True
+            thread.start()
+
+    def kill(self):
+        os._exit(1)
 
     def __call_old_slurm_cmd(self, original_slurm_cmd_script_path, exp_i, copy_current=True):
         """
