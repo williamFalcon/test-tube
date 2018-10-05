@@ -262,6 +262,8 @@ class SlurmCluster(AbstractCluster):
             # thread.daemon = True
             thread.start()
 
+            raise SystemExit
+
     def __call_old_slurm_cmd(self, original_slurm_cmd_script_path, exp_i, copy_current=True):
         """
         Copies old slurm script into a new one and adds a load flag in case it wasn't there.
