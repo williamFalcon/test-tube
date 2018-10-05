@@ -259,7 +259,7 @@ class SlurmCluster(AbstractCluster):
 
 
     def kill(self):
-        os._exit(1)
+        exit(1)
 
     def __call_old_slurm_cmd(self, original_slurm_cmd_script_path, exp_i, copy_current=True):
         """
