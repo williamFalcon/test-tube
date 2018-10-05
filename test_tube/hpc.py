@@ -157,7 +157,7 @@ class SlurmCluster(AbstractCluster):
         # whenever this script is called by slurm, it's an actual experiment, so start it
         if self.is_from_slurm_object:
             self.__run_experiment(train_function)
-            os._exit(1)
+            os._exit(0)
 
         # generate hopt trials
         trials = self.hyperparam_optimizer.generate_trials(nb_trials)
