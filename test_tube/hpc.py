@@ -254,8 +254,12 @@ class SlurmCluster(AbstractCluster):
 
             # remove potential for save to be called
             self.checkpoint_save_function = None
-            time.sleep(10)
-            os._exit(1)
+
+            threading.Timer(10, self.kill).start()
+
+
+    def kill(self):
+        os._exit(1)
 
     def __call_old_slurm_cmd(self, original_slurm_cmd_script_path, exp_i, copy_current=True):
         """
