@@ -250,6 +250,9 @@ class SlurmCluster(AbstractCluster):
             # This prints the type, value, and stack trace of the
             # current exception being handled.
             traceback.print_exc()
+
+            # remove potential for save to be called
+            self.checkpoint_save_function = None
             threading.Timer(30, self.kill).start()
 
 
