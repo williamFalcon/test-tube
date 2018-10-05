@@ -258,9 +258,9 @@ class SlurmCluster(AbstractCluster):
             # current exception being handled.
             traceback.print_exc()
 
-            thread = threading.Thread(target=exit)
+            # thread = threading.Thread(target=exit)
             # thread.daemon = True
-            thread.start()
+            # thread.start()
 
             raise SystemExit
 
