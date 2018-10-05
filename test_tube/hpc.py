@@ -7,6 +7,7 @@ import traceback
 import re
 from shutil import copyfile
 import threading
+import time
 
 
 class AbstractCluster(object):
@@ -253,11 +254,8 @@ class SlurmCluster(AbstractCluster):
 
             # remove potential for save to be called
             self.checkpoint_save_function = None
-            threading.Timer(30, self.kill).start()
-
-
-    def kill(self):
-        os._exit(1)
+            time.sleep(10)
+            os._exit(1)
 
     def __call_old_slurm_cmd(self, original_slurm_cmd_script_path, exp_i, copy_current=True):
         """
