@@ -156,8 +156,8 @@ class SlurmCluster(AbstractCluster):
 
         # whenever this script is called by slurm, it's an actual experiment, so start it
         if self.is_from_slurm_object:
-            self.__run_experiment(train_function)
-            os._exit(0)
+            code = self.__run_experiment(train_function)
+            os._exit(code)
 
         # generate hopt trials
         trials = self.hyperparam_optimizer.generate_trials(nb_trials)
@@ -245,6 +245,7 @@ class SlurmCluster(AbstractCluster):
 
             # run training
             train_function(self.hyperparam_optimizer, self, {})
+            return 0
 
         except Exception as e:
             print('Caught exception in worker thread', e)
@@ -252,6 +253,7 @@ class SlurmCluster(AbstractCluster):
             # This prints the type, value, and stack trace of the
             # current exception being handled.
             traceback.print_exc()
+            return 1
 
     def __call_old_slurm_cmd(self, original_slurm_cmd_script_path, exp_i, copy_current=True):
         """
