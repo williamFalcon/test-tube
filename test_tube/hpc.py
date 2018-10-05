@@ -251,7 +251,7 @@ class SlurmCluster(AbstractCluster):
             # This prints the type, value, and stack trace of the
             # current exception being handled.
             traceback.print_exc()
-            return [self.hyperparam_optimizer, None]
+            os._exit(1)
 
     def __call_old_slurm_cmd(self, original_slurm_cmd_script_path, exp_i, copy_current=True):
         """
