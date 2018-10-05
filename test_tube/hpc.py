@@ -11,7 +11,7 @@ import time
 
 
 def exit():
-    time.sleep(2)
+    time.sleep(1)
     os._exit(1)
 
 
