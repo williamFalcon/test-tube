@@ -65,6 +65,7 @@ class HyperOptArgumentParser(ArgumentParser):
     SLURM_CMD_PATH = 'test_tube_slurm_cmd_path'
     SLURM_EXP_CMD = 'hpc_exp_number'
     SLURM_LOAD_CMD = 'test_tube_do_checkpoint_load'
+    DRY_RUN_CMD = 'test_tube_dry_run'
     CMD_MAP = {
         TRIGGER_CMD: bool,
         SLURM_CMD_PATH: str,
@@ -88,6 +89,12 @@ class HyperOptArgumentParser(ArgumentParser):
         self.opt_args = {}
         self.json_config_arg_name = None
         self.pool = None
+
+        self.add_argument(
+            self.DRY_RUN_CMD,
+            default=False,
+            action='store_true',
+            help='Will only print out hyparameters to stdout.')
 
     def add_argument(self, *args, **kwargs):
         super(HyperOptArgumentParser, self).add_argument(*args, **kwargs)

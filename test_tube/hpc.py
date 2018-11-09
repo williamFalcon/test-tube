@@ -72,6 +72,11 @@ class AbstractCluster(object):
             if self.call_load_checkpoint:
                 self.hyperparam_optimizer.__delattr__(HyperOptArgumentParser.SLURM_LOAD_CMD)
 
+            self.is_dry_run = HyperOptArgumentParser.DRY_RUN_CMD in vars(self.hyperparam_optimizer)
+            if self.is_dry_run:
+                self.hyperparam_optimizer.__delattr__(HyperOptArgumentParser.DRY_RUN_CMD)
+
+
     def set_checkpoint_save_function(self, fx, kwargs):
         self.checkpoint_save_function = [fx, kwargs]
 
@@ -169,6 +174,8 @@ class SlurmCluster(AbstractCluster):
         # get the max test tube exp version so far if it's there
         next_test_tube_version = self.__get_max_test_tube_version(self.log_path)
 
+        if self.is_dry_run:
+            print('Dry run, scripts with following trial_params will be launched:')
         # for each trial, generate a slurm command
         for i, trial_params in enumerate(trials):
             exp_i = i + next_test_tube_version
@@ -181,6 +188,9 @@ class SlurmCluster(AbstractCluster):
         # generate command
         slurm_cmd_script_path = os.path.join(self.slurm_files_log_path, '{}_slurm_cmd.sh'.format(timestamp))
         slurm_cmd = self.__build_slurm_command(trial_params, slurm_cmd_script_path, timestamp, exp_i, self.on_gpu)
+        if self.is_dry_run:
+            print('{}: {}'.format(exp_i, trial_params))
+            return
         self.__save_slurm_cmd(slurm_cmd, slurm_cmd_script_path)
 
         # run script to launch job
