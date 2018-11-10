@@ -159,20 +159,22 @@ class SlurmCluster(AbstractCluster):
         # layout logging structure
         self.__layout_logging_dir()
 
-        # whenever this script is called by slurm, it's an actual experiment, so start it
         if self.is_from_slurm_object:
+            # Script is called by slurm: it's an actual experiment.
             self.__run_experiment(train_function)
+        else:
+            # Launcher script. Generate trials and launch jobs.
+            
+            # generate hopt trials
+            trials = self.hyperparam_optimizer.generate_trials(nb_trials)
 
-        # generate hopt trials
-        trials = self.hyperparam_optimizer.generate_trials(nb_trials)
+            # get the max test tube exp version so far if it's there
+            next_test_tube_version = self.__get_max_test_tube_version(self.log_path)
 
-        # get the max test tube exp version so far if it's there
-        next_test_tube_version = self.__get_max_test_tube_version(self.log_path)
-
-        # for each trial, generate a slurm command
-        for i, trial_params in enumerate(trials):
-            exp_i = i + next_test_tube_version
-            self.schedule_experiment(trial_params, exp_i)
+            # for each trial, generate a slurm command
+            for i, trial_params in enumerate(trials):
+                exp_i = i + next_test_tube_version
+                self.schedule_experiment(trial_params, exp_i)
 
     def schedule_experiment(self, trial_params, exp_i):
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d__%H-%M-%S")
