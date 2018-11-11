@@ -17,6 +17,10 @@ FLAT_PARAMS = [
         {'idx': 5, 'val': 0.999, 'name': 'decay'},
     ]
 ]
+def test_unknown_strategy():
+    with pytest.raises(ValueError):
+        strategies.generate_trials(
+            'unknown_strategy', FLAT_PARAMS, nb_trials=None)
 
 def test_grid_search_no_limit():
     trials = strategies.generate_trials(
