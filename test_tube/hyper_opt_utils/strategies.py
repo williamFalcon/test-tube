@@ -63,9 +63,6 @@ def generate_random_search_trials(params, nb_trials):
     :param nb_trials: The number of trials to run.
     :return: A dict containing the hyperparameters.
     """
-    if nb_trials is None:
-        raise ValueError(
-            '`random_search` strategy requires nb_trails to be an int.')
     results = []
 
     # ensures we have unique results
