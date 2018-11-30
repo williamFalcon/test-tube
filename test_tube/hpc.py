@@ -247,10 +247,13 @@ class SlurmCluster(AbstractCluster):
             stop_in_n_seconds = max(stop_in_n_seconds, 10)  # make sure we don't go below the 5 mins
 
             # schedule timer to interrupt training
-            threading.Timer(stop_in_n_seconds, self.call_save).start()
+            timer_instance = threading.Timer(stop_in_n_seconds, self.call_save)
+            timer_instance.start()
 
             # run training
             train_function(self.hyperparam_optimizer, self, {})
+
+            timer_instance.cancel()
 
         except Exception as e:
             print('Caught exception in worker thread', e)
