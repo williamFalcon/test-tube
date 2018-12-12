@@ -64,7 +64,7 @@ class AbstractCluster(object):
         # detect when this was called because a slurm object started a hopt.
         # if true, remove the flag so tt logs don't show it
         if hyperparam_optimizer is not None:
-            self.is_from_slurm_object = HyperOptArgumentParser.TRIGGER_CMD in vars(self.hyperparam_optimizer)
+            self.is_from_slurm_object = HyperOptArgumentParser.TRIGGER_CMD in vars(self.hyperparam_optimizer) and vars(self.hyperparam_optimizer)[HyperOptArgumentParser.TRIGGER_CMD] == True
             if self.is_from_slurm_object:
                 self.hyperparam_optimizer.__delattr__(HyperOptArgumentParser.TRIGGER_CMD)
 
