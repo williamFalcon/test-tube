@@ -429,7 +429,7 @@ class HyperOptArgumentParser(ArgumentParser):
         for i, (opt_name, opt_arg) in enumerate(params.items()):
             if opt_arg.tunable:
                 clean_name = opt_name.strip('-')
-                clean_name = re.sub('-', '_', opt_name)
+                clean_name = re.sub('-', '_', clean_name)
                 param_groups = []
                 for val in opt_arg.opt_values:
                     param_groups.append({'idx': i, 'val': val, 'name': clean_name})
