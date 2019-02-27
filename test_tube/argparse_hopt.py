@@ -39,7 +39,7 @@ def optimize_parallel_gpu_private(args):
         return [trial_params, None]
 
     finally:
-        g_gpu_id_q.put(gpu_id_set, block=True)
+        g_gpu_id_q.put(gpu_id_set)
 
 
 def optimize_parallel_cpu_private(args):
@@ -428,7 +428,8 @@ class HyperOptArgumentParser(ArgumentParser):
         flat_params = []
         for i, (opt_name, opt_arg) in enumerate(params.items()):
             if opt_arg.tunable:
-                clean_name = re.sub('-', '', opt_name)
+                clean_name = opt_name.strip('-')
+                clean_name = re.sub('-', '_', opt_name)
                 param_groups = []
                 for val in opt_arg.opt_values:
                     param_groups.append({'idx': i, 'val': val, 'name': clean_name})
