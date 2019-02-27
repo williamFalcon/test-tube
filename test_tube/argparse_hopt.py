@@ -483,7 +483,7 @@ class OptArg(object):
             if log_base is None:
                 # random search on uniform scale
                 if arg_type == 'int':
-                    self.opt_values = np.random.randint(low, high, nb_samples)
+                    self.opt_values = np.random.choice(np.arange(low, high), nb_samples, replace=False)
                 elif arg_type == 'float':
                     self.opt_values = np.random.uniform(low, high, nb_samples)
             else:
