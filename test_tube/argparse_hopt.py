@@ -484,7 +484,6 @@ class OptArg(object):
                 # random search on uniform scale
                 if arg_type is int:
                     self.opt_values = np.random.choice(np.arange(low, high), nb_samples, replace=False)
-                    print(self.opt_values)
                 elif arg_type is float:
                     self.opt_values = np.random.uniform(low, high, nb_samples)
             else:
