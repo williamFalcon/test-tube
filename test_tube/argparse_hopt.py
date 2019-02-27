@@ -106,6 +106,7 @@ class HyperOptArgumentParser(ArgumentParser):
     ):
         low = kwargs.pop("low", None)
         high = kwargs.pop("high", None)
+        arg_type = kwargs.pop("type", None)
         nb_samples = kwargs.pop("nb_samples", 10)
         tunable = kwargs.pop("tunable", False)
         log_base = kwargs.pop("log_base", None)
@@ -115,6 +116,7 @@ class HyperOptArgumentParser(ArgumentParser):
         self.opt_args[arg_name] = OptArg(
             obj_id=arg_name,
             opt_values=[low, high],
+            arg_type=arg_type,
             nb_samples=nb_samples,
             tunable=tunable,
             log_base=log_base,
@@ -465,6 +467,7 @@ class OptArg(object):
             self,
             obj_id,
             opt_values,
+            arg_type=None,
             nb_samples=None,
             tunable=False,
             log_base=None,
@@ -479,7 +482,10 @@ class OptArg(object):
 
             if log_base is None:
                 # random search on uniform scale
-                self.opt_values = np.random.uniform(low, high, nb_samples)
+                if arg_type == 'int':
+                    self.opt_values = np.random.randint(low, high, nb_samples)
+                elif arg_type == 'float':
+                    self.opt_values = np.random.uniform(low, high, nb_samples)
             else:
                 # random search on log scale with specified base
                 assert high >= low > 0, "`opt_values` must be positive to do log-scale search."
