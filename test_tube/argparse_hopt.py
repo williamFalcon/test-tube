@@ -96,8 +96,9 @@ class HyperOptArgumentParser(ArgumentParser):
         options = kwargs.pop("options", None)
         tunable = kwargs.pop("tunable", False)
         self.add_argument(*args, **kwargs)
-        arg_name = args[-1]
-        self.opt_args[arg_name] = OptArg(obj_id=arg_name, opt_values=options, tunable=tunable)
+        for i in range(len(args)):
+            arg_name = args[i]
+            self.opt_args[arg_name] = OptArg(obj_id=arg_name, opt_values=options, tunable=tunable)
 
     def opt_range(
             self,
@@ -106,7 +107,7 @@ class HyperOptArgumentParser(ArgumentParser):
     ):
         low = kwargs.pop("low", None)
         high = kwargs.pop("high", None)
-        arg_type = kwargs.pop("type", None)
+        arg_type = kwargs["type"]
         nb_samples = kwargs.pop("nb_samples", 10)
         tunable = kwargs.pop("tunable", False)
         log_base = kwargs.pop("log_base", None)
@@ -152,7 +153,6 @@ class HyperOptArgumentParser(ArgumentParser):
                 continue
 
             arg = arg_candidate[2:]
-
             # pull out the value of the argument if given
             if i + 1 <= len(argv) - 1:
                 if '--' not in argv[i + 1]:
@@ -221,7 +221,6 @@ class HyperOptArgumentParser(ArgumentParser):
 
         # track args
         self.parsed_args = deepcopy(old_args)
-
         # attach optimization fx
         old_args['trials'] = self.opt_trials
         old_args['optimize_parallel'] = self.optimize_parallel
