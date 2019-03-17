@@ -55,11 +55,10 @@ class Experiment(object):
             self.exp_hash = '{}_v{}'.format(self.name, old_version + 1)
             self.version = old_version + 1
 
-        self.__init_cache_file_if_needed()
-
         # create a new log file if not in debug mode
         if not debug:
 
+            self.__init_cache_file_if_needed()
             # when we have a version, load it
             if self.version is not None:
 
