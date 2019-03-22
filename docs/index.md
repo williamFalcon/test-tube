@@ -5,7 +5,7 @@ learning experiments.
 
 Use Test Tube if you need to:
 
--   Track many [Experiments](experiment_tracking/experiment/) across
+-   Track many [Experiments](experiment_tracking/experiment.md) across
     models.
 -   [Visualize](http://testtube.williamfalcon.com) and compare different
     experiments without uploading anywhere.
@@ -20,7 +20,7 @@ Test Tube is compatible with: Python 2 and 3
 
 ------------------------------------------------------------------------
 
-### Create an [Experiment](experiment_tracking/experiment/)
+### Create an [Experiment](experiment_tracking/experiment.md)
 
 ``` {.python}
 from test_tube import Experiment
