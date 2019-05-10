@@ -64,6 +64,7 @@ class AbstractCluster(object):
         # detect when this was called because a slurm object started a hopt.
         # if true, remove the flag so tt logs don't show it
         if hyperparam_optimizer is not None:
+
             self.is_from_slurm_object = HyperOptArgumentParser.TRIGGER_CMD in vars(self.hyperparam_optimizer) and vars(self.hyperparam_optimizer)[HyperOptArgumentParser.TRIGGER_CMD] == True
             if self.is_from_slurm_object:
                 self.hyperparam_optimizer.__delattr__(HyperOptArgumentParser.TRIGGER_CMD)
@@ -164,7 +165,7 @@ class SlurmCluster(AbstractCluster):
             self.__run_experiment(train_function)
         else:
             # Launcher script. Generate trials and launch jobs.
-            
+
             # generate hopt trials
             trials = self.hyperparam_optimizer.generate_trials(nb_trials)
 
@@ -458,13 +459,12 @@ class SlurmCluster(AbstractCluster):
             sub_commands.extend(command)
 
         # add nb of cpus if not looking at a gpu job
-        if not on_gpu:
-            command = [
-                '# cpus per job',
-                '#SBATCH --cpus-per-task={}'.format(self.per_experiment_nb_cpus),
-                '#################\n'
-            ]
-            sub_commands.extend(command)
+        command = [
+            '# cpus per job',
+            '#SBATCH --cpus-per-task={}'.format(self.per_experiment_nb_cpus),
+            '#################\n'
+        ]
+        sub_commands.extend(command)
 
         # pick nb nodes
         command = [
