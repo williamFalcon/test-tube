@@ -458,7 +458,7 @@ class SlurmCluster(AbstractCluster):
             sub_commands.extend(command)
 
         # add nb of cpus if not looking at a gpu job
-        if len(self.per_experiment_nb_cpus) > 0:
+        if self.per_experiment_nb_cpus > 0:
             command = [
                 '# cpus per job',
                 '#SBATCH --cpus-per-task={}'.format(self.per_experiment_nb_cpus),
