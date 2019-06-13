@@ -8,6 +8,7 @@ import re
 from shutil import copyfile
 import threading
 import time
+import signal
 
 
 def exit():
@@ -238,22 +239,27 @@ class SlurmCluster(AbstractCluster):
         # stop program
         os._exit(0)
 
+    def sig_handler(self, signum, frame):
+        print("caught signal", signum)
+        # print(socket.gethostname(), "USR1 signal caught.")
+        # do other stuff to cleanup here
+        print('requeuing job ' + os.environ['SLURM_JOB_ID'])
+        # os.system('scontrol requeue ' + os.environ['SLURM_JOB_ID'])
+        # sys.exit(-1)
+
+    # ------------------------
+    # HANDLE SLURM SIGNALS
+    # ------------------------
+    def term_handler(self, signum, frame):
+        print("bypassing sigterm")
+
     def __run_experiment(self, train_function):
+        signal.signal(signal.SIGUSR1, self.sig_handler)
+        signal.signal(signal.SIGTERM, self.term_handler)
 
         try:
-            # Wait (walltime - n mins) to stop the program and prompt checkpointing the model
-            stop_in_n_seconds = self.slurm_time_to_seconds(self.job_time)
-            stop_in_n_seconds -= (self.minutes_to_checkpoint_before_walltime * 60)
-            stop_in_n_seconds = max(stop_in_n_seconds, 10)  # make sure we don't go below the 5 mins
-
-            # schedule timer to interrupt training
-            timer_instance = threading.Timer(stop_in_n_seconds, self.call_save)
-            timer_instance.start()
-
             # run training
             train_function(self.hyperparam_optimizer, self, {})
-
-            timer_instance.cancel()
 
         except Exception as e:
             print('Caught exception in worker thread', e)
@@ -261,11 +267,6 @@ class SlurmCluster(AbstractCluster):
             # This prints the type, value, and stack trace of the
             # current exception being handled.
             traceback.print_exc()
-
-            # if exit isn't called on the thread, slurm doesn't have a chance to log the exception
-            thread = threading.Thread(target=exit)
-            thread.start()
-
             raise SystemExit
 
     def __call_old_slurm_cmd(self, original_slurm_cmd_script_path, exp_i, copy_current=True):
