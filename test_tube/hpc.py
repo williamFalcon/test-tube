@@ -245,6 +245,8 @@ class SlurmCluster(AbstractCluster):
         # do other stuff to cleanup here
         print('requeuing job ' + os.environ['SLURM_JOB_ID'])
         # os.system('scontrol requeue ' + os.environ['SLURM_JOB_ID'])
+        self.call_save()
+
         # sys.exit(-1)
 
     # ------------------------
