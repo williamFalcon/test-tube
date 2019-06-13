@@ -254,6 +254,7 @@ class SlurmCluster(AbstractCluster):
         print("bypassing sigterm")
 
     def __run_experiment(self, train_function):
+        print('setting signal')
         signal.signal(signal.SIGUSR1, self.sig_handler)
         signal.signal(signal.SIGTERM, self.term_handler)
 
