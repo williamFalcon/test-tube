@@ -225,7 +225,6 @@ class SlurmCluster(AbstractCluster):
         # if save function was passed, call it
         if self.get_checkpoint_save_function() is not None:
             save_fx, kwargs = self.get_checkpoint_save_function()
-            pdb.set_trace()
             save_fx(**kwargs)
 
             # if we're here, the job didn't finish and we were given a save function
@@ -242,7 +241,6 @@ class SlurmCluster(AbstractCluster):
         os._exit(0)
 
     def sig_handler(self, signum, frame):
-        pdb.set_trace()
         print("caught signal", signum)
         # print(socket.gethostname(), "USR1 signal caught.")
         # do other stuff to cleanup here
