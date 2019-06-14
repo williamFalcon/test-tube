@@ -9,6 +9,7 @@ from shutil import copyfile
 import threading
 import time
 import signal
+import pdb
 
 
 def exit():
@@ -240,6 +241,7 @@ class SlurmCluster(AbstractCluster):
         os._exit(0)
 
     def sig_handler(self, signum, frame):
+        pdb.set_trace()
         print("caught signal", signum)
         # print(socket.gethostname(), "USR1 signal caught.")
         # do other stuff to cleanup here
@@ -253,10 +255,12 @@ class SlurmCluster(AbstractCluster):
     # HANDLE SLURM SIGNALS
     # ------------------------
     def term_handler(self, signum, frame):
+        pdb.set_trace()
         print("bypassing sigterm")
 
     def __run_experiment(self, train_function):
         print('setting signal')
+        pdb.set_trace()
         signal.signal(signal.SIGUSR1, self.sig_handler)
         signal.signal(signal.SIGTERM, self.term_handler)
 
