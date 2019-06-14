@@ -489,7 +489,7 @@ class SlurmCluster(AbstractCluster):
         # add signal command to catch job termination
         command = [
             '# slurm will send a signal this far out before it kills the job',
-            '#SBATCH --signal=USR1@60',
+            f'#SBATCH --signal=USR1@{self.minutes_to_checkpoint_before_walltime * 60}',
             '#################\n'
         ]
 
