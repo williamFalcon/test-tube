@@ -488,6 +488,16 @@ class SlurmCluster(AbstractCluster):
         ]
         sub_commands.extend(command)
 
+        # add signal command to catch job termination
+        command = [
+            '# slurm will send a signal this far out before it kills the job',
+            '#SBATCH --signal=USR1@60',
+            '#################\n'
+        ]
+
+        sub_commands.extend(command)
+
+
         # Subscribe to email if requested
         mail_type = []
         if self.notify_on_end:
@@ -505,15 +515,6 @@ class SlurmCluster(AbstractCluster):
                 '#SBATCH --mail-user={}'.format(self.email),
             ]
             sub_commands.extend(email_query)
-
-        # add signal command to catch job termination
-        command = [
-            '# slurm will send a signal this far out before it kills the job',
-            '#SBATCH --signal=USR1@60',
-            '#################\n'
-        ]
-
-        sub_commands.extend(command)
 
         # add custom sbatch commands
         sub_commands.append('\n')
