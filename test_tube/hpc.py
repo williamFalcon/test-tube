@@ -245,7 +245,6 @@ class SlurmCluster(AbstractCluster):
         print("caught signal", signum)
         # print(socket.gethostname(), "USR1 signal caught.")
         # do other stuff to cleanup here
-        print('requeuing job ' + os.environ['SLURM_JOB_ID'])
         # os.system('scontrol requeue ' + os.environ['SLURM_JOB_ID'])
         self.call_save()
 
