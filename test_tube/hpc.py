@@ -225,6 +225,7 @@ class SlurmCluster(AbstractCluster):
         # if save function was passed, call it
         if self.get_checkpoint_save_function() is not None:
             save_fx, kwargs = self.get_checkpoint_save_function()
+            pdb.set_trace()
             save_fx(**kwargs)
 
             # if we're here, the job didn't finish and we were given a save function
