@@ -254,12 +254,10 @@ class SlurmCluster(AbstractCluster):
     # HANDLE SLURM SIGNALS
     # ------------------------
     def term_handler(self, signum, frame):
-        pdb.set_trace()
         print("bypassing sigterm")
 
     def __run_experiment(self, train_function):
         print('setting signal')
-        pdb.set_trace()
         signal.signal(signal.SIGUSR1, self.sig_handler)
         signal.signal(signal.SIGTERM, self.term_handler)
 
