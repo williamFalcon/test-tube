@@ -13,6 +13,13 @@ import numpy as np
 from .hyper_opt_utils import strategies
 from gettext import gettext as _
 
+# needed to work with pytorch multiprocess
+try:
+    import torch
+    multiprocessing.set_start_method('spawn', force=True)
+except ModuleNotFoundError:
+    pass
+
 
 def optimize_parallel_gpu_private(args):
     trial_params, train_function = args[0], args[1]
