@@ -48,14 +48,20 @@ Use test tube to do these things
 Compatible with Python any Python ML library like Tensorflow, Keras, Pytorch, Caffe, Caffe2, Chainer, MXNet, Theano, Scikit-learn   
 
 ### Examples   
+The Experiment object is a strict superclass of tensorboardx.SummaryWriter.   
 
 *Log and visualize with TensorboardX*     
 
 ```{.python}
 from test-tube import Experiment
+import torch
 
 exp = Experiment('/some/path')
 exp.tag({'learning_rate': 0.02, 'layers': 4})    
+
+# exp is superclass of SummaryWriter
+features = torch.Tensor(100, 784)
+writer.add_embedding(features, metadata=label, label_img=images.unsqueeze(1))
 
 # simulate training
 for n_iter in range(2000):
@@ -70,12 +76,9 @@ exp.close()
 pip install tensorflow   
 
 tensorboard --logdir /some/path
-```
-
-
-## Examples   
-
-### Parallelize GPU training on a HPC cluster    
+``` 
+    
+*Run grid search on SLURM GPU cluster*    
 
 ``` {.python}   
 from test_tube.hpc import SlurmCluster
@@ -104,32 +107,7 @@ cluster.optimize_parallel_cluster_gpu(train, nb_trials=20, job_name='first_tt_ba
 # we just ran 20 different hyperparameters on 20 GPUs in the HPC cluster!!    
 ```    
 
-### Log experiments
-
-``` {.python}
-from test_tube import Experiment
-
-exp = Experiment(name='dense_model', save_dir='../some/dir/')
-exp.tag({'learning_rate': 0.002, 'nb_layers': 2})
-
-for step in range(1, 10):
-    tng_err = 1.0 / step
-    exp.log({'tng_err': tng_err})
-```
-
-### Visualize experiments
-
-``` {.python}
-import pandas as pd
-import matplotlib
-
-# each experiment is saved to a metrics.csv file which can be imported anywhere
-# images save to exp/version/images
-df = pd.read_csv('../some/dir/test_tube_data/dense_model/version_0/metrics.csv')
-df.tng_err.plot()
-```
-
-### Optimize hyperparameters across GPUs
+*Optimize hyperparameters across GPUs*
 
 ``` {.python}
 from test_tube import HyperOptArgumentParser
@@ -156,29 +134,6 @@ Or... across CPUs
 
 ``` {.python}
 hparams.optimize_parallel_cpu(MyModel.fit, nb_trials=192, nb_workers=12)
-```
-
-### Optimize hyperparameters
-
-``` {.python}
-from test_tube import HyperOptArgumentParser
-
-# subclass of argparse
-parser = HyperOptArgumentParser(strategy='random_search')
-parser.add_argument('--learning_rate', default=0.002, type=float, help='the learning rate')
-
-# let's enable optimizing over the number of layers in the network
-parser.opt_list('--nb_layers', default=2, type=int, tunable=True, options=[2, 4, 8])
-
-# and tune the number of units in each layer
-parser.opt_range('--neurons', default=50, type=int, tunable=True, low=100, high=800, nb_samples=10)
-
-# compile (because it's argparse underneath)
-hparams = parser.parse_args()
-
-# run 20 trials of random search over the hyperparams
-for hparam_trial in hparams.trials(20):
-    train_network(hparam_trial)
 ```
 
 You can also optimize on a *log* scale to allow better search over
