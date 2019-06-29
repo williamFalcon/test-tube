@@ -10,7 +10,7 @@
   Log, organize and parallelize hyperparameter search for Deep Learning experiments
 </p>
 <p align="center">
-  <a href="https://badge.fury.io/py/test_tube"><img src="https://badge.fury.io/py/test_tube.svg"></a>
+  <a href="https://badge.fury.io/py/test-tube"><img src="https://badge.fury.io/py/test-tube.svg" alt="PyPI version" height="18"></a>
   <a href="https://travis-ci.org/williamFalcon/test-tube"><img src="https://travis-ci.org/williamFalcon/test-tube.svg?branch=master"></a>
   <a href="https://williamfalcon.github.io/test-tube/"><img src="https://readthedocs.org/projects/test-tube/badge/?version=latest"></a>
   <a href="https://github.com/williamFalcon/test-tube/blob/master/LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg"></a>
@@ -20,7 +20,7 @@
 
 **[View the docs here](https://williamfalcon.github.io/test-tube/)**
 
-------------------------------------------------------------------------
+---   
 
 Test tube is a python library to track and parallelize hyperparameter
 search for Deep Learning and ML experiments. It's framework agnostic and
@@ -30,54 +30,56 @@ built on top of the python argparse API for ease of use.
 pip install test_tube
 ```
 
-------------------------------------------------------------------------
+---   
 
-Use Test Tube if you need to:
+### Main test-tube uses
 
 -   [Parallelize hyperparameter
     optimization](https://williamfalcon.github.io/test-tube/hyperparameter_optimization/HyperOptArgumentParser/)
     (across multiple gpus or cpus).
 -   [Parallelize hyperparameter
     optimization](https://williamfalcon.github.io/test-tube/hyperparameter_optimization/HyperOptArgumentParser/)
-    across HPC cluster using SLURM. Auto-starts continuation jobs when walltime approaches.   
--   Track multiple
+    across HPC cluster using SLURM.   
+-   Log experiment hyperparameters and experiment data.   
     [Experiments](https://williamfalcon.github.io/test-tube/experiment_tracking/experiment/)
     across models.
--   Visualize experiments without uploading anywhere, logs store as csv
-    files.
--   Automatically track ALL parameters for a particular training run.
--   Automatically snapshot your code for an experiment using git tags.
--   Save progress images inline with training metrics.   
--   Not deal with allocating to the correct CPU or GPUs.   
+-   Visualize with [tensorboardx](https://github.com/lanpa/tensorboardX)
 
-Compatible with:   
-- Python 2, 3 
-- Tensorflow  
-- Keras   
-- Pytorch  
-- Caffe, Caffe2   
-- Chainer  
-- MXNet  
-- Theano  
-- Scikit-learn   
-- Any python based ML or DL library    
+Compatible with Python any Python ML library like Tensorflow, Keras, Pytorch, Caffe, Caffe2, Chainer, MXNet, Theano, Scikit-learn   
 
-### IMMEDIATE CONTRIBUTION OPPORTUNITIES!    
-1. Write tests for log.py   
-2. Write tests for argparse_hopt.py   
-3. Implement hyperband   
-4. Implement SMAC   
-5. Integrate tensorboardx   
+---   
+### Examples   
+The Experiment object is a subclass of tensorboardx.SummaryWriter.   
 
-### Why Test Tube
+**Log and visualize with TensorboardX**     
 
-If you're a researcher, test-tube is highly encouraged as a way to post
-your paper's training logs to help add transparency and show others what
-you've tried that didn't work.
+```{.python}
+from test-tube import Experiment
+import torch
 
-## Examples   
+exp = Experiment('/some/path')
+exp.tag({'learning_rate': 0.02, 'layers': 4})    
 
-### Parallelize GPU training on a HPC cluster    
+# exp is superclass of SummaryWriter
+features = torch.Tensor(100, 784)
+writer.add_embedding(features, metadata=label, label_img=images.unsqueeze(1))
+
+# simulate training
+for n_iter in range(2000):
+    e.log({'testtt': n_iter * np.sin(n_iter)})
+
+# save and close
+exp.save()
+exp.close()
+```
+
+```{.bash}
+pip install tensorflow   
+
+tensorboard --logdir /some/path
+``` 
+    
+**Run grid search on SLURM GPU cluster**    
 
 ``` {.python}   
 from test_tube.hpc import SlurmCluster
@@ -106,32 +108,7 @@ cluster.optimize_parallel_cluster_gpu(train, nb_trials=20, job_name='first_tt_ba
 # we just ran 20 different hyperparameters on 20 GPUs in the HPC cluster!!    
 ```    
 
-### Log experiments
-
-``` {.python}
-from test_tube import Experiment
-
-exp = Experiment(name='dense_model', save_dir='../some/dir/')
-exp.tag({'learning_rate': 0.002, 'nb_layers': 2})
-
-for step in range(1, 10):
-    tng_err = 1.0 / step
-    exp.log({'tng_err': tng_err})
-```
-
-### Visualize experiments
-
-``` {.python}
-import pandas as pd
-import matplotlib
-
-# each experiment is saved to a metrics.csv file which can be imported anywhere
-# images save to exp/version/images
-df = pd.read_csv('../some/dir/test_tube_data/dense_model/version_0/metrics.csv')
-df.tng_err.plot()
-```
-
-### Optimize hyperparameters across GPUs
+**Optimize hyperparameters across GPUs**
 
 ``` {.python}
 from test_tube import HyperOptArgumentParser
@@ -158,29 +135,6 @@ Or... across CPUs
 
 ``` {.python}
 hparams.optimize_parallel_cpu(MyModel.fit, nb_trials=192, nb_workers=12)
-```
-
-### Optimize hyperparameters
-
-``` {.python}
-from test_tube import HyperOptArgumentParser
-
-# subclass of argparse
-parser = HyperOptArgumentParser(strategy='random_search')
-parser.add_argument('--learning_rate', default=0.002, type=float, help='the learning rate')
-
-# let's enable optimizing over the number of layers in the network
-parser.opt_list('--nb_layers', default=2, type=int, tunable=True, options=[2, 4, 8])
-
-# and tune the number of units in each layer
-parser.opt_range('--neurons', default=50, type=int, tunable=True, low=100, high=800, nb_samples=10)
-
-# compile (because it's argparse underneath)
-hparams = parser.parse_args()
-
-# run 20 trials of random search over the hyperparams
-for hparam_trial in hparams.trials(20):
-    train_network(hparam_trial)
 ```
 
 You can also optimize on a *log* scale to allow better search over
