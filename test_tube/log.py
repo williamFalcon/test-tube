@@ -14,8 +14,7 @@ _ROOT = os.path.abspath(os.path.dirname(__file__))
 # Experiment object
 # -----------------------------
 
-# def __init__(self, logdir=None, comment='', purge_step=None, max_queue=10,
-#              flush_secs=120, filename_suffix='', write_to_disk=True, **kwargs):
+
 class Experiment(SummaryWriter):
     def __init__(
         self,
@@ -40,6 +39,7 @@ class Experiment(SummaryWriter):
             global _ROOT
             _ROOT = save_dir
 
+        self.tag_markdown_saved = False
         self.no_save_dir = save_dir is None
         self.metrics = []
         self.tags = {}
@@ -263,9 +263,35 @@ class Experiment(SummaryWriter):
         df = pd.DataFrame(self.metrics)
         df.to_csv(metrics_file_path, index=False)
 
-        # whenever we save, we also save tfx
-
+        # save TFX scalars
         self.export_scalars_to_json(self.get_tensorboardx_scalars_path(self.name, self.version))
+
+        # until hparam plugin is fixed, generate hparams as text
+        if not self.tag_markdown_saved and len(self.tags) > 0:
+            self.tag_markdown_saved = True
+            self.add_text('hparams', self.__generate_tfx_meta_log())
+
+    def __generate_tfx_meta_log(self):
+        header = f'''###### {self.name}, version {self.version}\n---\n'''
+        desc = ''
+        if self.description is not None:
+            desc = f'''#####*{self.description}*\n'''
+        params = f'''##### Hyperparameters\n'''
+
+        row_header = '''parameter|value\n-|-\n'''
+        rows = [row_header]
+        for k, v in self.tags.items():
+            row = f'''{k}|{v}\n'''
+            rows.append(row)
+
+        all_rows = [
+            header,
+            desc,
+            params
+        ]
+        all_rows.extend(rows)
+        mkdown_log = ''.join(all_rows)
+        return mkdown_log
 
     def __save_images(self, metrics):
         """
@@ -388,9 +414,13 @@ class Experiment(SummaryWriter):
 if __name__ == '__main__':
     import math
     from time import sleep
-    e = Experiment()
+    e = Experiment(description='my description')
+    e.tag({'lr': 0.02, 'layers': 4})
 
     for n_iter in range(2000):
-        e.log({'xsinx': n_iter * np.sin(n_iter)})
+        e.log({'testtt': n_iter * np.sin(n_iter)})
     print('done')
     e.save()
+    e.close()
+
+    os._exit(1)
