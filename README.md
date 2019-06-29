@@ -47,6 +47,7 @@ pip install test_tube
 
 Compatible with Python any Python ML library like Tensorflow, Keras, Pytorch, Caffe, Caffe2, Chainer, MXNet, Theano, Scikit-learn   
 
+---   
 ### Examples   
 The Experiment object is a strict superclass of tensorboardx.SummaryWriter.   
 
