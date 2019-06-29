@@ -50,7 +50,7 @@ Compatible with Python any Python ML library like Tensorflow, Keras, Pytorch, Ca
 ### Examples   
 The Experiment object is a strict superclass of tensorboardx.SummaryWriter.   
 
-*Log and visualize with TensorboardX*     
+**Log and visualize with TensorboardX**     
 
 ```{.python}
 from test-tube import Experiment
@@ -78,7 +78,7 @@ pip install tensorflow
 tensorboard --logdir /some/path
 ``` 
     
-*Run grid search on SLURM GPU cluster*    
+**Run grid search on SLURM GPU cluster**    
 
 ``` {.python}   
 from test_tube.hpc import SlurmCluster
@@ -107,7 +107,7 @@ cluster.optimize_parallel_cluster_gpu(train, nb_trials=20, job_name='first_tt_ba
 # we just ran 20 different hyperparameters on 20 GPUs in the HPC cluster!!    
 ```    
 
-*Optimize hyperparameters across GPUs*
+**Optimize hyperparameters across GPUs**
 
 ``` {.python}
 from test_tube import HyperOptArgumentParser
