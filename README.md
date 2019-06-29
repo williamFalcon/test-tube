@@ -32,7 +32,7 @@ pip install test_tube
 
 ---   
 
-Use test tube to do these things
+### Main test-tube uses
 
 -   [Parallelize hyperparameter
     optimization](https://williamfalcon.github.io/test-tube/hyperparameter_optimization/HyperOptArgumentParser/)
