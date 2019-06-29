@@ -5,6 +5,7 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 from imageio import imwrite
+from tensorboardX import SummaryWriter
 
 # constants
 _ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -13,8 +14,9 @@ _ROOT = os.path.abspath(os.path.dirname(__file__))
 # Experiment object
 # -----------------------------
 
-
-class Experiment(object):
+# def __init__(self, logdir=None, comment='', purge_step=None, max_queue=10,
+#              flush_secs=120, filename_suffix='', write_to_disk=True, **kwargs):
+class Experiment(SummaryWriter):
     def __init__(
         self,
         name='default',
@@ -24,6 +26,7 @@ class Experiment(object):
         autosave=True,
         description=None,
         create_git_tag=False,
+        *args, **kwargs
     ):
         """
         A new Experiment object defaults to 'default' unless a specific name is provided
@@ -31,11 +34,14 @@ class Experiment(object):
         :param name:
         :param debug:
         """
+        super(SummaryWriter, self).__init__(*args, **kwargs)
+
         # change where the save dir is if requested
         if save_dir is not None:
             global _ROOT
             _ROOT = save_dir
 
+        self.no_save_dir = save_dir is None
         self.metrics = []
         self.tags = {}
         self.name = name
@@ -133,6 +139,10 @@ class Experiment(object):
 
         # make the directory for the experiment media assets name
         os.mkdir(self.get_media_path(self.name, self.version))
+
+        # make the directory for tensorboardx stuff
+        os.mkdir(self.get_tensorboardx_path(self.name, self.version))
+
 
     def __get_last_experiment_version(self):
         try:
@@ -313,7 +323,10 @@ class Experiment(object):
         :param path:
         :return:
         """
-        return os.path.join(_ROOT, 'test_tube_data', exp_name, 'version_{}'.format(exp_version))
+        if self.no_save_dir:
+            return os.path.join(_ROOT, 'test_tube_data', exp_name, 'version_{}'.format(exp_version))
+        else:
+            return os.path.join(_ROOT, exp_name, 'version_{}'.format(exp_version))
 
     def get_media_path(self, exp_name, exp_version):
         """
@@ -322,6 +335,14 @@ class Experiment(object):
         :return:
         """
         return os.path.join(self.get_data_path(exp_name, exp_version), 'media')
+
+    def get_tensorboardx_path(self, exp_name, exp_version):
+        """
+        Returns the path to the local package cache
+        :param path:
+        :return:
+        """
+        return os.path.join(self.get_data_path(exp_name, exp_version), 'tf')
 
     # ----------------------------
     # OVERWRITES
@@ -332,3 +353,9 @@ class Experiment(object):
 
     def __hash__(self):
         return 'Exp: {}, v: {}'.format(self.name, self.version)
+
+
+if __name__ == '__main__':
+    e = Experiment()
+    e.log({'val_loss': 1})
+    e.save()
