@@ -20,7 +20,7 @@
 
 **[View the docs here](https://williamfalcon.github.io/test-tube/)**
 
-------------------------------------------------------------------------
+---   
 
 Test tube is a python library to track and parallelize hyperparameter
 search for Deep Learning and ML experiments. It's framework agnostic and
@@ -30,9 +30,9 @@ built on top of the python argparse API for ease of use.
 pip install test_tube
 ```
 
-------------------------------------------------------------------------
+---   
 
-Use Test Tube if you need to:
+Use test tube to do these things
 
 -   [Parallelize hyperparameter
     optimization](https://williamfalcon.github.io/test-tube/hyperparameter_optimization/HyperOptArgumentParser/)
@@ -40,40 +40,12 @@ Use Test Tube if you need to:
 -   [Parallelize hyperparameter
     optimization](https://williamfalcon.github.io/test-tube/hyperparameter_optimization/HyperOptArgumentParser/)
     across HPC cluster using SLURM. Auto-starts continuation jobs when walltime approaches.   
--   Track multiple
+-   Log experiment hyperparameters and data
     [Experiments](https://williamfalcon.github.io/test-tube/experiment_tracking/experiment/)
     across models.
--   Visualize experiments without uploading anywhere, logs store as csv
-    files.
--   Automatically track ALL parameters for a particular training run.
--   Automatically snapshot your code for an experiment using git tags.
--   Save progress images inline with training metrics.   
--   Not deal with allocating to the correct CPU or GPUs.   
+-   Visualize with [tensorboardx](https://github.com/lanpa/tensorboardX)
 
-Compatible with:   
-- Python 2, 3 
-- Tensorflow  
-- Keras   
-- Pytorch  
-- Caffe, Caffe2   
-- Chainer  
-- MXNet  
-- Theano  
-- Scikit-learn   
-- Any python based ML or DL library    
-
-### IMMEDIATE CONTRIBUTION OPPORTUNITIES!    
-1. Write tests for log.py   
-2. Write tests for argparse_hopt.py   
-3. Implement hyperband   
-4. Implement SMAC   
-5. Integrate tensorboardx   
-
-### Why Test Tube
-
-If you're a researcher, test-tube is highly encouraged as a way to post
-your paper's training logs to help add transparency and show others what
-you've tried that didn't work.
+Compatible with Python any Python ML library like Tensorflow, Keras, Pytorch, Caffe, Caffe2, Chainer, MXNet, Theano, Scikit-learn   
 
 ## Examples   
 
