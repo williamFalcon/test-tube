@@ -23,7 +23,7 @@ class Experiment(SummaryWriter):
         debug=False,
         version=None,
         save_dir=None,
-        autosave=True,
+        autosave=False,
         description=None,
         create_git_tag=False,
         *args, **kwargs
@@ -34,7 +34,6 @@ class Experiment(SummaryWriter):
         :param name:
         :param debug:
         """
-        super(SummaryWriter, self).__init__(*args, **kwargs)
 
         # change where the save dir is if requested
         if save_dir is not None:
@@ -52,6 +51,8 @@ class Experiment(SummaryWriter):
         self.create_git_tag = create_git_tag
         self.exp_hash = '{}_v{}'.format(self.name, version)
         self.created_at = str(datetime.utcnow())
+
+        init_with_save = False
 
         # update version hash if we need to increase version on our own
         # we will increase the previous version, so do it now so the hash
@@ -71,7 +72,7 @@ class Experiment(SummaryWriter):
                 # when no version and no file, create it
                 if not os.path.exists(self.__get_log_name()):
                     self.__create_exp_file(self.version)
-                    self.save()
+                    init_with_save = True
                 else:
                     # otherwise load it
                     self.__load()
@@ -81,7 +82,7 @@ class Experiment(SummaryWriter):
                 old_version = self.__get_last_experiment_version()
                 self.version = old_version
                 self.__create_exp_file(self.version + 1)
-                self.save()
+                init_with_save = True
 
             # create a git tag if requested
             if self.create_git_tag == True:
@@ -92,7 +93,11 @@ class Experiment(SummaryWriter):
                 print('Test tube created git tag:', 'tt_{}'.format(self.exp_hash))
 
         # set the tensorboardx log path to the /tf folder in the exp folder
-        self.logdir = self.get_tensorboardx_path(self.name, self.version)
+        logdir = self.get_tensorboardx_path(self.name, self.version)
+        super().__init__(logdir=logdir, *args, **kwargs)
+
+        if init_with_save:
+            self.save()
 
     def argparse(self, argparser):
         parsed = vars(argparser)
@@ -185,25 +190,34 @@ class Experiment(SummaryWriter):
         if self.autosave == True:
             self.save()
 
-    def log(self, metrics_dict):
+    def log(self, metrics_dict, main_tag='', global_step=None, walltime=None):
         """
         Adds a json dict of metrics.
 
         >> e.log({"loss": 23, "coeff_a": 0.2})
 
         :param metrics_dict:
+        :tag optional tfx tag
         :return:
         """
         if self.debug: return
+
+        # handle tfx metrics
+        if global_step is None:
+            global_step = len(self.metrics)
+        self.add_scalars(main_tag, metrics_dict, global_step, walltime)
 
         # timestamp
         if 'created_at' not in metrics_dict:
             metrics_dict['created_at'] = str(datetime.utcnow())
 
         self.__convert_numpy_types(metrics_dict)
+
         self.metrics.append(metrics_dict)
+
         if self.autosave == True:
             self.save()
+
 
     def __convert_numpy_types(self, metrics_dict):
         for k, v in metrics_dict.items():
@@ -248,6 +262,10 @@ class Experiment(SummaryWriter):
         # save the metrics data
         df = pd.DataFrame(self.metrics)
         df.to_csv(metrics_file_path, index=False)
+
+        # whenever we save, we also save tfx
+
+        self.export_scalars_to_json(self.get_tensorboardx_scalars_path(self.name, self.version))
 
     def __save_images(self, metrics):
         """
@@ -347,6 +365,15 @@ class Experiment(SummaryWriter):
         """
         return os.path.join(self.get_data_path(exp_name, exp_version), 'tf')
 
+    def get_tensorboardx_scalars_path(self, exp_name, exp_version):
+        """
+        Returns the path to the local package cache
+        :param path:
+        :return:
+        """
+        tfx_path = self.get_tensorboardx_path(exp_name, exp_version)
+        return os.path.join(tfx_path, 'scalars.json')
+
     # ----------------------------
     # OVERWRITES
     # ----------------------------
@@ -359,6 +386,11 @@ class Experiment(SummaryWriter):
 
 
 if __name__ == '__main__':
+    import math
+    from time import sleep
     e = Experiment()
-    e.log({'val_loss': 1})
+
+    for n_iter in range(2000):
+        e.log({'xsinx': n_iter * np.sin(n_iter)})
+    print('done')
     e.save()
