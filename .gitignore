@@ -9,6 +9,7 @@ test.py
 example.json
 .pytest_cache/
 talk/
+.DS_Store
 
 # C extensions
 *.so
