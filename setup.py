@@ -12,7 +12,8 @@ setup(
     install_requires=[
         'pandas>=0.20.3',
         'numpy>=1.13.3',
-        'imageio>=2.3.0'
+        'imageio>=2.3.0',
+        'tensorboardx>=1.7'
     ],
     author_email='will@hacstudios.com',
     url='https://github.com/williamFalcon/test_tube',
