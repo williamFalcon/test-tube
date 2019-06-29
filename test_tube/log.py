@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 from imageio import imwrite
 from tensorboardX import SummaryWriter
+import atexit
 
 # constants
 _ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -96,8 +97,11 @@ class Experiment(SummaryWriter):
         logdir = self.get_tensorboardx_path(self.name, self.version)
         super().__init__(logdir=logdir, *args, **kwargs)
 
-        if init_with_save:
-            self.save()
+        # register on exit fx so we always close the writer
+        atexit.register(self.on_exit)
+
+    def on_exit(self):
+        self.close()
 
     def argparse(self, argparser):
         parsed = vars(argparser)
@@ -417,10 +421,11 @@ if __name__ == '__main__':
     e = Experiment(description='my description')
     e.tag({'lr': 0.02, 'layers': 4})
 
-    for n_iter in range(2000):
-        e.log({'testtt': n_iter * np.sin(n_iter)})
-    print('done')
-    e.save()
-    e.close()
+    for n_iter in range(20):
+        sleep(0.3)
+        e.log({'xsinx': n_iter * np.sin(n_iter)})
+        if n_iter % 10 == 0:
+            print('saved')
+            e.save()
 
     os._exit(1)

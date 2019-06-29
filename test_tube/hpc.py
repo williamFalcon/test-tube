@@ -242,9 +242,6 @@ class SlurmCluster(AbstractCluster):
 
     def sig_handler(self, signum, frame):
         print("caught signal", signum)
-        # print(socket.gethostname(), "USR1 signal caught.")
-        # do other stuff to cleanup here
-        # os.system('scontrol requeue ' + os.environ['SLURM_JOB_ID'])
         self.call_save()
 
         # sys.exit(-1)
@@ -494,7 +491,6 @@ class SlurmCluster(AbstractCluster):
         ]
 
         sub_commands.extend(command)
-
 
         # Subscribe to email if requested
         mail_type = []
