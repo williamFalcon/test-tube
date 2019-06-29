@@ -39,13 +39,39 @@ Use test tube to do these things
     (across multiple gpus or cpus).
 -   [Parallelize hyperparameter
     optimization](https://williamfalcon.github.io/test-tube/hyperparameter_optimization/HyperOptArgumentParser/)
-    across HPC cluster using SLURM. Auto-starts continuation jobs when walltime approaches.   
--   Log experiment hyperparameters and data
+    across HPC cluster using SLURM.   
+-   Log experiment hyperparameters and experiment data.   
     [Experiments](https://williamfalcon.github.io/test-tube/experiment_tracking/experiment/)
     across models.
 -   Visualize with [tensorboardx](https://github.com/lanpa/tensorboardX)
 
 Compatible with Python any Python ML library like Tensorflow, Keras, Pytorch, Caffe, Caffe2, Chainer, MXNet, Theano, Scikit-learn   
+
+### Examples   
+
+*Log and visualize with TensorboardX*     
+
+```{.python}
+from test-tube import Experiment
+
+exp = Experiment('/some/path')
+exp.tag({'learning_rate': 0.02, 'layers': 4})    
+
+# simulate training
+for n_iter in range(2000):
+    e.log({'testtt': n_iter * np.sin(n_iter)})
+
+# save and close
+exp.save()
+exp.close()
+```
+
+```{.bash}
+pip install tensorflow   
+
+tensorboard --logdir /some/path
+```
+
 
 ## Examples   
 
