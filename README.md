@@ -10,7 +10,7 @@
   Log, organize and parallelize hyperparameter search for Deep Learning experiments
 </p>
 <p align="center">
-  <a href="https://badge.fury.io/py/test_tube"><img src="https://badge.fury.io/py/test_tube.svg"></a>
+  <a href="https://badge.fury.io/py/test-tube"><img src="https://badge.fury.io/py/test-tube.svg" alt="PyPI version" height="18"></a>
   <a href="https://travis-ci.org/williamFalcon/test-tube"><img src="https://travis-ci.org/williamFalcon/test-tube.svg?branch=master"></a>
   <a href="https://williamfalcon.github.io/test-tube/"><img src="https://readthedocs.org/projects/test-tube/badge/?version=latest"></a>
   <a href="https://github.com/williamFalcon/test-tube/blob/master/LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg"></a>
