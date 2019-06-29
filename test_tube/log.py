@@ -91,6 +91,9 @@ class Experiment(SummaryWriter):
                 os.system(cmd)
                 print('Test tube created git tag:', 'tt_{}'.format(self.exp_hash))
 
+        # set the tensorboardx log path to the /tf folder in the exp folder
+        self.logdir = self.get_tensorboardx_path(self.name, self.version)
+
     def argparse(self, argparser):
         parsed = vars(argparser)
         to_add = {}
