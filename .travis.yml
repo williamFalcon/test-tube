@@ -4,8 +4,10 @@ python:
 # command to install dependencies
 cache: pip
 install:
-  - pip install --progress-bar off -r requirements.txt
-  - pip install --progress-bar off -e .
+  - pip install -r requirements.txt
+  - pip install -e .
+
+dist: xenial
 
 # command to run tests
 script:
