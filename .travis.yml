@@ -4,6 +4,7 @@ python:
 # command to install dependencies
 cache: pip
 install:
+  - travis_wait 30
   - pip install -r requirements.txt
   - pip install -e .
 
