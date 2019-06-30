@@ -14,7 +14,7 @@ setup(
         'numpy>=1.13.3',
         'imageio>=2.3.0',
         'tensorboard>=1.14.0',
-        'pytorch>=1.1.0'
+        'torch>=1.1.0'
     ],
     author_email='will@hacstudios.com',
     url='https://github.com/williamFalcon/test_tube',
