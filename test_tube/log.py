@@ -5,7 +5,7 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 from imageio import imwrite
-from tensorboardX import SummaryWriter
+from torch.utils.tensorboard import SummaryWriter
 import atexit
 
 # constants
@@ -95,7 +95,7 @@ class Experiment(SummaryWriter):
 
         # set the tensorboardx log path to the /tf folder in the exp folder
         logdir = self.get_tensorboardx_path(self.name, self.version)
-        super().__init__(logdir=logdir, *args, **kwargs)
+        super().__init__(log_dir=logdir, *args, **kwargs)
 
         # register on exit fx so we always close the writer
         atexit.register(self.on_exit)
@@ -423,9 +423,10 @@ if __name__ == '__main__':
 
     for n_iter in range(20):
         sleep(0.3)
-        e.log({'xsinx': n_iter * np.sin(n_iter)})
+        e.log({'loss/xsinx': n_iter * np.sin(n_iter)})
         if n_iter % 10 == 0:
             print('saved')
             e.save()
 
+    e.close()
     os._exit(1)
