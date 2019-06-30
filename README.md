@@ -49,7 +49,7 @@ Compatible with Python any Python ML library like Tensorflow, Keras, Pytorch, Ca
 
 ---   
 ### Examples   
-The Experiment object is a subclass of Pytorch.SummaryWriter.   
+The Experiment object is a subclass of Pytorch.SummaryWriter.  
 
 **Log and visualize with Tensorboard**     
 
