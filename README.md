@@ -43,15 +43,15 @@ pip install test_tube
 -   Log experiment hyperparameters and experiment data.   
     [Experiments](https://williamfalcon.github.io/test-tube/experiment_tracking/experiment/)
     across models.
--   Visualize with [tensorboardx](https://github.com/lanpa/tensorboardX)
+-   Visualize with [tensorboard](https://www.tensorflow.org/guide/summaries_and_tensorboard)
 
 Compatible with Python any Python ML library like Tensorflow, Keras, Pytorch, Caffe, Caffe2, Chainer, MXNet, Theano, Scikit-learn   
 
 ---   
 ### Examples   
-The Experiment object is a subclass of tensorboardx.SummaryWriter.   
+The Experiment object is a subclass of Pytorch.SummaryWriter.   
 
-**Log and visualize with TensorboardX**     
+**Log and visualize with Tensorboard**     
 
 ```{.python}
 from test-tube import Experiment
