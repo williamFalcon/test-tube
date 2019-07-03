@@ -16,7 +16,7 @@ _ROOT = os.path.abspath(os.path.dirname(__file__))
 # -----------------------------
 
 
-class Experiment(SummaryWriter):
+class Experiment(object):
     def __init__(
         self,
         name='default',
