@@ -6,6 +6,8 @@ import numpy as np
 import pandas as pd
 from imageio import imwrite
 from torch.utils.tensorboard import SummaryWriter
+from tensorboardX import SummaryWriter
+
 import atexit
 
 # constants
@@ -16,7 +18,7 @@ _ROOT = os.path.abspath(os.path.dirname(__file__))
 # -----------------------------
 
 
-class Experiment(object):
+class Experiment(SummaryWriter):
     def __init__(
         self,
         name='default',
@@ -95,7 +97,7 @@ class Experiment(object):
 
         # set the tensorboardx log path to the /tf folder in the exp folder
         logdir = self.get_tensorboardx_path(self.name, self.version)
-        # super().__init__(log_dir=logdir, *args, **kwargs)
+        super().__init__(logdir=logdir, *args, **kwargs)
 
         # register on exit fx so we always close the writer
         atexit.register(self.on_exit)
@@ -107,8 +109,7 @@ class Experiment(object):
         return state
 
     def on_exit(self):
-        pass
-        # self.close()
+        self.close()
 
     def argparse(self, argparser):
         parsed = vars(argparser)
