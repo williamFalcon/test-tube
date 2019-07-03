@@ -102,7 +102,7 @@ class Experiment(SummaryWriter):
 
     def __getstate__(self):
         state = self.__dict__.copy()
-        for k, v in state:
+        for k, v in state.items():
             print (k, v)
         return state
 
