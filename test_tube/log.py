@@ -100,6 +100,9 @@ class Experiment(SummaryWriter):
         # register on exit fx so we always close the writer
         atexit.register(self.on_exit)
 
+    def __getstate__(self):
+        return {}
+
     def on_exit(self):
         self.close()
 
