@@ -107,7 +107,8 @@ class Experiment(object):
         return state
 
     def on_exit(self):
-        self.close()
+        pass
+        # self.close()
 
     def argparse(self, argparser):
         parsed = vars(argparser)
