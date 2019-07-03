@@ -102,7 +102,8 @@ class Experiment(SummaryWriter):
 
     def __getstate__(self):
         state = self.__dict__.copy()
-        del state['metrics']
+        for k, v in state:
+            print (k, v)
         return state
 
     def on_exit(self):
