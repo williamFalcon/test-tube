@@ -16,6 +16,38 @@ _ROOT = os.path.abspath(os.path.dirname(__file__))
 # -----------------------------
 
 
+class DDPExperiment(object):
+    def __init__(
+        self,
+        exp
+    ):
+        """
+        Used as meta_data storage if the experiment needs to be pickled
+        :param name:
+        :param debug:
+        :param version:
+        :param save_dir:
+        :param autosave:
+        :param description:
+        :param create_git_tag:
+        :param args:
+        :param kwargs:
+        """
+
+        self.tag_markdown_saved = exp.tag_markdown_saved
+        self.no_save_dir = exp.no_save_dir
+        self.metrics = exp.metrics
+        self.tags = exp.tags
+        self.name = exp.name
+        self.debug = exp.debug
+        self.version = exp.version
+        self.autosave = exp.autosave
+        self.description = exp.description
+        self.create_git_tag = exp.create_git_tag
+        self.exp_hash = exp.exp_hash
+        self.created_at = exp.created_at
+
+
 class Experiment(SummaryWriter):
     def __init__(
         self,
