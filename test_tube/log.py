@@ -46,6 +46,7 @@ class DDPExperiment(object):
         self.create_git_tag = exp.create_git_tag
         self.exp_hash = exp.exp_hash
         self.created_at = exp.created_at
+        self.save_dir = exp.save_dir
 
 
     def get_non_ddp_exp(self):
@@ -84,6 +85,7 @@ class Experiment(SummaryWriter):
             global _ROOT
             _ROOT = save_dir
 
+        self.save_dir = save_dir
         self.tag_markdown_saved = False
         self.no_save_dir = save_dir is None
         self.metrics = []
