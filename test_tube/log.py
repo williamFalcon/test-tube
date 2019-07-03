@@ -95,7 +95,7 @@ class Experiment(object):
 
         # set the tensorboardx log path to the /tf folder in the exp folder
         logdir = self.get_tensorboardx_path(self.name, self.version)
-        super().__init__(log_dir=logdir, *args, **kwargs)
+        # super().__init__(log_dir=logdir, *args, **kwargs)
 
         # register on exit fx so we always close the writer
         atexit.register(self.on_exit)
