@@ -101,7 +101,9 @@ class Experiment(SummaryWriter):
         atexit.register(self.on_exit)
 
     def __getstate__(self):
-        return {}
+        state = self.__dict__.copy()
+        del state['metrics']
+        return state
 
     def on_exit(self):
         self.close()
