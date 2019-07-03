@@ -132,6 +132,13 @@ class Experiment(SummaryWriter):
         # register on exit fx so we always close the writer
         atexit.register(self.on_exit)
 
+    def get_meta_copy(self):
+        """
+        Gets a meta-version only copy of this module
+        :return:
+        """
+        return DDPExperiment(self)
+
     def on_exit(self):
         self.close()
 
