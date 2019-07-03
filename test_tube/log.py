@@ -48,20 +48,18 @@ class DDPExperiment(object):
         self.created_at = exp.created_at
 
 
-class Experiment(SummaryWriter):
-
-
-    @classmethod
-    def init_with_ddp_exp(cls, exp):
+    def get_non_ddp_exp(self):
         return Experiment(
-            name=exp.name,
-            debug=exp.debug,
-            version=exp.version,
-            save_dir=exp.save_dir,
-            autosave=exp.autosave,
-            description=exp.description,
-            create_git_tag=exp.create_git_tag
+            name=self.name,
+            debug=self.debug,
+            version=self.version,
+            save_dir=self.save_dir,
+            autosave=self.autosave,
+            description=self.description,
+            create_git_tag=self.create_git_tag
         )
+
+class Experiment(SummaryWriter):
 
     def __init__(
         self,
