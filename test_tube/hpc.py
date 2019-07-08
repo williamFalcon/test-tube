@@ -27,16 +27,12 @@ class AbstractCluster(object):
             python_cmd='python3',
             enable_log_err=True,
             enable_log_out=True,
-            test_tube_exp_name=None
     ):
         self.hyperparam_optimizer = hyperparam_optimizer
         self.log_path = log_path
-        if log_path is not None:
-            self.log_path = os.path.join(log_path, 'test_tube_data')
 
         self.enable_log_err = enable_log_err
         self.enable_log_out = enable_log_out
-        self.test_tube_exp_name = test_tube_exp_name
         self.slurm_files_log_path = None
         self.err_log_path = None
         self.out_log_path = None
@@ -333,10 +329,7 @@ class SlurmCluster(AbstractCluster):
         """
 
         # format the logging folder path
-        if self.test_tube_exp_name is not None:
-            slurm_out_path = os.path.join(self.log_path, self.test_tube_exp_name)
-        else:
-            slurm_out_path = os.path.join(self.log_path, self.job_name)
+        slurm_out_path = os.path.join(self.log_path, self.job_name)
 
         self.log_path = slurm_out_path
 
