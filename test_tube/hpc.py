@@ -54,6 +54,7 @@ class AbstractCluster(object):
         self.call_load_checkpoint = False
         self.commands = []
         self.slurm_commands = []
+        self.hpc_exp_number = 0
 
         # these are set via getters and setters so we can use a BaseManager which can be shared across processes
         self.checkpoint_save_function = None
@@ -62,6 +63,7 @@ class AbstractCluster(object):
         # detect when this was called because a slurm object started a hopt.
         # if true, remove the flag so tt logs don't show it
         if hyperparam_optimizer is not None:
+
             self.is_from_slurm_object = HyperOptArgumentParser.TRIGGER_CMD in vars(self.hyperparam_optimizer) and vars(self.hyperparam_optimizer)[HyperOptArgumentParser.TRIGGER_CMD] == True
             if self.is_from_slurm_object:
                 self.hyperparam_optimizer.__delattr__(HyperOptArgumentParser.TRIGGER_CMD)
@@ -69,6 +71,8 @@ class AbstractCluster(object):
             self.call_load_checkpoint = HyperOptArgumentParser.SLURM_LOAD_CMD in vars(self.hyperparam_optimizer)
             if self.call_load_checkpoint:
                 self.hyperparam_optimizer.__delattr__(HyperOptArgumentParser.SLURM_LOAD_CMD)
+
+            self.hpc_exp_number = self.hyperparam_optimizer.hpc_exp_number
 
     def set_checkpoint_save_function(self, fx, kwargs):
         self.checkpoint_save_function = [fx, kwargs]
