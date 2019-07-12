@@ -99,6 +99,10 @@ class Experiment(SummaryWriter):
         self.exp_hash = '{}_v{}'.format(self.name, version)
         self.created_at = str(datetime.utcnow())
 
+        # when debugging don't do anything else
+        if debug:
+            return
+
         # update version hash if we need to increase version on our own
         # we will increase the previous version, so do it now so the hash
         # is accurate
@@ -107,36 +111,35 @@ class Experiment(SummaryWriter):
             self.exp_hash = '{}_v{}'.format(self.name, old_version + 1)
             self.version = old_version + 1
 
-        # create a new log file if not in debug mode
-        if not debug:
+        # create a new log file
+        self.__init_cache_file_if_needed()
 
-            self.__init_cache_file_if_needed()
-            # when we have a version, load it
-            if self.version is not None:
+        # when we have a version, load it
+        if self.version is not None:
 
-                # when no version and no file, create it
-                if not os.path.exists(self.__get_log_name()):
-                    self.__create_exp_file(self.version)
-                else:
-                    # otherwise load it
-                    try:
-                        self.__load()
-                    except Exception as e:
-                        self.debug = True
+            # when no version and no file, create it
+            if not os.path.exists(self.__get_log_name()):
+                self.__create_exp_file(self.version)
             else:
-                # if no version given, increase the version to a new exp
-                # create the file if not exists
-                old_version = self.__get_last_experiment_version()
-                self.version = old_version
-                self.__create_exp_file(self.version + 1)
+                # otherwise load it
+                try:
+                    self.__load()
+                except Exception as e:
+                    self.debug = True
+        else:
+            # if no version given, increase the version to a new exp
+            # create the file if not exists
+            old_version = self.__get_last_experiment_version()
+            self.version = old_version
+            self.__create_exp_file(self.version + 1)
 
-            # create a git tag if requested
-            if self.create_git_tag:
-                desc = description if description is not None else 'no description'
-                tag_msg = 'Test tube exp: {} - {}'.format(self.name, desc)
-                cmd = 'git tag -a tt_{} -m "{}"'.format(self.exp_hash, tag_msg)
-                os.system(cmd)
-                print('Test tube created git tag:', 'tt_{}'.format(self.exp_hash))
+        # create a git tag if requested
+        if self.create_git_tag:
+            desc = description if description is not None else 'no description'
+            tag_msg = 'Test tube exp: {} - {}'.format(self.name, desc)
+            cmd = 'git tag -a tt_{} -m "{}"'.format(self.exp_hash, tag_msg)
+            os.system(cmd)
+            print('Test tube created git tag:', 'tt_{}'.format(self.exp_hash))
 
         # set the tensorboardx log path to the /tf folder in the exp folder
         logdir = self.get_tensorboardx_path(self.name, self.version)
