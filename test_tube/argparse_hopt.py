@@ -17,7 +17,7 @@ from gettext import gettext as _
 try:
     import torch
     import multiprocessing
-    multiprocessing.set_start_method('spawn', force=True)
+    # multiprocessing.set_start_method('spawn', force=True)
 except ModuleNotFoundError:
     pass
 
