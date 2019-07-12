@@ -119,7 +119,10 @@ class Experiment(SummaryWriter):
                     self.__create_exp_file(self.version)
                 else:
                     # otherwise load it
-                    self.__load()
+                    try:
+                        self.__load()
+                    except Exception as e:
+                        self.debug = True
             else:
                 # if no version given, increase the version to a new exp
                 # create the file if not exists
