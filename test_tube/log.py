@@ -188,7 +188,7 @@ class Experiment(SummaryWriter):
         """
         exp_cache_file = self.get_data_path(self.name, self.version)
         if not os.path.isdir(exp_cache_file):
-            os.makedirs(exp_cache_file)
+            os.makedirs(exp_cache_file, exist_ok=True)
 
     def __create_exp_file(self, version):
         """
