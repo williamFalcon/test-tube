@@ -99,8 +99,6 @@ class Experiment(SummaryWriter):
         self.exp_hash = '{}_v{}'.format(self.name, version)
         self.created_at = str(datetime.utcnow())
 
-        init_with_save = False
-
         # update version hash if we need to increase version on our own
         # we will increase the previous version, so do it now so the hash
         # is accurate
@@ -119,7 +117,6 @@ class Experiment(SummaryWriter):
                 # when no version and no file, create it
                 if not os.path.exists(self.__get_log_name()):
                     self.__create_exp_file(self.version)
-                    init_with_save = True
                 else:
                     # otherwise load it
                     self.__load()
@@ -129,22 +126,22 @@ class Experiment(SummaryWriter):
                 old_version = self.__get_last_experiment_version()
                 self.version = old_version
                 self.__create_exp_file(self.version + 1)
-                init_with_save = True
 
             # create a git tag if requested
-            if self.create_git_tag == True:
+            if self.create_git_tag and not debug:
                 desc = description if description is not None else 'no description'
                 tag_msg = 'Test tube exp: {} - {}'.format(self.name, desc)
                 cmd = 'git tag -a tt_{} -m "{}"'.format(self.exp_hash, tag_msg)
                 os.system(cmd)
                 print('Test tube created git tag:', 'tt_{}'.format(self.exp_hash))
 
-        # set the tensorboardx log path to the /tf folder in the exp folder
-        logdir = self.get_tensorboardx_path(self.name, self.version)
-        super().__init__(log_dir=logdir, *args, **kwargs)
+        if not debug:
+            # set the tensorboardx log path to the /tf folder in the exp folder
+            logdir = self.get_tensorboardx_path(self.name, self.version)
+            super().__init__(log_dir=logdir, *args, **kwargs)
 
-        # register on exit fx so we always close the writer
-        atexit.register(self.on_exit)
+            # register on exit fx so we always close the writer
+            atexit.register(self.on_exit)
 
     def get_meta_copy(self):
         """
@@ -186,9 +183,13 @@ class Experiment(SummaryWriter):
         Inits a file that we log historical experiments
         :return:
         """
-        exp_cache_file = self.get_data_path(self.name, self.version)
-        if not os.path.isdir(exp_cache_file):
-            os.makedirs(exp_cache_file, exist_ok=True)
+        try:
+            exp_cache_file = self.get_data_path(self.name, self.version)
+            if not os.path.isdir(exp_cache_file):
+                os.makedirs(exp_cache_file)
+        except Exception as e:
+            # file already exists (likely written by another exp. In this case disable the experiment
+            self.debug = True
 
     def __create_exp_file(self, version):
         """
@@ -196,17 +197,22 @@ class Experiment(SummaryWriter):
         :param version:
         :return:
         """
-        exp_cache_file = self.get_data_path(self.name, self.version)
-        # if no exp, then make it
-        path = '{}/meta.experiment'.format(exp_cache_file)
-        open(path, 'w').close()
-        self.version = version
 
-        # make the directory for the experiment media assets name
-        os.makedirs(self.get_media_path(self.name, self.version), exist_ok=True)
+        try:
+            exp_cache_file = self.get_data_path(self.name, self.version)
+            # if no exp, then make it
+            path = '{}/meta.experiment'.format(exp_cache_file)
+            open(path, 'w').close()
+            self.version = version
 
-        # make the directory for tensorboardx stuff
-        os.makedirs(self.get_tensorboardx_path(self.name, self.version), exist_ok=True)
+            # make the directory for the experiment media assets name
+            os.makedirs(self.get_media_path(self.name, self.version), exist_ok=True)
+
+            # make the directory for tensorboardx stuff
+            os.makedirs(self.get_tensorboardx_path(self.name, self.version), exist_ok=True)
+        except Exception as e:
+            # file already exists (likely written by another exp. In this case disable the experiment
+            self.debug = True
 
 
     def __get_last_experiment_version(self):
