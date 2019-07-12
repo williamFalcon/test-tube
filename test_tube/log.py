@@ -206,10 +206,10 @@ class Experiment(SummaryWriter):
             self.version = version
 
             # make the directory for the experiment media assets name
-            os.makedirs(self.get_media_path(self.name, self.version), exist_ok=True)
+            os.makedirs(self.get_media_path(self.name, self.version))
 
             # make the directory for tensorboardx stuff
-            os.makedirs(self.get_tensorboardx_path(self.name, self.version), exist_ok=True)
+            os.makedirs(self.get_tensorboardx_path(self.name, self.version))
         except Exception as e:
             # file already exists (likely written by another exp. In this case disable the experiment
             self.debug = True
