@@ -203,10 +203,10 @@ class Experiment(SummaryWriter):
         self.version = version
 
         # make the directory for the experiment media assets name
-        os.mkdir(self.get_media_path(self.name, self.version))
+        os.makedirs(self.get_media_path(self.name, self.version), exist_ok=True)
 
         # make the directory for tensorboardx stuff
-        os.mkdir(self.get_tensorboardx_path(self.name, self.version))
+        os.makedirs(self.get_tensorboardx_path(self.name, self.version), exist_ok=True)
 
 
     def __get_last_experiment_version(self):
