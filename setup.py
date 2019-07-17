@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from setuptools import find_packages, setup
 
-version = '0.6.7'
+version = '0.6.7.1'
 
 setup(
     name='test_tube',
@@ -13,7 +13,7 @@ setup(
         'pandas>=0.20.3',
         'numpy>=1.13.3',
         'imageio>=2.3.0',
-        'tensorboard>=1.14.0',
+        'tb-nightly==1.15.0a20190708',
         'torch>=1.1.0',
         'future'
     ],
