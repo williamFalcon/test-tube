@@ -258,7 +258,7 @@ class Experiment(SummaryWriter):
         if self.autosave == True:
             self.save()
 
-    def log(self, metrics_dict, main_tag='', global_step=None, walltime=None):
+    def log(self, metrics_dict, global_step=None, walltime=None):
         """
         Adds a json dict of metrics.
 
@@ -273,7 +273,9 @@ class Experiment(SummaryWriter):
         # handle tfx metrics
         if global_step is None:
             global_step = len(self.metrics)
-        self.add_scalars(main_tag, metrics_dict, global_step, walltime)
+
+        for k, v in metrics_dict.items():
+            self.add_scalar(tag=k, scalar_value=v, global_step=global_step, walltime=walltime)
 
         # timestamp
         if 'created_at' not in metrics_dict:
@@ -283,7 +285,7 @@ class Experiment(SummaryWriter):
 
         self.metrics.append(metrics_dict)
 
-        if self.autosave == True:
+        if self.autosave:
             self.save()
 
 
