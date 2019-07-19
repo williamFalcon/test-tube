@@ -97,6 +97,24 @@ class HyperOptArgumentParser(ArgumentParser):
         self.json_config_arg_name = None
         self.pool = None
 
+    def __getstate__(self):
+        # capture what is normally pickled
+        state = self.__dict__.copy()
+
+        # remove all functions from the namespace
+        clean_state = {}
+        for k, v in state.items():
+            if not hasattr(v, '__call__'):
+                clean_state[k] = v
+                print('clean, ', k, v)
+
+        # what we return here will be stored in the pickle
+        return clean_state
+
+    def __setstate__(self, newstate):
+        # re-instate our __dict__ state from the pickled state
+        self.__dict__.update(newstate)
+
     def add_argument(self, *args, **kwargs):
         super(HyperOptArgumentParser, self).add_argument(*args, **kwargs)
 
