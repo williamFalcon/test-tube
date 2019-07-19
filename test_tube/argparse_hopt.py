@@ -319,6 +319,7 @@ class HyperOptArgumentParser(ArgumentParser):
                 g_gpu_id_q = local_gpu_q
 
             # init a pool with the nb of worker threads we want
+            print('-'*100)
             self.pool = Pool(processes=nb_workers, initializer=init, initargs=(gpu_q,))
 
         # apply parallelization
