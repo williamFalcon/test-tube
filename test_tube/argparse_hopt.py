@@ -461,6 +461,7 @@ class TTNamespace(argparse.Namespace):
         for k, v in state.items():
             if not hasattr(v, '__call__'):
                 clean_state[k] = v
+                print('clean, ', k, v)
 
         # what we return here will be stored in the pickle
         return clean_state
