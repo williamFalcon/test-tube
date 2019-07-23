@@ -171,11 +171,11 @@ class SlurmCluster(AbstractCluster):
             trials = self.hyperparam_optimizer.generate_trials(nb_trials)
 
             # get the max test tube exp version so far if it's there
-            next_test_tube_version = self.__get_max_test_tube_version(self.log_path)
+            next_trial_version = self.__get_max_trial_version(self.log_path)
 
             # for each trial, generate a slurm command
             for i, trial_params in enumerate(trials):
-                exp_i = i + next_test_tube_version
+                exp_i = i + next_trial_version
                 self.schedule_experiment(trial_params, exp_i)
 
     def schedule_experiment(self, trial_params, exp_i):
@@ -315,12 +315,12 @@ class SlurmCluster(AbstractCluster):
         with open(slurm_cmd_script_path, mode='w') as file:
             file.write(slurm_cmd)
 
-    def __get_max_test_tube_version(self, path):
+    def __get_max_trial_version(self, path):
         files = os.listdir(path)
-        version_files = [f for f in files if 'version_' in f]
+        version_files = [f for f in files if 'trial_' in f]
         if len(version_files) > 0:
             # regex out everything except file version for ve
-            versions = [int(re.sub('version_', '', f_name)) for f_name in version_files]
+            versions = [int(re.sub('trial_', '', f_name)) for f_name in version_files]
             max_version = max(versions)
             return max_version + 1
         else:
