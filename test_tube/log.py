@@ -170,10 +170,14 @@ class Experiment(SummaryWriter):
 
     def __clean_dir(self):
         files = os.listdir(self.log_dir)
-        print(files)
+
+        if self.rank == 0:
+            return
+
         for f in files:
             if self.process in f:
-                pass
+                self.close()
+                os.remove(f)
 
     def argparse(self, argparser):
         parsed = vars(argparser)
