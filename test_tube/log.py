@@ -85,7 +85,7 @@ class Experiment(SummaryWriter):
         """
 
         # change where the save dir is if requested
-        SummaryWriter.__init__('test', *args, **kwargs)
+
         if save_dir is not None:
             global _ROOT
             _ROOT = save_dir
@@ -149,7 +149,7 @@ class Experiment(SummaryWriter):
 
         # set the tensorboardx log path to the /tf folder in the exp folder
         logdir = self.get_tensorboardx_path(self.name, self.version)
-
+        SummaryWriter.__init__(log_dir=logdir, *args, **kwargs)
 
         # register on exit fx so we always close the writer
         atexit.register(self.on_exit)
