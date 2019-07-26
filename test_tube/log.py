@@ -177,7 +177,7 @@ class Experiment(SummaryWriter):
         for f in files:
             if str(self.process) in f:
                 self.close()
-                os.remove(f)
+                os.remove(os.path.join(self.log_dir, f))
 
     def argparse(self, argparser):
         parsed = vars(argparser)
