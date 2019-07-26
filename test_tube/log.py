@@ -249,7 +249,7 @@ class Experiment(SummaryWriter):
         :param val:
         :return:
         """
-        if self.debug: return
+        if self.debug or self.rank > 0: return
 
         # parse tags
         for k, v in tag_dict.items():
@@ -269,7 +269,7 @@ class Experiment(SummaryWriter):
         :tag optional tfx tag
         :return:
         """
-        if self.debug: return
+        if self.debug or self.rank > 0: return
 
         # handle tfx metrics
         if global_step is None:
@@ -303,7 +303,7 @@ class Experiment(SummaryWriter):
         Saves current experiment progress
         :return:
         """
-        if self.debug: return
+        if self.debug or self.rank > 0: return
 
         # save images and replace the image array with the
         # file name
