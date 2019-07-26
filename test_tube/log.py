@@ -175,7 +175,7 @@ class Experiment(SummaryWriter):
             return
 
         for f in files:
-            if self.process in f:
+            if str(self.process) in f:
                 self.close()
                 os.remove(f)
 
