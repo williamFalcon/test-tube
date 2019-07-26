@@ -480,25 +480,25 @@ class Experiment(SummaryWriter):
     # ----------------------------
     # OVERWRITES
     # ----------------------------
-    def _get_file_writer(self):
-        print('file writer')
-
-        """Returns the default FileWriter instance. Recreates it if closed."""
-        if self.all_writers is None or self.file_writer is None:
-            self.file_writer = TTFileWriter(self.log_dir, self.max_queue,
-                                          self.flush_secs, self.filename_suffix)
-            self.file_writer.rank = self.rank
-            self.file_writer.debug = self.debug
-
-            self.all_writers = {self.file_writer.get_logdir(): self.file_writer}
-            if self.purge_step is not None:
-                most_recent_step = self.purge_step
-                self.file_writer.add_event(
-                    Event(step=most_recent_step, file_version='brain.Event:2'))
-                self.file_writer.add_event(
-                    Event(step=most_recent_step, session_log=SessionLog(status=SessionLog.START)))
-                self.purge_step = None
-        return self.file_writer
+    # def _get_file_writer(self):
+    #     print('file writer')
+    #
+    #     """Returns the default FileWriter instance. Recreates it if closed."""
+    #     if self.all_writers is None or self.file_writer is None:
+    #         self.file_writer = TTFileWriter(self.log_dir, self.max_queue,
+    #                                       self.flush_secs, self.filename_suffix)
+    #         self.file_writer.rank = self.rank
+    #         self.file_writer.debug = self.debug
+    #
+    #         self.all_writers = {self.file_writer.get_logdir(): self.file_writer}
+    #         if self.purge_step is not None:
+    #             most_recent_step = self.purge_step
+    #             self.file_writer.add_event(
+    #                 Event(step=most_recent_step, file_version='brain.Event:2'))
+    #             self.file_writer.add_event(
+    #                 Event(step=most_recent_step, session_log=SessionLog(status=SessionLog.START)))
+    #             self.purge_step = None
+    #     return self.file_writer
 
 
     def __str__(self):
