@@ -85,7 +85,7 @@ class Experiment(SummaryWriter):
         """
 
         # change where the save dir is if requested
-        super.__init__('test', *args, **kwargs)
+        SummaryWriter.__init__('test', *args, **kwargs)
         if save_dir is not None:
             global _ROOT
             _ROOT = save_dir
