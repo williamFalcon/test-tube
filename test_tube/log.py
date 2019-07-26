@@ -105,6 +105,7 @@ class Experiment(SummaryWriter):
         self.exp_hash = '{}_v{}'.format(self.name, version)
         self.created_at = str(datetime.utcnow())
         self.rank = rank
+        self.process = os.getpid()
 
         # when debugging don't do anything else
         if debug:
@@ -165,6 +166,13 @@ class Experiment(SummaryWriter):
     def on_exit(self):
         if self.rank == 0:
             self.close()
+
+    def __clean_dir(self):
+        files = os.listdir(self.log_dir)
+        print(files)
+        for f in files:
+            if self.process in f:
+                pass
 
     def argparse(self, argparser):
         parsed = vars(argparser)
