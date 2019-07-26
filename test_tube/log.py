@@ -505,6 +505,13 @@ class Experiment(SummaryWriter):
     def __hash__(self):
         return 'Exp: {}, v: {}'.format(self.name, self.version)
 
+    def flush(self):
+        if self.all_writers is None:
+            return  # ignore double close
+
+        for writer in self.all_writers.values():
+            writer.flush()
+
 
 class TTFileWriter(FileWriter):
 
