@@ -444,13 +444,13 @@ class SlurmCluster(AbstractCluster):
         if self.per_experiment_nb_gpus > 0 and on_gpu:
             command = [
                 '# gpus per node',
-                '#SBATCH --gres gpu:{}'.format(self.per_experiment_nb_gpus),
+                '#SBATCH --gres=gpu:{}'.format(self.per_experiment_nb_gpus),
                 '#################\n'
             ]
             if self.gpu_type is not None:
                 command = [
                     '# gpus per node',
-                    '#SBATCH --gres gpu:{}:{}'.format(self.gpu_type, self.per_experiment_nb_gpus),
+                    '#SBATCH --gres=gpu:{}:{}'.format(self.gpu_type, self.per_experiment_nb_gpus),
                     '#################\n'
                 ]
             sub_commands.extend(command)
