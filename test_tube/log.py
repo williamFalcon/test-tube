@@ -485,6 +485,8 @@ class Experiment(SummaryWriter):
     # ----------------------------
     def _get_file_writer(self):
         """Returns the default FileWriter instance. Recreates it if closed."""
+        if self.rank > 0:
+            return
         if self.all_writers is None or self.file_writer is None:
             if 'purge_step' in self.kwargs.keys():
                 most_recent_step = self.kwargs.pop('purge_step')
