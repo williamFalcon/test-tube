@@ -474,9 +474,25 @@ class Experiment(SummaryWriter):
         tfx_path = self.get_tensorboardx_path(exp_name, exp_version)
         return os.path.join(tfx_path, 'scalars.json')
 
+
     # ----------------------------
     # OVERWRITES
     # ----------------------------
+    def add_summary(self, summary, global_step=None, walltime=None):
+        """
+        Overwrite tf add summary so we can ignore when other non-zero processes call it
+        Avoids overwriting logs from multiple processes
+        :param summary:
+        :param global_step:
+        :param walltime:
+        :return:
+        """
+        # don't log when rank > 0
+        if self.debug or self.rank > 0: return
+
+        # otherwise do the normal thing
+        super().add_summary(self, summary, global_step=global_step, walltime=walltime)
+
 
     def __str__(self):
         return 'Exp: {}, v: {}'.format(self.name, self.version)
