@@ -171,7 +171,8 @@ class SlurmCluster(AbstractCluster):
             trials = self.hyperparam_optimizer.generate_trials(nb_trials)
 
             # get the max test tube exp version so far if it's there
-            next_trial_version = self.__get_max_trial_version(self.log_path)
+            scripts_path = os.path.join(self.log_path, 'slurm_out_logs')
+            next_trial_version = self.__get_max_trial_version(scripts_path)
 
             # for each trial, generate a slurm command
             for i, trial_params in enumerate(trials):
