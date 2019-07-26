@@ -98,6 +98,7 @@ class Experiment(SummaryWriter):
         self.create_git_tag = create_git_tag
         self.exp_hash = '{}_v{}'.format(self.name, version)
         self.created_at = str(datetime.utcnow())
+        self.rank = 0
 
         # when debugging don't do anything else
         if debug:
