@@ -486,11 +486,12 @@ class Experiment(SummaryWriter):
     def _get_file_writer(self):
         """Returns the default FileWriter instance. Recreates it if closed."""
         if self.rank > 0:
-            return
+            return TTDummyFileWriter()
+
         if self.all_writers is None or self.file_writer is None:
             if 'purge_step' in self.kwargs.keys():
                 most_recent_step = self.kwargs.pop('purge_step')
-                self.file_writer = TTFileWriter(logdir=self.log_dir, **self.kwargs)
+                self.file_writer = FileWriter(logdir=self.log_dir, **self.kwargs)
                 self.file_writer.debug = self.debug
                 self.file_writer.rank = self.rank
 
@@ -518,12 +519,7 @@ class Experiment(SummaryWriter):
             writer.flush()
 
 
-class TTFileWriter(FileWriter):
-
-    def __init__(self, *args, **kwargs):
-        FileWriter(self).__init__(*args, **kwargs)
-        self.debug = False
-        self.rank = 0
+class TTDummyFileWriter(object):
 
     def add_summary(self, summary, global_step=None, walltime=None):
         """
@@ -534,11 +530,7 @@ class TTFileWriter(FileWriter):
         :param walltime:
         :return:
         """
-        # don't log when rank > 0
-        if self.debug or self.rank > 0: return
-
-        # otherwise do the normal thing
-        super().add_summary(self, summary, global_step=global_step, walltime=walltime)
+        return
 
 
 
