@@ -512,7 +512,7 @@ class Experiment(SummaryWriter):
         return 'Exp: {}, v: {}'.format(self.name, self.version)
 
     def flush(self):
-        if self.rank == 0:
+        if self.rank > 0:
             return
 
         if self.all_writers is None:
