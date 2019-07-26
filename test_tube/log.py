@@ -334,9 +334,6 @@ class Experiment(SummaryWriter):
         df = pd.DataFrame(self.metrics)
         df.to_csv(metrics_file_path, index=False)
 
-        # save TFX scalars
-        self.export_scalars_to_json(self.get_tensorboardx_scalars_path(self.name, self.version))
-
         # write new vals to disk
         self.flush()
 
