@@ -485,7 +485,7 @@ class Experiment(SummaryWriter):
         if self.all_writers is None or self.file_writer is None:
             import pdb
             pdb.set_trace()
-            self.file_writer = FileWriter(self.log_dir, self.max_queue,
+            self.file_writer = TTFileWriter(self.log_dir, self.max_queue,
                                           self.flush_secs, self.filename_suffix)
             self.file_writer.rank = self.rank
             self.file_writer.debug = self.debug
@@ -511,7 +511,7 @@ class Experiment(SummaryWriter):
 class TTFileWriter(FileWriter):
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        FileWriter(self).__init__(*args, **kwargs)
         self.debug = False
         self.rank = 0
 
