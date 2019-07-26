@@ -337,6 +337,9 @@ class Experiment(SummaryWriter):
         # save TFX scalars
         self.export_scalars_to_json(self.get_tensorboardx_scalars_path(self.name, self.version))
 
+        # write new vals to disk
+        self.flush()
+
         # until hparam plugin is fixed, generate hparams as text
         if not self.tag_markdown_saved and len(self.tags) > 0:
             self.tag_markdown_saved = True
