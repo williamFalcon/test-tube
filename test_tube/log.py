@@ -75,6 +75,7 @@ class Experiment(SummaryWriter):
         autosave=False,
         description=None,
         create_git_tag=False,
+        rank=0,
         *args, **kwargs
     ):
         """
@@ -103,7 +104,7 @@ class Experiment(SummaryWriter):
         self.create_git_tag = create_git_tag
         self.exp_hash = '{}_v{}'.format(self.name, version)
         self.created_at = str(datetime.utcnow())
-        self.rank = 0
+        self.rank = rank
 
         # when debugging don't do anything else
         if debug:
