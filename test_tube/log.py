@@ -164,7 +164,8 @@ class Experiment(SummaryWriter):
         return DDPExperiment(self)
 
     def on_exit(self):
-        self.close()
+        if self.rank == 0:
+            self.close()
 
     def argparse(self, argparser):
         parsed = vars(argparser)
