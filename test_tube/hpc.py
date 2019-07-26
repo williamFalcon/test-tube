@@ -321,7 +321,7 @@ class SlurmCluster(AbstractCluster):
         version_files = [f for f in files if 'trial_' in f]
         if len(version_files) > 0:
             # regex out everything except file version for ve
-            versions = [int(re.sub('trial_', '', f_name)) for f_name in version_files]
+            versions = [int(f_name.split('_')[1]) for f_name in version_files]
             max_version = max(versions)
             return max_version + 1
         else:
