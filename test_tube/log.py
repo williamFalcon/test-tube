@@ -5,8 +5,12 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 from imageio import imwrite
-from torch.utils.tensorboard import SummaryWriter
+from torch.utils.tensorboard import SummaryWriter, FileWriter
 import atexit
+from tensorboard.compat.proto.event_pb2 import SessionLog
+from tensorboard.compat.proto.event_pb2 import Event
+from tensorboard.compat.proto import event_pb2
+from tensorboard.summary.writer.event_file_writer import EventFileWriter
 
 # constants
 _ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -16,7 +20,52 @@ _ROOT = os.path.abspath(os.path.dirname(__file__))
 # -----------------------------
 
 
+class DDPExperiment(object):
+    def __init__(
+        self,
+        exp
+    ):
+        """
+        Used as meta_data storage if the experiment needs to be pickled
+        :param name:
+        :param debug:
+        :param version:
+        :param save_dir:
+        :param autosave:
+        :param description:
+        :param create_git_tag:
+        :param args:
+        :param kwargs:
+        """
+
+        self.tag_markdown_saved = exp.tag_markdown_saved
+        self.no_save_dir = exp.no_save_dir
+        self.metrics = exp.metrics
+        self.tags = exp.tags
+        self.name = exp.name
+        self.debug = exp.debug
+        self.version = exp.version
+        self.autosave = exp.autosave
+        self.description = exp.description
+        self.create_git_tag = exp.create_git_tag
+        self.exp_hash = exp.exp_hash
+        self.created_at = exp.created_at
+        self.save_dir = exp.save_dir
+
+
+    def get_non_ddp_exp(self):
+        return Experiment(
+            name=self.name,
+            debug=self.debug,
+            version=self.version,
+            save_dir=self.save_dir,
+            autosave=self.autosave,
+            description=self.description,
+            create_git_tag=self.create_git_tag
+        )
+
 class Experiment(SummaryWriter):
+
     def __init__(
         self,
         name='default',
@@ -26,6 +75,7 @@ class Experiment(SummaryWriter):
         autosave=False,
         description=None,
         create_git_tag=False,
+        rank=0,
         *args, **kwargs
     ):
         """
@@ -36,10 +86,12 @@ class Experiment(SummaryWriter):
         """
 
         # change where the save dir is if requested
+
         if save_dir is not None:
             global _ROOT
             _ROOT = save_dir
 
+        self.save_dir = save_dir
         self.tag_markdown_saved = False
         self.no_save_dir = save_dir is None
         self.metrics = []
@@ -52,8 +104,12 @@ class Experiment(SummaryWriter):
         self.create_git_tag = create_git_tag
         self.exp_hash = '{}_v{}'.format(self.name, version)
         self.created_at = str(datetime.utcnow())
+        self.rank = rank
+        self.process = os.getpid()
 
-        init_with_save = False
+        # when debugging don't do anything else
+        if debug:
+            return
 
         # update version hash if we need to increase version on our own
         # we will increase the previous version, so do it now so the hash
@@ -63,35 +119,35 @@ class Experiment(SummaryWriter):
             self.exp_hash = '{}_v{}'.format(self.name, old_version + 1)
             self.version = old_version + 1
 
-        # create a new log file if not in debug mode
-        if not debug:
+        # create a new log file
+        self.__init_cache_file_if_needed()
 
-            self.__init_cache_file_if_needed()
-            # when we have a version, load it
-            if self.version is not None:
+        # when we have a version, load it
+        if self.version is not None:
 
-                # when no version and no file, create it
-                if not os.path.exists(self.__get_log_name()):
-                    self.__create_exp_file(self.version)
-                    init_with_save = True
-                else:
-                    # otherwise load it
-                    self.__load()
+            # when no version and no file, create it
+            if not os.path.exists(self.__get_log_name()):
+                self.__create_exp_file(self.version)
             else:
-                # if no version given, increase the version to a new exp
-                # create the file if not exists
-                old_version = self.__get_last_experiment_version()
-                self.version = old_version
-                self.__create_exp_file(self.version + 1)
-                init_with_save = True
+                # otherwise load it
+                try:
+                    self.__load()
+                except Exception as e:
+                    self.debug = True
+        else:
+            # if no version given, increase the version to a new exp
+            # create the file if not exists
+            old_version = self.__get_last_experiment_version()
+            self.version = old_version
+            self.__create_exp_file(self.version + 1)
 
-            # create a git tag if requested
-            if self.create_git_tag == True:
-                desc = description if description is not None else 'no description'
-                tag_msg = 'Test tube exp: {} - {}'.format(self.name, desc)
-                cmd = 'git tag -a tt_{} -m "{}"'.format(self.exp_hash, tag_msg)
-                os.system(cmd)
-                print('Test tube created git tag:', 'tt_{}'.format(self.exp_hash))
+        # create a git tag if requested
+        if self.create_git_tag:
+            desc = description if description is not None else 'no description'
+            tag_msg = 'Test tube exp: {} - {}'.format(self.name, desc)
+            cmd = 'git tag -a tt_{} -m "{}"'.format(self.exp_hash, tag_msg)
+            os.system(cmd)
+            print('Test tube created git tag:', 'tt_{}'.format(self.exp_hash))
 
         # set the tensorboardx log path to the /tf folder in the exp folder
         logdir = self.get_tensorboardx_path(self.name, self.version)
@@ -100,8 +156,28 @@ class Experiment(SummaryWriter):
         # register on exit fx so we always close the writer
         atexit.register(self.on_exit)
 
+    def get_meta_copy(self):
+        """
+        Gets a meta-version only copy of this module
+        :return:
+        """
+        return DDPExperiment(self)
+
     def on_exit(self):
-        self.close()
+        self.__clean_dir()
+        if self.rank == 0:
+            self.close()
+
+    def __clean_dir(self):
+        files = os.listdir(self.log_dir)
+
+        if self.rank == 0:
+            return
+
+        for f in files:
+            if str(self.process) in f:
+                self.close()
+                os.remove(os.path.join(self.log_dir, f))
 
     def argparse(self, argparser):
         parsed = vars(argparser)
@@ -133,9 +209,13 @@ class Experiment(SummaryWriter):
         Inits a file that we log historical experiments
         :return:
         """
-        exp_cache_file = self.get_data_path(self.name, self.version)
-        if not os.path.isdir(exp_cache_file):
-            os.makedirs(exp_cache_file)
+        try:
+            exp_cache_file = self.get_data_path(self.name, self.version)
+            if not os.path.isdir(exp_cache_file):
+                os.makedirs(exp_cache_file, exist_ok=True)
+        except Exception as e:
+            # file already exists (likely written by another exp. In this case disable the experiment
+            self.debug = True
 
     def __create_exp_file(self, version):
         """
@@ -143,17 +223,22 @@ class Experiment(SummaryWriter):
         :param version:
         :return:
         """
-        exp_cache_file = self.get_data_path(self.name, self.version)
-        # if no exp, then make it
-        path = '{}/meta.experiment'.format(exp_cache_file)
-        open(path, 'w').close()
-        self.version = version
 
-        # make the directory for the experiment media assets name
-        os.mkdir(self.get_media_path(self.name, self.version))
+        try:
+            exp_cache_file = self.get_data_path(self.name, self.version)
+            # if no exp, then make it
+            path = '{}/meta.experiment'.format(exp_cache_file)
+            open(path, 'w').close()
+            self.version = version
 
-        # make the directory for tensorboardx stuff
-        os.mkdir(self.get_tensorboardx_path(self.name, self.version))
+            # make the directory for the experiment media assets name
+            os.makedirs(self.get_media_path(self.name, self.version), exist_ok=True)
+
+            # make the directory for tensorboardx stuff
+            os.makedirs(self.get_tensorboardx_path(self.name, self.version), exist_ok=True)
+        except Exception as e:
+            # file already exists (likely written by another exp. In this case disable the experiment
+            self.debug = True
 
 
     def __get_last_experiment_version(self):
@@ -184,7 +269,7 @@ class Experiment(SummaryWriter):
         :param val:
         :return:
         """
-        if self.debug: return
+        if self.debug or self.rank > 0: return
 
         # parse tags
         for k, v in tag_dict.items():
@@ -194,7 +279,7 @@ class Experiment(SummaryWriter):
         if self.autosave == True:
             self.save()
 
-    def log(self, metrics_dict, main_tag='', global_step=None, walltime=None):
+    def log(self, metrics_dict, global_step=None, walltime=None):
         """
         Adds a json dict of metrics.
 
@@ -204,12 +289,14 @@ class Experiment(SummaryWriter):
         :tag optional tfx tag
         :return:
         """
-        if self.debug: return
+        if self.debug or self.rank > 0: return
 
         # handle tfx metrics
         if global_step is None:
             global_step = len(self.metrics)
-        self.add_scalars(main_tag, metrics_dict, global_step, walltime)
+
+        for k, v in metrics_dict.items():
+            self.add_scalar(tag=k, scalar_value=v, global_step=global_step, walltime=walltime)
 
         # timestamp
         if 'created_at' not in metrics_dict:
@@ -219,7 +306,7 @@ class Experiment(SummaryWriter):
 
         self.metrics.append(metrics_dict)
 
-        if self.autosave == True:
+        if self.autosave:
             self.save()
 
 
@@ -236,7 +323,7 @@ class Experiment(SummaryWriter):
         Saves current experiment progress
         :return:
         """
-        if self.debug: return
+        if self.debug or self.rank > 0: return
 
         # save images and replace the image array with the
         # file name
@@ -267,8 +354,8 @@ class Experiment(SummaryWriter):
         df = pd.DataFrame(self.metrics)
         df.to_csv(metrics_file_path, index=False)
 
-        # save TFX scalars
-        self.export_scalars_to_json(self.get_tensorboardx_scalars_path(self.name, self.version))
+        # write new vals to disk
+        self.flush()
 
         # until hparam plugin is fixed, generate hparams as text
         if not self.tag_markdown_saved and len(self.tags) > 0:
@@ -404,15 +491,62 @@ class Experiment(SummaryWriter):
         tfx_path = self.get_tensorboardx_path(exp_name, exp_version)
         return os.path.join(tfx_path, 'scalars.json')
 
+
     # ----------------------------
     # OVERWRITES
     # ----------------------------
+    def _get_file_writer(self):
+        """Returns the default FileWriter instance. Recreates it if closed."""
+        if self.rank > 0:
+            return TTDummyFileWriter()
+
+        if self.all_writers is None or self.file_writer is None:
+            if 'purge_step' in self.kwargs.keys():
+                most_recent_step = self.kwargs.pop('purge_step')
+                self.file_writer = FileWriter(logdir=self.log_dir, **self.kwargs)
+                self.file_writer.debug = self.debug
+                self.file_writer.rank = self.rank
+
+                self.file_writer.add_event(
+                    Event(step=most_recent_step, file_version='brain.Event:2'))
+                self.file_writer.add_event(
+                    Event(step=most_recent_step, session_log=SessionLog(status=SessionLog.START)))
+            else:
+                self.file_writer = FileWriter(logdir=self.log_dir, **self.kwargs)
+            self.all_writers = {self.file_writer.get_logdir(): self.file_writer}
+        return self.file_writer
+
 
     def __str__(self):
         return 'Exp: {}, v: {}'.format(self.name, self.version)
 
     def __hash__(self):
         return 'Exp: {}, v: {}'.format(self.name, self.version)
+
+    def flush(self):
+        if self.rank > 0:
+            return
+
+        if self.all_writers is None:
+            return  # ignore double close
+
+        for writer in self.all_writers.values():
+            writer.flush()
+
+
+class TTDummyFileWriter(object):
+
+    def add_summary(self, summary, global_step=None, walltime=None):
+        """
+        Overwrite tf add summary so we can ignore when other non-zero processes call it
+        Avoids overwriting logs from multiple processes
+        :param summary:
+        :param global_step:
+        :param walltime:
+        :return:
+        """
+        return
+
 
 
 if __name__ == '__main__':
@@ -430,3 +564,4 @@ if __name__ == '__main__':
 
     e.close()
     os._exit(1)
+

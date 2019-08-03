@@ -27,16 +27,12 @@ class AbstractCluster(object):
             python_cmd='python3',
             enable_log_err=True,
             enable_log_out=True,
-            test_tube_exp_name=None
     ):
         self.hyperparam_optimizer = hyperparam_optimizer
         self.log_path = log_path
-        if log_path is not None:
-            self.log_path = os.path.join(log_path, 'test_tube_data')
 
         self.enable_log_err = enable_log_err
         self.enable_log_out = enable_log_out
-        self.test_tube_exp_name = test_tube_exp_name
         self.slurm_files_log_path = None
         self.err_log_path = None
         self.out_log_path = None
@@ -58,6 +54,7 @@ class AbstractCluster(object):
         self.call_load_checkpoint = False
         self.commands = []
         self.slurm_commands = []
+        self.hpc_exp_number = 0
 
         # these are set via getters and setters so we can use a BaseManager which can be shared across processes
         self.checkpoint_save_function = None
@@ -66,6 +63,7 @@ class AbstractCluster(object):
         # detect when this was called because a slurm object started a hopt.
         # if true, remove the flag so tt logs don't show it
         if hyperparam_optimizer is not None:
+
             self.is_from_slurm_object = HyperOptArgumentParser.TRIGGER_CMD in vars(self.hyperparam_optimizer) and vars(self.hyperparam_optimizer)[HyperOptArgumentParser.TRIGGER_CMD] == True
             if self.is_from_slurm_object:
                 self.hyperparam_optimizer.__delattr__(HyperOptArgumentParser.TRIGGER_CMD)
@@ -73,6 +71,8 @@ class AbstractCluster(object):
             self.call_load_checkpoint = HyperOptArgumentParser.SLURM_LOAD_CMD in vars(self.hyperparam_optimizer)
             if self.call_load_checkpoint:
                 self.hyperparam_optimizer.__delattr__(HyperOptArgumentParser.SLURM_LOAD_CMD)
+
+            self.hpc_exp_number = self.hyperparam_optimizer.hpc_exp_number
 
     def set_checkpoint_save_function(self, fx, kwargs):
         self.checkpoint_save_function = [fx, kwargs]
@@ -171,11 +171,12 @@ class SlurmCluster(AbstractCluster):
             trials = self.hyperparam_optimizer.generate_trials(nb_trials)
 
             # get the max test tube exp version so far if it's there
-            next_test_tube_version = self.__get_max_test_tube_version(self.log_path)
+            scripts_path = os.path.join(self.log_path, 'slurm_out_logs')
+            next_trial_version = self.__get_max_trial_version(scripts_path)
 
             # for each trial, generate a slurm command
             for i, trial_params in enumerate(trials):
-                exp_i = i + next_test_tube_version
+                exp_i = i + next_trial_version
                 self.schedule_experiment(trial_params, exp_i)
 
     def schedule_experiment(self, trial_params, exp_i):
@@ -315,12 +316,12 @@ class SlurmCluster(AbstractCluster):
         with open(slurm_cmd_script_path, mode='w') as file:
             file.write(slurm_cmd)
 
-    def __get_max_test_tube_version(self, path):
+    def __get_max_trial_version(self, path):
         files = os.listdir(path)
-        version_files = [f for f in files if 'version_' in f]
+        version_files = [f for f in files if 'trial_' in f]
         if len(version_files) > 0:
             # regex out everything except file version for ve
-            versions = [int(re.sub('version_', '', f_name)) for f_name in version_files]
+            versions = [int(f_name.split('_')[1]) for f_name in version_files]
             max_version = max(versions)
             return max_version + 1
         else:
@@ -333,10 +334,7 @@ class SlurmCluster(AbstractCluster):
         """
 
         # format the logging folder path
-        if self.test_tube_exp_name is not None:
-            slurm_out_path = os.path.join(self.log_path, self.test_tube_exp_name)
-        else:
-            slurm_out_path = os.path.join(self.log_path, self.job_name)
+        slurm_out_path = os.path.join(self.log_path, self.job_name)
 
         self.log_path = slurm_out_path
 
@@ -446,14 +444,14 @@ class SlurmCluster(AbstractCluster):
         # add nb of gpus
         if self.per_experiment_nb_gpus > 0 and on_gpu:
             command = [
-                '# gpus per cluster',
-                '#SBATCH --gres gpu:{}'.format(self.per_experiment_nb_gpus),
+                '# gpus per node',
+                '#SBATCH --gres=gpu:{}'.format(self.per_experiment_nb_gpus),
                 '#################\n'
             ]
             if self.gpu_type is not None:
                 command = [
-                    '# gpus per cluster',
-                    '#SBATCH --gres gpu:{}:{}'.format(self.gpu_type, self.per_experiment_nb_gpus),
+                    '# gpus per node',
+                    '#SBATCH --gres=gpu:{}:{}'.format(self.gpu_type, self.per_experiment_nb_gpus),
                     '#################\n'
                 ]
             sub_commands.extend(command)
