@@ -251,46 +251,22 @@ for trial_hparams in hparams.trials(2):
     # trial_hparams now has values sampled from the training routine
 </code></pre>
 
-<h3 id="optimize_parallel"><code>optimize_parallel</code></h3>
-<p><code>DEPRECATED... see optimize_parallel_gpu / _cpu</code></p>
-<pre><code class="python">hparams = parser.parse_args()
-hparams.optimize_parallel(function_to_optimize, nb_trials=20, nb_parallel=2)
-</code></pre>
-
-<p>Parallelize the trials across <code>nb_parallel</code> processes. Arguments passed
-into the <code>function_to_optimize</code> are the <code>trial_params</code> and index of
-process it's in.</p>
-<p><strong>Example</strong></p>
-<pre><code class="python"># parallelize tuning on 2 gpus
-# this will place each trial in n into a given gpu
-def opt_function(trial_params, process_index):
-    GPUs = ['0', '1']
-    os.environ[&quot;CUDA_VISIBLE_DEVICES&quot;] = GPUs[process_index]
-    train_main(trial_params)
-
-hparams = parser.parse_args()
-hparams.optimize_parallel(opt_function, nb_trials=20, nb_parallel=2)
-
-# at the end of the optimize_parallel function, all 20 trials will be completed
-# in this case by running 10 sets of 2 trials in parallel
-</code></pre>
-
 <h3 id="optimize_parallel_gpu"><code>optimize_parallel_gpu</code></h3>
 <pre><code class="python">hparams = parser.parse_args()
-hparams.optimize_parallel_gpu(function_to_optimize, gpu_ids=['1', '0, 2'], nb_trials=20, nb_workers=2)
+hparams.optimize_parallel_gpu(function_to_optimize, gpu_ids=['1', '0, 2'])
 </code></pre>
 
 <p>Parallelize the trials across <code>nb_workers</code> processes. Auto assign the
 correct gpus. Argument passed into the <code>function_to_optimize</code> is the
-<code>trial_params</code> argument.</p>
+<code>trial_params</code> argument and the gpu_ids.</p>
 <p><strong>Example</strong></p>
 <pre><code class="python"># parallelize tuning on 2 gpus
 # this will place each trial in n into a given gpu
-def train_main(trial_params):
+def train_main(trial_params, gpu_ids):
     # train your model, etc here...
 
 hparams = parser.parse_args()
-hparams.optimize_parallel_gpu(train_main, gpu_ids=['1', '0, 2'], nb_trials=20, nb_workers=2)
+hparams.optimize_parallel_gpu(train_main, gpu_ids=['1', '0, 2'])
 
 # at the end of the optimize_parallel function, all 20 trials will be completed
 # in this case by running 10 sets of 2 trials in parallel
