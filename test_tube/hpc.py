@@ -260,7 +260,7 @@ class SlurmCluster(AbstractCluster):
 
         try:
             # run training
-            train_function(self.hyperparam_optimizer, self, {})
+            train_function(self.hyperparam_optimizer, self)
 
         except Exception as e:
             print('Caught exception in worker thread', e)
