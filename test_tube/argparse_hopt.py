@@ -34,7 +34,7 @@ def optimize_parallel_gpu_private(args):
         os.environ["CUDA_VISIBLE_DEVICES"] = gpu_id_set
 
         # run training fx on the specific gpus
-        results = train_function(trial_params)
+        results = train_function(trial_params, gpu_id_set)
 
         return [trial_params, results]
 
@@ -268,22 +268,20 @@ class HyperOptArgumentParser(ArgumentParser):
     def optimize_parallel_gpu(
             self,
             train_function,
-            nb_trials,
             gpu_ids,
-            nb_workers=4,
+            max_nb_trials=None,
     ):
         """
         Runs optimization across gpus with cuda drivers
         :param train_function:
-        :param nb_trials:
+        :param max_nb_trials:
         :param gpu_ids: List of strings like: ['0', '1, 3']
-        :param nb_workers:
         :return:
         """
         self.trials = strategies.generate_trials(
             strategy=self.strategy,
             flat_params=self.__flatten_params(self.opt_args),
-            nb_trials=nb_trials,
+            nb_trials=max_nb_trials,
         )
 
         self.trials = [(self.__namespace_from_trial(x), train_function) for x in self.trials]
@@ -301,6 +299,7 @@ class HyperOptArgumentParser(ArgumentParser):
                 g_gpu_id_q = local_gpu_q
 
             # init a pool with the nb of worker threads we want
+            nb_workers = len(gpu_ids)
             self.pool = Pool(processes=nb_workers, initializer=init, initargs=(gpu_q,))
 
         # apply parallelization
