@@ -30,7 +30,7 @@ class DDPExperiment(object):
         :param name:
         :param debug:
         :param version:
-        :param exp_dir:
+        :param save_dir:
         :param autosave:
         :param description:
         :param create_git_tag:
@@ -39,7 +39,7 @@ class DDPExperiment(object):
         """
 
         self.tag_markdown_saved = exp.tag_markdown_saved
-        self.no_exp_dir = exp.no_exp_dir
+        self.no_save_dir = exp.no_save_dir
         self.metrics = exp.metrics
         self.tags = exp.tags
         self.name = exp.name
@@ -50,7 +50,7 @@ class DDPExperiment(object):
         self.create_git_tag = exp.create_git_tag
         self.exp_hash = exp.exp_hash
         self.created_at = exp.created_at
-        self.exp_dir = exp.exp_dir
+        self.save_dir = exp.save_dir
 
 
     def get_non_ddp_exp(self):
@@ -58,7 +58,7 @@ class DDPExperiment(object):
             name=self.name,
             debug=self.debug,
             version=self.version,
-            exp_dir=self.exp_dir,
+            save_dir=self.save_dir,
             autosave=self.autosave,
             description=self.description,
             create_git_tag=self.create_git_tag
@@ -68,7 +68,7 @@ class Experiment(SummaryWriter):
 
     def __init__(
         self,
-        exp_dir=None,
+        save_dir=None,
         name='default',
         debug=False,
         version=None,
@@ -87,13 +87,13 @@ class Experiment(SummaryWriter):
 
         # change where the save dir is if requested
 
-        if exp_dir is not None:
+        if save_dir is not None:
             global _ROOT
-            _ROOT = exp_dir
+            _ROOT = save_dir
 
-        self.exp_dir = exp_dir
+        self.save_dir = save_dir
         self.tag_markdown_saved = False
-        self.no_exp_dir = exp_dir is None
+        self.no_save_dir = save_dir is None
         self.metrics = []
         self.tags = {}
         self.name = name
@@ -169,7 +169,7 @@ class Experiment(SummaryWriter):
             self.close()
 
     def __clean_dir(self):
-        files = os.listdir(self.exp_dir)
+        files = os.listdir(self.save_dir)
 
         if self.rank == 0:
             return
@@ -177,7 +177,7 @@ class Experiment(SummaryWriter):
         for f in files:
             if str(self.process) in f:
                 self.close()
-                os.remove(os.path.join(self.exp_dir, f))
+                os.remove(os.path.join(self.save_dir, f))
 
     def argparse(self, argparser):
         parsed = vars(argparser)
@@ -461,7 +461,7 @@ class Experiment(SummaryWriter):
         :param path:
         :return:
         """
-        if self.no_exp_dir:
+        if self.no_save_dir:
             return os.path.join(_ROOT, 'test_tube_data', exp_name, 'version_{}'.format(exp_version))
         else:
             return os.path.join(_ROOT, exp_name, 'version_{}'.format(exp_version))
@@ -503,7 +503,7 @@ class Experiment(SummaryWriter):
         if self.all_writers is None or self.file_writer is None:
             if self.purge_step is not None:
                 most_recent_step = self.purge_step
-                self.file_writer = FileWriter(logdir=self.exp_dir, **self.kwargs)
+                self.file_writer = FileWriter(logdir=self.save_dir, **self.kwargs)
                 self.file_writer.debug = self.debug
                 self.file_writer.rank = self.rank
 
@@ -512,7 +512,7 @@ class Experiment(SummaryWriter):
                 self.file_writer.add_event(
                     Event(step=most_recent_step, session_log=SessionLog(status=SessionLog.START)))
             else:
-                self.file_writer = FileWriter(logdir=self.exp_dir, **self.kwargs)
+                self.file_writer = FileWriter(logdir=self.save_dir, **self.kwargs)
             self.all_writers = {self.file_writer.get_logdir(): self.file_writer}
         return self.file_writer
 
