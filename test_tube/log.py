@@ -501,8 +501,8 @@ class Experiment(SummaryWriter):
             return TTDummyFileWriter()
 
         if self.all_writers is None or self.file_writer is None:
-            if 'purge_step' in self.kwargs.keys():
-                most_recent_step = self.kwargs.pop('purge_step')
+            if self.purge_step is not None:
+                most_recent_step = self.purge_step
                 self.file_writer = FileWriter(logdir=self.exp_dir, **self.kwargs)
                 self.file_writer.debug = self.debug
                 self.file_writer.rank = self.rank
