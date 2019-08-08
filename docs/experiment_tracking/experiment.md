@@ -10,7 +10,7 @@ from test_tube import Experiment
 
 exp = Experiment(name='dense_model',
                  debug=False,
-                 save_dir='/Desktop/test_tube')
+                 exp_dir='/Desktop/test_tube')
 
 exp.tag({'learning_rate': 0.002, 'nb_layers': 2})
 

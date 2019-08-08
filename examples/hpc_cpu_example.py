@@ -11,7 +11,7 @@ def train(hparams, *args):
     exp = Experiment(
         name=hparams.test_tube_exp_name,
         # Location to save the metrics.
-        save_dir=hparams.log_path,
+        exp_dir=hparams.log_path,
         # The experiment version is optional, but using the one 
         # from SLURM means the exp will not collide with other
         # versions if SLURM runs multiple at once.

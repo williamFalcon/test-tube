@@ -16,7 +16,7 @@ def train(hparams):
     # init exp and track all the parameters from the HyperOptArgumentParser
     exp = Experiment(
         name=hparams.test_tube_exp_name,
-        save_dir=hparams.log_path,
+        exp_dir=hparams.log_path,
         autosave=False,
     )
     exp.argparse(hparams)

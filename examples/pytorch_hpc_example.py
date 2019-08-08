@@ -14,7 +14,7 @@ def train(hparams, *args):
     exp = Experiment(
         name=hparams.test_tube_exp_name,
         # Location to save the metrics.
-        save_dir=hparams.log_path,
+        exp_dir=hparams.log_path,
         autosave=False,
     )
     exp.argparse(hparams)
