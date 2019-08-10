@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from setuptools import find_packages, setup
 
-version = '0.6.8'
+version = '0.6.9'
 
 setup(
     name='test_tube',
