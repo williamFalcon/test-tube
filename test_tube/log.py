@@ -503,7 +503,7 @@ class Experiment(SummaryWriter):
         if self.all_writers is None or self.file_writer is None:
             if self.purge_step is not None:
                 most_recent_step = self.purge_step
-                self.file_writer = FileWriter(self.save_dir, self.max_queue,
+                self.file_writer = FileWriter(self.log_dir, self.max_queue,
                                           self.flush_secs, self.filename_suffix)
                 self.file_writer.debug = self.debug
                 self.file_writer.rank = self.rank
@@ -513,7 +513,7 @@ class Experiment(SummaryWriter):
                 self.file_writer.add_event(
                     Event(step=most_recent_step, session_log=SessionLog(status=SessionLog.START)))
             else:
-                self.file_writer = FileWriter(self.save_dir, self.max_queue,
+                self.file_writer = FileWriter(self.log_dir, self.max_queue,
                                           self.flush_secs, self.filename_suffix)
             self.all_writers = {self.file_writer.get_logdir(): self.file_writer}
         return self.file_writer
