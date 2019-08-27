@@ -272,48 +272,6 @@ class SlurmCluster(AbstractCluster):
             traceback.print_exc()
             raise SystemExit
 
-    def __call_old_slurm_cmd(self, original_slurm_cmd_script_path, exp_i, copy_current=True):
-        """
-        Copies old slurm script into a new one and adds a load flag in case it wasn't there.
-        Then schedules the script again, but this time with the load flag which will signal the program
-        to load the model so it can continue training.
-
-        :param original_slurm_cmd_script_path:
-        :param exp_i:
-        :param copy_current:
-        :return:
-        """
-
-        # generate command
-        script_path = original_slurm_cmd_script_path.split('slurm_scripts')[0] + 'slurm_scripts'
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d__%H-%M-%S")
-        timestamp = 'trial_{}_{}'.format(exp_i, timestamp)
-        new_slurm_cmd_script_path = os.path.join(script_path, '{}_slurm_cmd.sh'.format(timestamp))
-
-        # copy with new time
-        copyfile(original_slurm_cmd_script_path, new_slurm_cmd_script_path)
-
-        # add continue flag if not there
-        old_file = open(original_slurm_cmd_script_path)
-        lines = old_file.read().split('\n')
-        last_line = lines[-1]
-        lines = [line + '\n' for line in lines]
-        lines[-1] = last_line
-        old_file.close()
-        if not HyperOptArgumentParser.SLURM_LOAD_CMD in lines[-1]:
-            last_line = lines[-1]
-            last_line = '{} --{}\n'.format(last_line, HyperOptArgumentParser.SLURM_LOAD_CMD)
-            lines[-1] = last_line
-            open(new_slurm_cmd_script_path, 'w').writelines(lines)
-
-        # run script to launch job
-        print('\nlaunching exp...')
-        result = call('{} {}'.format(AbstractCluster.RUN_CMD, new_slurm_cmd_script_path), shell=True)
-        if result == 0:
-            print('launched exp ', new_slurm_cmd_script_path)
-        else:
-            print('launch failed...')
-
     def __save_slurm_cmd(self, slurm_cmd, slurm_cmd_script_path):
         with open(slurm_cmd_script_path, mode='w') as file:
             file.write(slurm_cmd)
