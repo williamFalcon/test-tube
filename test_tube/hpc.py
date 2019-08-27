@@ -231,12 +231,15 @@ class SlurmCluster(AbstractCluster):
             # if we're here, the job didn't finish and we were given a save function
             # if we were given a load function, then schedule the program again and pass in the load function
             if self.get_checkpoint_load_function() is not None:
+                job_id = os.environ['SLURM_JOB_ID']
+                cmd = 'scontrol requeue {}'.format(job_id)
 
-                # copy the original slurm command into a new file, rename with current time, add load_flag
-                # and call
-                original_slurm_cmd_script_path = self.hyperparam_optimizer.test_tube_slurm_cmd_path
-                exp_i = self.hyperparam_optimizer.hpc_exp_number
-                self.__call_old_slurm_cmd(original_slurm_cmd_script_path, exp_i)
+                print('\nrequeing job {}...'.format(job_id))
+                result = call(cmd, shell=True)
+                if result == 0:
+                    print('requeued exp ', job_id)
+                else:
+                    print('requeue failed...')
 
         # stop program
         os._exit(0)
@@ -244,7 +247,6 @@ class SlurmCluster(AbstractCluster):
     def sig_handler(self, signum, frame):
         print("caught signal", signum)
         self.call_save()
-
         # sys.exit(-1)
 
     # ------------------------
