@@ -120,12 +120,14 @@ class SlurmCluster(AbstractCluster):
             train_function,
             nb_trials,
             job_name,
+            enable_auto_resubmit=False,
             job_display_name=None
     ):
         if job_display_name is None:
             job_display_name = job_name
 
-        self.__optimize_parallel_cluster_internal(train_function, nb_trials, job_name, job_display_name, on_gpu=True)
+        self.__optimize_parallel_cluster_internal(train_function, nb_trials, job_name, job_display_name,
+                                                  enable_auto_resubmit, on_gpu=True)
 
     def optimize_parallel_cluster_cpu(
             self,
@@ -145,6 +147,7 @@ class SlurmCluster(AbstractCluster):
             nb_trials,
             job_name,
             job_display_name,
+            enable_auto_resubmit,
             on_gpu
     ):
         """
@@ -157,6 +160,7 @@ class SlurmCluster(AbstractCluster):
         self.job_name = job_name
         self.job_display_name = job_display_name
         self.on_gpu = on_gpu
+        self.enable_auto_resubmit = enable_auto_resubmit
 
         # layout logging structure
         self.__layout_logging_dir()
@@ -256,9 +260,10 @@ class SlurmCluster(AbstractCluster):
         print("bypassing sigterm")
 
     def __run_experiment(self, train_function):
-        print('setting signal')
-        signal.signal(signal.SIGUSR1, self.sig_handler)
-        signal.signal(signal.SIGTERM, self.term_handler)
+        if self.enable_auto_resubmit:
+            print('setting signal')
+            signal.signal(signal.SIGUSR1, self.sig_handler)
+            signal.signal(signal.SIGTERM, self.term_handler)
 
         try:
             # run training
