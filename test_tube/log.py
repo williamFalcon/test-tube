@@ -154,7 +154,7 @@ class Experiment(SummaryWriter):
         super().__init__(log_dir=log_dir, *args, **kwargs)
 
         # register on exit fx so we always close the writer
-        atexit.register(self.on_exit)
+        # atexit.register(self.on_exit)
 
     def get_meta_copy(self):
         """
