@@ -164,9 +164,11 @@ class Experiment(SummaryWriter):
         return DDPExperiment(self)
 
     def on_exit(self):
-        self.__clean_dir()
         if self.rank == 0:
             self.close()
+
+        self.__clean_dir()
+
 
     def __clean_dir(self):
         files = os.listdir(self.save_dir)
@@ -176,7 +178,6 @@ class Experiment(SummaryWriter):
 
         for f in files:
             if str(self.process) in f:
-                self.close()
                 os.remove(os.path.join(self.save_dir, f))
 
     def argparse(self, argparser):
