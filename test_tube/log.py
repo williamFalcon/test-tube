@@ -293,8 +293,16 @@ class Experiment(SummaryWriter):
         if global_step is None:
             global_step = len(self.metrics)
 
+        new_metrics_dict = metrics_dict.copy()
         for k, v in metrics_dict.items():
-            self.add_scalar(tag=k, scalar_value=v, global_step=global_step, walltime=walltime)
+            if isinstance(v, dict):
+                self.add_scalars(main_tag=k, tag_scalar_dict=v, global_step=global_step, walltime=walltime)
+                tmp_metrics_dict = new_metrics_dict.pop(k)
+                new_metrics_dict.update(tmp_metrics_dict)
+            else:
+                self.add_scalar(tag=k, scalar_value=v, global_step=global_step, walltime=walltime)
+
+        metrics_dict = new_metrics_dict
 
         # timestamp
         if 'created_at' not in metrics_dict:
@@ -306,7 +314,6 @@ class Experiment(SummaryWriter):
 
         if self.autosave:
             self.save()
-
 
     def __convert_numpy_types(self, metrics_dict):
         for k, v in metrics_dict.items():
