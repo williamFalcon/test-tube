@@ -164,8 +164,7 @@ class Experiment(SummaryWriter):
         return DDPExperiment(self)
 
     def on_exit(self):
-        if self.rank == 0:
-            self.close()
+        pass
 
 
     def __clean_dir(self):
