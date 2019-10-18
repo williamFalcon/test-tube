@@ -167,8 +167,6 @@ class Experiment(SummaryWriter):
         if self.rank == 0:
             self.close()
 
-        self.__clean_dir()
-
 
     def __clean_dir(self):
         files = os.listdir(self.save_dir)
