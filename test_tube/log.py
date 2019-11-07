@@ -563,7 +563,7 @@ def atomic_write(dst_path):
     Usage:
     >>> with atomic_write(dst_path) as tmp_path:
     >>>     # write to tmp_path
-    >>> # Here dst_path has contect all tmp_path if not exception happened.
+    >>> # Here tmp_path renamed to dst_path, if not exception happened.
     """
     tmp_path = str(dst_path) + '.tmp'
     try:
