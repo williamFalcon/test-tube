@@ -7,7 +7,7 @@ Use Test Tube if you need to:
 
 -   Track many [Experiments](experiment_tracking/experiment.md) across
     models.
--   [Visualize](http://testtube.williamfalcon.com) and compare different
+-   Visualize and compare different
     experiments without uploading anywhere.
 -   [Optimize your
     hyperparameters](hyperparameter_optimization/HyperOptArgumentParser/)
