@@ -1,5 +1,7 @@
+import contextlib
 import json
 import os
+import shutil
 from datetime import datetime
 
 import numpy as np
@@ -348,16 +350,19 @@ class Experiment(SummaryWriter):
         }
 
         # save the experiment meta file
-        with open(self.__get_log_name(), 'w') as file:
-            json.dump(obj, file, ensure_ascii=False)
+        with atomic_write(self.__get_log_name()) as tmp_path:
+            with open(tmp_path, 'w') as file:
+                json.dump(obj, file, ensure_ascii=False)
 
         # save the metatags file
         df = pd.DataFrame({'key': list(self.tags.keys()), 'value': list(self.tags.values())})
-        df.to_csv(meta_tags_path, index=False)
+        with atomic_write(meta_tags_path) as tmp_path:
+            df.to_csv(tmp_path, index=False)
 
         # save the metrics data
         df = pd.DataFrame(self.metrics)
-        df.to_csv(metrics_file_path, index=False)
+        with atomic_write(metrics_file_path) as tmp_path:
+            df.to_csv(tmp_path, index=False)
 
         # write new vals to disk
         self.flush()
@@ -553,6 +558,27 @@ class TTDummyFileWriter(object):
         :return:
         """
         return
+
+
+@contextlib.contextmanager
+def atomic_write(dst_path):
+    """A context manager to simplify atomic writing.
+
+    Usage:
+    >>> with atomic_write(dst_path) as tmp_path:
+    >>>     # write to tmp_path
+    >>> # Here tmp_path renamed to dst_path, if no exception happened.
+    """
+    tmp_path = str(dst_path) + '.tmp'
+    try:
+        yield tmp_path
+    except:
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)
+        raise
+    else:
+        # If everything is fine, move tmp file to the destination.
+        shutil.move(tmp_path, str(dst_path))
 
 
 
