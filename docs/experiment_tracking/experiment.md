@@ -17,7 +17,7 @@ exp.tag({'learning_rate': 0.002, 'nb_layers': 2})
 for step in training_steps:
     tng_err = model.eval(tng_x, tng_y)
 
-    exp.log('tng_err': tng_err)
+    exp.log({'tng_err': tng_err})
 
 # training complete!
 # all your logs and data are ready to be visualized at testtube.williamfalcon.com
