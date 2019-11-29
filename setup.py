@@ -13,7 +13,7 @@ setup(
         'pandas>=0.20.3',
         'numpy>=1.13.3',
         'imageio>=2.3.0',
-        'tb-nightly==1.15.0a20190708',
+        'tensorboard>=1.15.0',
         'torch>=1.1.0',
         'future'
     ],
