@@ -156,6 +156,8 @@ class Experiment(SummaryWriter):
         # this is a fix for pytorch 1.1 since it does not have this attribute
         if not hasattr(self, 'purge_step'):
             self.purge_step = None
+        if not hasattr(self, 'max_queue'):
+            self.max_queue = 0
         super().__init__(log_dir=log_dir, *args, **kwargs)
 
         # register on exit fx so we always close the writer
