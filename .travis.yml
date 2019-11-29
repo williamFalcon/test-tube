@@ -25,9 +25,10 @@ install:
     fi
   - pip install Cython
   - pip install -r requirements-ci.txt
+  - pip install pytest
 
 
 # command to run tests
 script:
   - pip install -e .
-  - pytest . -v # or py.test for Python versions 3.5 and below
+  - py.test . -v # or py.test for Python versions 3.5 and below
