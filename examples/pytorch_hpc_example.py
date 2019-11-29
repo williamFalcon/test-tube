@@ -3,7 +3,9 @@
 This example shows how to use gpus on SLURM with PyTorch.
 """
 import torch
+
 from test_tube import Experiment, HyperOptArgumentParser, SlurmCluster
+
 
 def train(hparams, *args):
     """Train your awesome model.

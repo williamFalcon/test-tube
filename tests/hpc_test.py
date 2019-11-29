@@ -1,6 +1,7 @@
 import pytest
-from test_tube.hpc import SlurmCluster
+
 from test_tube.argparse_hopt import HyperOptArgumentParser
+from test_tube.hpc import SlurmCluster
 
 
 def test_slurm_time_to_seconds():
