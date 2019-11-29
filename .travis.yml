@@ -1,15 +1,30 @@
 language: python
-python:
-  - "3.6"
 # command to install dependencies
 cache: pip
+
+matrix:
+  include:
+    - python: 3.6
+      env:
+        - MIN_REQUIREMENTS=1
+    - python: 3.7
+      env:
+        - MIN_REQUIREMENTS=1
+    - python: 3.6
+    - python: 3.7
+
 install:
-  - pip install -r requirements.txt
-  - pip install -e .
+  - if [[ "${MIN_REQUIREMENTS}" == "1" ]]; then
+      python -c "req = open('requirements.txt').read().replace('>', '=') ; open('requirements-ci.txt', 'w').write(req)" ;
+    else
+      cp requirements.txt requirements-ci.txt ;
+    fi
+  - pip install -r requirements-ci.txt
 
 # keep build from timing out
-dist: xenial
+dist: xenial  # Ubuntu 16.04
 
 # command to run tests
 script:
-  - pytest # or py.test for Python versions 3.5 and below
+  - pytest . -v # or py.test for Python versions 3.5 and below
+  - pip install -e .
