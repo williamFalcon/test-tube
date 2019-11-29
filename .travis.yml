@@ -27,5 +27,5 @@ dist: xenial  # Ubuntu 16.04
 
 # command to run tests
 script:
-  - pytest . -v # or py.test for Python versions 3.5 and below
   - pip install -e .
+  - pytest . -v # or py.test for Python versions 3.5 and below
