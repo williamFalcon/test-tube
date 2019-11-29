@@ -1,6 +1,7 @@
 import itertools
-import random
 import json
+import random
+
 
 class HyperParamOptimizer(object):
 

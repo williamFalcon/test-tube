@@ -1,15 +1,12 @@
-import os
-import sys
-from .argparse_hopt import HyperOptArgumentParser
-from subprocess import call
 import datetime
-import traceback
-import re
-from shutil import copyfile
-import threading
-import time
+import os
 import signal
-import pdb
+import sys
+import time
+import traceback
+from subprocess import call
+
+from .argparse_hopt import HyperOptArgumentParser
 
 
 def exit():

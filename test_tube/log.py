@@ -7,12 +7,9 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 from imageio import imwrite
-from torch.utils.tensorboard import SummaryWriter, FileWriter
-import atexit
-from tensorboard.compat.proto.event_pb2 import SessionLog
 from tensorboard.compat.proto.event_pb2 import Event
-from tensorboard.compat.proto import event_pb2
-from tensorboard.summary.writer.event_file_writer import EventFileWriter
+from tensorboard.compat.proto.event_pb2 import SessionLog
+from torch.utils.tensorboard import SummaryWriter, FileWriter
 
 # constants
 _ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -583,7 +580,6 @@ def atomic_write(dst_path):
 
 
 if __name__ == '__main__':
-    import math
     from time import sleep
     e = Experiment(description='my description')
     e.tag({'lr': 0.02, 'layers': 4})

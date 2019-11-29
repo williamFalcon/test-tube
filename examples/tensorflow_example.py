@@ -1,6 +1,6 @@
 import tensorflow as tf
-from test_tube import Experiment, HyperOptArgumentParser
 
+from test_tube import Experiment, HyperOptArgumentParser
 
 """
 This script demonstrates how to do a hyperparameter search over 2 parameters in tensorflow

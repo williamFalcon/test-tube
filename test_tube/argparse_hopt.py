@@ -7,11 +7,13 @@ import re
 import traceback
 from argparse import ArgumentParser
 from copy import deepcopy
+from gettext import gettext as _
 from multiprocessing import Pool, Queue
 from time import sleep
+
 import numpy as np
+
 from .hyper_opt_utils import strategies
-from gettext import gettext as _
 
 # needed to work with pytorch multiprocess
 try:
