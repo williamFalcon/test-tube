@@ -19,6 +19,7 @@ install:
     else
       cp requirements.txt requirements-ci.txt ;
     fi
+  - pip install Cython
   - pip install -r requirements-ci.txt
 
 # keep build from timing out
