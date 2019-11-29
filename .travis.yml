@@ -31,4 +31,4 @@ install:
 # command to run tests
 script:
   - pip install -e .
-  - py.test . -v # or py.test for Python versions 3.5 and below
+  - pytest -v # or py.test for Python versions 3.5 and below
