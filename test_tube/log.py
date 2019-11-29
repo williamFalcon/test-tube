@@ -153,6 +153,7 @@ class Experiment(SummaryWriter):
 
         # set the tensorboardx log path to the /tf folder in the exp folder
         log_dir = self.get_tensorboardx_path(self.name, self.version)
+        # this is a fix for pytorch 1.1 since it does not have this attribute
         if not hasattr(self, 'purge_step'):
             self.purge_step = None
         super().__init__(log_dir=log_dir, *args, **kwargs)
