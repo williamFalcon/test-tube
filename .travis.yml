@@ -8,10 +8,6 @@ matrix:
       dist: xenial  # Ubuntu 16.04
       env:
         - MIN_REQUIREMENTS=1
-    - python: 3.7
-      dist: xenial  # Ubuntu 16.04
-      env:
-        - MIN_REQUIREMENTS=1
     - python: 3.6
       dist: bionic  # Ubuntu 18.04
     - python: 3.7
@@ -31,3 +27,6 @@ install:
 script:
   - pip install -e .
   - pytest # or py.test for Python versions 3.5 and below
+
+notifications:
+  email: false
