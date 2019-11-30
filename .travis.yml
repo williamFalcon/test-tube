@@ -1,15 +1,32 @@
 language: python
-python:
-  - "3.6"
 # command to install dependencies
 cache: pip
-install:
-  - pip install -r requirements.txt
-  - pip install -e .
 
-# keep build from timing out
-dist: xenial
+matrix:
+  include:
+    - python: 3.6
+      dist: xenial  # Ubuntu 16.04
+      env:
+        - MIN_REQUIREMENTS=1
+    - python: 3.6
+      dist: bionic  # Ubuntu 18.04
+    - python: 3.7
+      dist: bionic  # Ubuntu 18.04
+
+install:
+  - if [[ "${MIN_REQUIREMENTS}" == "1" ]]; then
+      python -c "req = open('requirements.txt').read().replace('>', '=') ; open('requirements-ci.txt', 'w').write(req)" ;
+    else
+      cp requirements.txt requirements-ci.txt ;
+    fi
+  - pip install Cython
+  - pip install -r requirements-ci.txt
+
 
 # command to run tests
 script:
+  - pip install -e .
   - pytest # or py.test for Python versions 3.5 and below
+
+notifications:
+  email: false
