@@ -155,8 +155,8 @@ class Experiment(SummaryWriter):
         log_dir = self.get_tensorboardx_path(self.name, self.version)
         # this is a fix for pytorch 1.1 since it does not have this attribute
         for attr, val in [('purge_step', None),
-                          ('max_queue', 0),
-                          ('flush_secs', 0),
+                          ('max_queue', 10),
+                          ('flush_secs', 120),
                           ('filename_suffix', '')]:
             if not hasattr(self, attr):
                 setattr(self, attr, val)
