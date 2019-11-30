@@ -150,6 +150,13 @@ class Experiment(SummaryWriter):
 
         # set the tensorboardx log path to the /tf folder in the exp folder
         log_dir = self.get_tensorboardx_path(self.name, self.version)
+        # this is a fix for pytorch 1.1 since it does not have this attribute
+        for attr, val in [('purge_step', None),
+                          ('max_queue', 10),
+                          ('flush_secs', 120),
+                          ('filename_suffix', '')]:
+            if not hasattr(self, attr):
+                setattr(self, attr, val)
         super().__init__(log_dir=log_dir, *args, **kwargs)
 
         # register on exit fx so we always close the writer
