@@ -25,7 +25,14 @@ setup(
     version=version,
     description='Experiment logger and visualizer',
     author='William Falcon',
-    install_requires=load_requirements(PATH_ROOT),
+    install_requires=[
+        'pandas>=0.20.3',
+        'numpy>=1.13.3',
+        'imageio>=2.3.0',
+        'tensorboard>=1.15.0',
+        'torch>=1.1.0',
+        'future'
+    ],
     author_email='will@hacstudios.com',
     url='https://github.com/williamFalcon/test_tube',
     download_url='https://github.com/williamFalcon/test_tube/archive/{}.tar.gz'.format(version),
