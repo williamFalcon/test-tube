@@ -14,11 +14,11 @@ matrix:
       dist: bionic  # Ubuntu 18.04
 
 install:
-  - pip install -e .
   - if [[ "${MIN_REQUIREMENTS}" == "1" ]]; then
       python -c "req = open('requirements.txt').read().replace('>', '=') ; open('requirements-ci.txt', 'w').write(req)" ;
       pip install -r requirements-ci.txt ;
     fi
+  - pip install -e .
 
 
 # command to run tests
