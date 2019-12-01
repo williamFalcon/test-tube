@@ -17,10 +17,8 @@ install:
   - pip install -e .
   - if [[ "${MIN_REQUIREMENTS}" == "1" ]]; then
       python -c "req = open('requirements.txt').read().replace('>', '=') ; open('requirements-ci.txt', 'w').write(req)" ;
-    else
-      cp requirements.txt requirements-ci.txt ;
+      pip install -r requirements-ci.txt ;
     fi
-  - pip install -r requirements-ci.txt
 
 
 # command to run tests
