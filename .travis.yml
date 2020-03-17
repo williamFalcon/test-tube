@@ -16,16 +16,13 @@ matrix:
 install:
   - if [[ "${MIN_REQUIREMENTS}" == "1" ]]; then
       python -c "req = open('requirements.txt').read().replace('>', '=') ; open('requirements-ci.txt', 'w').write(req)" ;
-    else
-      cp requirements.txt requirements-ci.txt ;
+      pip install -r requirements-ci.txt ;
     fi
-  - pip install Cython
-  - pip install -r requirements-ci.txt
+  - pip install -e .
 
 
 # command to run tests
 script:
-  - pip install -e .
   - pytest # or py.test for Python versions 3.5 and below
 
 notifications:
