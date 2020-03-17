@@ -248,13 +248,7 @@ class Experiment(SummaryWriter):
     def __get_last_experiment_version(self):
         try:
             exp_cache_file = os.sep.join(self.get_data_path(self.name, self.version).split(os.sep)[:-1])
-            last_version = -1
-            for f in os.listdir(exp_cache_file):
-                if 'version_' in f:
-                    file_parts = f.split('_')
-                    version = int(file_parts[-1])
-                    last_version = max(last_version, version)
-            return last_version
+            return find_last_experiment_version(exp_cache_file)
         except Exception as e:
             return -1
 
@@ -584,6 +578,15 @@ def atomic_write(dst_path):
         # If everything is fine, move tmp file to the destination.
         shutil.move(tmp_path, str(dst_path))
 
+
+def find_last_experiment_version(path):
+    last_version = -1
+    for f in os.listdir(path):
+        if 'version_' in f:
+            file_parts = f.split('_')
+            version = int(file_parts[-1])
+            last_version = max(last_version, version)
+    return last_version
 
 
 if __name__ == '__main__':
