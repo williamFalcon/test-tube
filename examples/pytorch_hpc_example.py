@@ -53,7 +53,7 @@ if __name__ == '__main__':
 
     # Email results if your hpc supports it.
     cluster.notify_job_status(
-        email='some@email.com', on_done=True, on_fail=True)
+        email='some@email.com', on_done=True, on_fail=True, on_time_limit=True)
 
     # SLURM Module to load.
     cluster.load_modules([

@@ -44,6 +44,7 @@ class AbstractCluster(object):
         self.email = None
         self.notify_on_end = False
         self.notify_on_fail = False
+        self.notify_on_time_limit = False
         self.job_name = None
         self.python_cmd = python_cmd
         self.gpu_type = None
@@ -96,10 +97,11 @@ class AbstractCluster(object):
     def load_modules(self, modules):
         self.modules = modules
 
-    def notify_job_status(self, email, on_done, on_fail):
+    def notify_job_status(self, email, on_done, on_fail, on_time_limit):
         self.email = email
         self.notify_on_end = on_done
         self.notify_on_fail = on_fail
+        self.notify_on_time_limit = on_time_limit
 
     def optimize_parallel_cluster(self, train_function, nb_trials, job_name):
         raise NotImplementedError
@@ -460,6 +462,8 @@ class SlurmCluster(AbstractCluster):
             mail_type.append('END')
         if self.notify_on_fail:
             mail_type.append('FAIL')
+        if self.notify_on_time_limit:
+            mail_type.append('TIME_LIMIT')
         if len(mail_type) > 0:
             mail_type_query = [
                 '# Have SLURM send you an email when the job ends or fails',

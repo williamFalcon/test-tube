@@ -94,8 +94,8 @@ cluster = SlurmCluster(
     python_cmd='python3'
 )
 
-# let the cluster know where to email for a change in job status (ie: complete, fail, etc...)
-cluster.notify_job_status(email='some@email.com', on_done=True, on_fail=True)
+# let the cluster know where to email for a change in job status (ie: complete, fail, time limit reached, etc...)
+cluster.notify_job_status(email='some@email.com', on_done=True, on_fail=True, on_time_limit=True)
 
 # set the job options. In this instance, we'll run 20 different models
 # each with its own set of hyperparameters giving each one 1 GPU (ie: taking up 20 GPUs)

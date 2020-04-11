@@ -25,8 +25,8 @@ cluster = SlurmCluster(
     python_cmd='python3'
 )
 
-# let the cluster know where to email for a change in job status (ie: complete, fail, etc...)
-cluster.notify_job_status(email='some@email.com', on_done=True, on_fail=True)
+# let the cluster know where to email for a change in job status (ie: complete, fail, time limit reached, etc...)
+cluster.notify_job_status(email='some@email.com', on_done=True, on_fail=True, on_time_limit=True)
 
 # set the job options. In this instance, we'll run 20 different models
 # each with its own set of hyperparameters giving each one 1 GPU (ie: taking up 20 GPUs)
@@ -254,20 +254,21 @@ cluster.load_modules([
 ### `notify_job_status`
 
 ``` {.python}
-cluster.notify_job_status(email, on_done, on_fail)  
+cluster.notify_job_status(email, on_done, on_fail, on_time_limit)  
 ```
 
 Loads modules needed to run the job. Your Slurm documentation should have a list of available modules. You can also get those by running ```module avail```.   
 
 - ```email``` String. Email address to get notifications.       
 - ```on_done``` Boolean. If true, you'll get an email when the job completes.      
-- ```on_fail``` Boolean. If true, you'll get an email if the job fails.    
+- ```on_fail``` Boolean. If true, you'll get an email if the job fails.   
+- ```on_time_limit``` Boolean. If true, you'll get an email if the job is stopped for exceeding its time limit. 
 
 **Example**
 
 
 ``` {.python}
-cluster.notify_job_status(email='some@email.com', on_done=True, on_fail=True)   
+cluster.notify_job_status(email='some@email.com', on_done=True, on_fail=True, on_time_limit=True)   
 ```   
 
 ### `optimize_parallel_cluster_gpu`
