@@ -54,7 +54,7 @@ The Experiment object is a subclass of Pytorch.SummaryWriter.
 **Log and visualize with Tensorboard**     
 
 ```{.python}
-from test-tube import Experiment
+from test_tube import Experiment
 import torch
 
 exp = Experiment('/some/path')
