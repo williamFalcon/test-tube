@@ -35,12 +35,12 @@ class AbstractCluster(object):
         self.out_log_path = None
         self.modules = []
         self.script_name = os.path.realpath(sys.argv[0])
-        self.job_time = '15:00'
-        self.minutes_to_checkpoint_before_walltime = 5
-        self.per_experiment_nb_gpus = 1
-        self.per_experiment_nb_cpus = 1
-        self.per_experiment_nb_nodes = 1
-        self.memory_mb_per_node = 2000
+        self.job_time = None
+        self.minutes_to_checkpoint_before_walltime = None
+        self.per_experiment_nb_gpus = None
+        self.per_experiment_nb_cpus = None
+        self.per_experiment_nb_nodes = None
+        self.memory_mb_per_node = None
         self.email = None
         self.notify_on_end = False
         self.notify_on_fail = False
@@ -397,13 +397,14 @@ class SlurmCluster(AbstractCluster):
             ]
             sub_commands.extend(command)
 
-        # add job time
-        command = [
-            '# time needed for job',
-            '#SBATCH --time={}'.format(self.job_time),
-            '#################\n'
-        ]
-        sub_commands.extend(command)
+        if self.job_time is not None:
+            # add job time
+            command = [
+                '# time needed for job',
+                '#SBATCH --time={}'.format(self.job_time),
+                '#################\n'
+            ]
+            sub_commands.extend(command)
 
         # add nb of gpus
         if self.per_experiment_nb_gpus > 0 and on_gpu:
@@ -421,7 +422,7 @@ class SlurmCluster(AbstractCluster):
             sub_commands.extend(command)
 
         # add nb of cpus if not looking at a gpu job
-        if self.per_experiment_nb_cpus > 0:
+        if self.per_experiment_nb_cpus is not None:
             command = [
                 '# cpus per job',
                 '#SBATCH --cpus-per-task={}'.format(self.per_experiment_nb_cpus),
@@ -429,30 +430,32 @@ class SlurmCluster(AbstractCluster):
             ]
             sub_commands.extend(command)
 
-        # pick nb nodes
-        command = [
-            '# number of requested nodes',
-            '#SBATCH --nodes={}'.format(self.per_experiment_nb_nodes),
-            '#################\n'
-        ]
-        sub_commands.extend(command)
+        if self.per_experiment_nb_nodes is not None:
+            # pick nb nodes
+            command = [
+                '# number of requested nodes',
+                '#SBATCH --nodes={}'.format(self.per_experiment_nb_nodes),
+                '#################\n'
+            ]
+            sub_commands.extend(command)
 
-        # pick memory per node
-        command = [
-            '# memory per node',
-            '#SBATCH --mem={}'.format(self.memory_mb_per_node),
-            '#################\n'
-        ]
-        sub_commands.extend(command)
+        if self.memory_mb_per_node is not None:
+            # pick memory per node
+            command = [
+                '# memory per node',
+                '#SBATCH --mem={}'.format(self.memory_mb_per_node),
+                '#################\n'
+            ]
+            sub_commands.extend(command)
 
-        # add signal command to catch job termination
-        command = [
-            '# slurm will send a signal this far out before it kills the job',
-            f'#SBATCH --signal=USR1@{self.minutes_to_checkpoint_before_walltime * 60}',
-            '#################\n'
-        ]
-
-        sub_commands.extend(command)
+        if self.minutes_to_checkpoint_before_walltime is not None:
+            # add signal command to catch job termination
+            command = [
+                '# slurm will send a signal this far out before it kills the job',
+                f'#SBATCH --signal=USR1@{self.minutes_to_checkpoint_before_walltime * 60}',
+                '#################\n'
+            ]
+            sub_commands.extend(command)
 
         # Subscribe to email if requested
         mail_type = []
