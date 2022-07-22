@@ -53,7 +53,7 @@ The Experiment object is a subclass of Pytorch.SummaryWriter.
 
 **Log and visualize with Tensorboard**     
 
-```{.python}
+```python
 from test-tube import Experiment
 import torch
 
@@ -73,7 +73,7 @@ exp.save()
 exp.close()
 ```
 
-```{.bash}
+```bash
 pip install tensorflow   
 
 tensorboard --logdir /some/path
@@ -81,7 +81,7 @@ tensorboard --logdir /some/path
     
 **Run grid search on SLURM GPU cluster**    
 
-``` {.python}   
+``` python
 from test_tube.hpc import SlurmCluster
 
 # hyperparameters is a test-tube hyper params object
@@ -110,7 +110,7 @@ cluster.optimize_parallel_cluster_gpu(train, nb_trials=20, job_name='first_tt_ba
 
 **Optimize hyperparameters across GPUs**
 
-``` {.python}
+``` python
 from test_tube import HyperOptArgumentParser
 
 # subclass of argparse
@@ -133,7 +133,7 @@ hparams.optimize_parallel_gpu(MyModel.fit, gpu_ids=['1', '2,3', '0'], nb_trials=
 
 Or... across CPUs
 
-``` {.python}
+``` python
 hparams.optimize_parallel_cpu(MyModel.fit, nb_trials=192, nb_workers=12)
 ```
 
@@ -142,7 +142,7 @@ magnitudes of hyperparameter values, with a chosen base (disabled by
 default). Keep in mind that the range you search over must be strictly
 positive.
 
-``` {.python}
+```python
 from test_tube import HyperOptArgumentParser
 
 # subclass of argparse
@@ -163,7 +163,7 @@ for hparam_trial in hparams.trials(20):
 
 ### Convert your argparse params into searchable params by changing 1 line
 
-``` {.python}
+```python
 import argparse
 from test_tube import HyperOptArgumentParser
 
@@ -177,7 +177,7 @@ parser = HyperOptArgumentParser(description='Process some integers.', strategy='
 
 ### Log images inline with metrics
 
-``` {.python}
+```python
 # name must have either jpg, png or jpeg in it
 img = np.imread('a.jpg')
 exp.log('test_jpg': img, 'val_err': 0.2)
